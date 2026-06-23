@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jadwal Digital TV</title>
+    <style>
+        /* Tema Warna Bintang Pelajar */
+        :root {
+            --bp-teal-light: #48d1cc;
+            --bp-navy: #1e3a8a;
+            --bp-yellow: #fbbf24;
+            --bg-color: #f0fdfa;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-dim: #64748b;
+            --border-color: #cbd5e1;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: Arial, sans-serif; /* Font aman untuk semua TV */
+            margin: 0;
+            padding: 20px;
+            overflow: hidden;
+        }
+
+        /* --- PERBAIKAN 1: UKURAN HEADER DIPERKECIL --- */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 4px solid var(--bp-teal-light);
+            padding-bottom: 10px;
+        }
+
+        .logo-container {
+            width: 220px; /* Ukuran logo disesuaikan */
+        }
+        .logo-container img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        .title-container {
+            text-align: right;
+        }
+
+        .header h1 {
+            font-size: 32px; /* Judul jauh lebih kecil */
+            margin: 0;
+            color: var(--bp-navy);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .header .subtitle {
+            color: #ef4444; /* Merah untuk jam */
+            font-size: 22px;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+
+        /* --- PERBAIKAN 2: UKURAN TABEL DIPERBESAR --- */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: var(--card-bg);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        th {
+            background-color: var(--bp-navy);
+            color: #ffffff;
+            font-size: 26px; /* Header tabel */
+            padding: 15px;
+            border: 1px solid var(--border-color);
+            text-transform: uppercase;
+        }
+
+        td {
+            padding: 18px 15px;
+            border: 1px solid var(--border-color);
+            font-size: 32px; /* ISI TABEL DIPERBESAR MAKSIMAL */
+            text-align: center;
+            vertical-align: middle;
+            color: var(--bp-navy);
+        }
+
+        .col-siswa {
+            text-align: left;
+            line-height: 1.4;
+            font-size: 28px; /* Siswa sedikit lebih kecil dari nama guru agar muat ke bawah */
+        }
+
+        .col-sesi {
+            font-size: 36px; /* Sesi sangat besar */
+            font-weight: bold;
+            color: #ef4444;
+        }
+
+        .col-guru, .col-mapel {
+            font-weight: bold;
+        }
+
+        .footer {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            padding: 15px;
+            background-color: var(--bp-navy);
+            color: white;
+            font-size: 20px;
+            border-radius: 8px;
+        }
+        
+        .page-indicator {
+            background-color: var(--bp-yellow);
+            color: var(--bp-navy);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+
+        #error-msg {
+            display: none;
+            background-color: #ef4444;
+            color: white;
+            text-align: center;
+            padding: 15px;
+            font-size: 20px;
+            font-weight: bold;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .loading {
+            text-align: center;
+            font-size: 26px;
+            color: var(--text-dim);
+            padding: 50px;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <div class="logo-container">
+            <img src="https://www.bintangpelajar.com/wp-content/uploads/2020/12/logo-BP-2020-01.png" alt="Bintang Pelajar">
+        </div>
+        <div class="title-container">
+            <h1>Jadwal Kegiatan Pembelajaran</h1>
+            <div class="subtitle" id="clock">Memuat waktu...</div>
+        </div>
+    </div>
+
+    <div id="error-msg">Gagal terhubung ke server...</div>
+
+    <table id="schedule-table">
+        <thead>
+            <tr>
+                <th width="15%">SESI</th>
+                <th width="22%">GURU</th>
+                <th width="8%">RUANG</th>
+                <th width="20%">MAPEL/KELAS</th>
+                <th width="35%">NAMA SISWA</th>
+            </tr>
+        </thead>
+        <tbody id="table-body">
+            <tr>
+                <td colspan="5" class="loading">Menghubungkan ke Database Bintang Pelajar...</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="footer">
+        <div id="last-update">Update terakhir: -</div>
+        <div class="page-indicator" id="page-indicator">Halaman 1 / 1</div>
+    </div>
+
+    <script>
+        /**
+         * PERBAIKAN: Menggunakan JavaScript Klasik (ES5) agar kompatibel dengan SEMUA SMART TV
+         */
+        
+        // -------------------------------------------------------------
+        // WAAJIB UBAH TULISAN DI BAWAH INI DENGAN URL API ANDA YANG ASLI
+        // -------------------------------------------------------------
+        var API_URL = "https://script.google.com/macros/s/AKfycbywopky_VUnmvfktok0xRaXDpQrzjuOMo7VjfAselVjzZI7G6FBwijJJh8G9LZWUCqqdw/exec"; 
+        
+        var ITEMS_PER_PAGE = 1;      
+        var SLIDE_DURATION = 7000;  
+        var REFRESH_DATA = 300000;   
+
+        var scheduleData = [];
+        var currentPage = 0;
+        var slideInterval = null;
+
+        // FUNGSI MENGAMBIL DATA (Menggunakan XMLHttpRequest karena TV jadul menolak Fetch API)
+        function fetchData() {
+            var xhr = new XMLHttpRequest();
+            xhr.open("GET", API_URL, true);
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === 4) {
+                    if (xhr.status === 200) {
+                        try {
+                            var data = JSON.parse(xhr.responseText);
+                            
+                            if(data.error) {
+                                showError("Error: " + data.error);
+                                return;
+                            }
+
+                            // Filter baris kosong
+                            var dataBersih = [];
+                            for(var i = 0; i < data.length; i++) {
+                                var guru = data[i].guru ? String(data[i].guru).trim() : "";
+                                if(guru !== "" && guru !== "-") {
+                                    dataBersih.push(data[i]);
+                                }
+                            }
+
+                            scheduleData = dataBersih;
+                            document.getElementById('error-msg').style.display = 'none';
+                            updateLastRefresh();
+                            
+                            currentPage = 0; 
+                            renderTable();
+                            startPagination();
+
+                        } catch(e) {
+                            showError("Gagal memproses data.");
+                        }
+                    } else {
+                        showError("Gagal terhubung ke API Sheets (Error " + xhr.status + "). Cek pengaturan Siapa Saja saat Deploy.");
+                    }
+                }
+            };
+            xhr.send();
+        }
+
+        // FUNGSI MENGGAMBAR TABEL
+        function renderTable() {
+            var tbody = document.getElementById('table-body');
+            tbody.innerHTML = ''; 
+            
+            if (scheduleData.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" class="loading">Tidak ada jadwal pada sesi ini.</td></tr>';
+                document.getElementById('page-indicator').innerText = 'Halaman 0 / 0';
+                return;
+            }
+
+            var totalPages = Math.ceil(scheduleData.length / ITEMS_PER_PAGE);
+            document.getElementById('page-indicator').innerText = 'Halaman ' + (currentPage + 1) + ' / ' + totalPages;
+
+            var startIdx = currentPage * ITEMS_PER_PAGE;
+            var endIdx = startIdx + ITEMS_PER_PAGE;
+            var pageData = scheduleData.slice(startIdx, endIdx);
+
+            for(var i = 0; i < pageData.length; i++) {
+                var row = pageData[i];
+                var tr = document.createElement('tr');
+                
+                var namaSiswa = row.siswa ? String(row.siswa).replace(/\n/g, '<br>') : '-';
+                if(namaSiswa.trim() === "") namaSiswa = "-";
+                
+                tr.innerHTML = 
+                    '<td class="col-sesi">' + (row.sesi || '-') + '</td>' +
+                    '<td class="col-guru">' + (row.guru || '-') + '</td>' +
+                    '<td>' + (row.ruang || '-') + '</td>' +
+                    '<td class="col-mapel">' + (row.mapel || '-') + '</td>' +
+                    '<td class="col-siswa">' + namaSiswa + '</td>';
+                
+                tbody.appendChild(tr);
+            }
+        }
+
+        // FUNGSI SLIDESHOW HALAMAN
+        function startPagination() {
+            if(slideInterval !== null) {
+                clearInterval(slideInterval);
+            }
+            
+            var totalPages = Math.ceil(scheduleData.length / ITEMS_PER_PAGE);
+            if (totalPages > 1) {
+                slideInterval = setInterval(function() {
+                    currentPage++;
+                    if (currentPage >= totalPages) {
+                        currentPage = 0; 
+                    }
+                    renderTable();
+                }, SLIDE_DURATION);
+            }
+        }
+
+        // FUNGSI ERROR
+        function showError(msg) {
+            var errorEl = document.getElementById('error-msg');
+            errorEl.innerText = msg;
+            errorEl.style.display = 'block';
+        }
+
+        // FUNGSI JAM TV
+        function updateClock() {
+            var now = new Date();
+            var days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+            var day = days[now.getDay()];
+            
+            // Format manual agar kompatibel
+            var date = now.getDate();
+            var months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+            var month = months[now.getMonth()];
+            var year = now.getFullYear();
+
+            var h = ("0" + now.getHours()).slice(-2);
+            var m = ("0" + now.getMinutes()).slice(-2);
+            var s = ("0" + now.getSeconds()).slice(-2);
+
+            document.getElementById('clock').innerText = day + ', ' + date + ' ' + month + ' ' + year + ' | ' + h + ':' + m + ':' + s + ' WIB';
+        }
+
+        // FUNGSI WAKTU UPDATE
+        function updateLastRefresh() {
+            var now = new Date();
+            var h = ("0" + now.getHours()).slice(-2);
+            var m = ("0" + now.getMinutes()).slice(-2);
+            var s = ("0" + now.getSeconds()).slice(-2);
+            document.getElementById('last-update').innerText = 'Update terakhir: ' + h + ':' + m + ':' + s;
+        }
+
+        // JALANKAN PROGRAM
+        setInterval(updateClock, 1000); 
+        updateClock();
+        
+        fetchData(); 
+        setInterval(fetchData, REFRESH_DATA); 
+
+    </script>
+</body>
+</html>

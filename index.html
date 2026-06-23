@@ -14,136 +14,85 @@
             --card-bg: #ffffff;
             --text-main: #1e293b;
             --text-dim: #64748b;
-            --border-color: #cbd5e1;
         }
 
         body {
             background-color: var(--bg-color);
             color: var(--text-main);
-            font-family: Arial, sans-serif; /* Font aman untuk semua TV */
+            font-family: 'Segoe UI', Tahoma, sans-serif;
             margin: 0;
-            padding: 20px;
+            padding: 10px; /* Padding dikurangi agar ruang lebih lega */
             overflow: hidden;
         }
 
-        /* --- PERBAIKAN 1: UKURAN HEADER DIPERKECIL --- */
         .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
-            border-bottom: 4px solid var(--bp-teal-light);
-            padding-bottom: 10px;
+            margin-bottom: 10px; /* Jarak atas bawah diperkecil */
+            border-bottom: 3px solid var(--bp-teal-light);
+            padding-bottom: 5px;
         }
 
-        .logo-container {
-            width: 100px; /* Ukuran logo disesuaikan */
-        }
-        .logo-container img {
-            max-width: 100%;
-            height: auto;
-        }
-
-        .title-container {
-            text-align: right;
-        }
+        .logo-container { width: 120px; } /* Logo diperkecil sesuai permintaan */
+        .logo-container img { max-width: 100%; height: auto; }
 
         .header h1 {
-            font-size: 32px; /* Judul jauh lebih kecil */
+            font-size: 24px; /* Judul diperkecil */
             margin: 0;
             color: var(--bp-navy);
             text-transform: uppercase;
-            letter-spacing: 1px;
         }
 
         .header .subtitle {
-            color: #ef4444; /* Merah untuk jam */
-            font-size: 22px;
+            color: #ef4444;
+            font-size: 18px;
             font-weight: bold;
-            margin-top: 5px;
         }
 
-        /* --- PERBAIKAN 2: UKURAN TABEL DIPERBESAR --- */
         table {
             width: 100%;
             border-collapse: collapse;
             background-color: var(--card-bg);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            border-radius: 10px;
-            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
 
         th {
             background-color: var(--bp-navy);
             color: #ffffff;
-            font-size: 26px; /* Header tabel */
-            padding: 15px;
-            border: 1px solid var(--border-color);
-            text-transform: uppercase;
+            font-size: 20px; /* Header tabel diperkecil */
+            padding: 8px;
         }
 
         td {
-            padding: 18px 15px;
-            border: 1px solid var(--border-color);
-            font-size: 32px; /* ISI TABEL DIPERBESAR MAKSIMAL */
+            padding: 8px 10px; /* Padding diperkecil agar baris lebih rapat */
+            border: 1px solid #ddd;
+            font-size: 22px; /* Ukuran teks utama dikecilkan sedikit */
             text-align: center;
             vertical-align: middle;
             color: var(--bp-navy);
         }
 
+        /* KHUSUS SISWA: Dibuat lebih kecil agar tidak kepotong */
         .col-siswa {
             text-align: left;
-            line-height: 1.4;
-            font-size: 28px; /* Siswa sedikit lebih kecil dari nama guru agar muat ke bawah */
+            line-height: 1.2;
+            font-size: 18px; /* Ukuran font siswa dibuat lebih ramping */
+            font-weight: 500;
         }
 
-        .col-sesi {
-            font-size: 36px; /* Sesi sangat besar */
-            font-weight: bold;
-            color: #ef4444;
-        }
-
-        .col-guru, .col-mapel {
-            font-weight: bold;
-        }
+        .col-sesi { font-size: 28px; font-weight: bold; color: #ef4444; }
+        .col-guru, .col-mapel { font-weight: bold; }
 
         .footer {
             display: flex;
             justify-content: space-between;
-            margin-top: 20px;
-            padding: 15px;
+            margin-top: 10px;
+            padding: 8px 15px;
             background-color: var(--bp-navy);
             color: white;
-            font-size: 20px;
-            border-radius: 8px;
-        }
-        
-        .page-indicator {
-            background-color: var(--bp-yellow);
-            color: var(--bp-navy);
-            padding: 5px 15px;
-            border-radius: 20px;
-            font-weight: bold;
-        }
-
-        #error-msg {
-            display: none;
-            background-color: #ef4444;
-            color: white;
-            text-align: center;
-            padding: 15px;
-            font-size: 20px;
-            font-weight: bold;
-            border-radius: 8px;
-            margin-bottom: 15px;
-        }
-
-        .loading {
-            text-align: center;
-            font-size: 26px;
-            color: var(--text-dim);
-            padding: 50px;
-            font-style: italic;
+            font-size: 16px;
+            border-radius: 5px;
         }
     </style>
 </head>

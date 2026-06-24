@@ -336,6 +336,8 @@
         
         fetchData(); 
         setInterval(fetchData, REFRESH_DATA); 
+        // Refresh seluruh halaman TV otomatis setiap 3 jam agar animasi tetap mulus
+        setTimeout(function() { location.reload(); }, 10800000);
     </script>
 </body>
 </html>

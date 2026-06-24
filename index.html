@@ -117,19 +117,9 @@
             word-wrap: break-word;
             overflow-wrap: break-word;
         }
-        .col-sesi {
-            font-size: 30px;
-            font-weight: 900;
-            color: var(--danger);
-        }
-        .col-guru {
-            font-weight: 800;
-            color: var(--primary);
-        }
-        .col-mapel {
-            font-weight: bold;
-            color: var(--text-light);
-        }
+        .col-sesi { font-size: 30px; font-weight: 900; color: var(--danger); }
+        .col-guru { font-weight: 800; color: var(--primary); }
+        .col-mapel { font-weight: bold; color: var(--text-light); }
 
         /* --- ANIMASI FADE IN --- */
         @keyframes fadeUp {
@@ -143,7 +133,6 @@
         tbody tr:nth-child(4) { animation-delay: 0.4s; }
         tbody tr:nth-child(5) { animation-delay: 0.5s; }
         tbody tr:nth-child(6) { animation-delay: 0.6s; }
-
     </style>
 </head>
 <body>
@@ -155,7 +144,7 @@
         <div class="title-wrapper">
             <h1>Jadwal Kegiatan Pembelajaran</h1>
             <div id="clock">Memuat Waktu...</div>
-            <div id="page-indicator">Halaman 1 dari 1</div>
+            <div id="page-indicator">Halaman - dari -</div>
         </div>
     </div>
 
@@ -186,13 +175,12 @@
         // =========================================================================
         var API_URL = "https://script.google.com/macros/s/AKfycbywopky_VUnmvfktok0xRaXDpQrzjuOMo7VjfAselVjzZI7G6FBwijJJh8G9LZWUCqqdw/exec"; 
         
-        // PENGATURAN SLIDESHOW
-        var ITEMS_PER_PAGE = 6;      // Maksimal baris per halaman
-        var SLIDE_DURATION = 5000;  // Waktu pindah halaman (10000 ms = 10 detik)
-        var REFRESH_DATA = 300000;   // Waktu tarik data baru (300000 ms = 5 menit)
+        var SLIDE_DURATION = 5000;  // 5 detik per slide
+        var REFRESH_DATA = 300000;   // Update data dari Google tiap 5 menit
 
         var scheduleData = [];
-        var currentPage = 0;
+        var pages = []; // Menyimpan data per halaman yang sudah dihitung
+        var currentPageIndex = 0;
         var slideInterval = null;
 
         function fetchData() {
@@ -202,9 +190,13 @@
                 if (xhr.readyState === 4 && xhr.status === 200) {
                     try {
                         scheduleData = JSON.parse(xhr.responseText);
-                        currentPage = 0; 
-                        renderTable();
-                        startPagination();
+                        if(scheduleData.length > 0) {
+                            calculateDynamicPages(); // Hitung kotak sebelum tampil
+                        } else {
+                            pages = [];
+                            document.getElementById('table-body').innerHTML = '<tr><td colspan="5" style="padding: 50px;">Tidak ada jadwal pada sesi ini.</td></tr>';
+                            document.getElementById('page-indicator').innerText = 'Halaman 0 dari 0';
+                        }
                     } catch(e) {
                         console.error("Gagal memproses data");
                     }
@@ -213,23 +205,81 @@
             xhr.send();
         }
 
-        // MESIN PENGGAMBAR TABEL & PEMOTONG HALAMAN
-        function renderTable() {
+        // MESIN CERDAS PEMOTONG HALAMAN (SMART PAGINATION)
+        function calculateDynamicPages() {
+            var tbody = document.getElementById('table-body');
+            var container = document.querySelector('.table-container');
+            var table = document.getElementById('schedule-table');
+            
+            pages = [];
+            tbody.innerHTML = ''; 
+            
+            var currentPageData = [];
+            var safeMargin = 15; // Jarak aman sebelum menyentuh batas bawah kotak
+            
+            for (var i = 0; i < scheduleData.length; i++) {
+                var row = scheduleData[i];
+                var tr = document.createElement('tr');
+                
+                var namaSiswa = row.siswa ? String(row.siswa).replace(/\n/g, '<br>') : '-';
+                if(namaSiswa.trim() === "") namaSiswa = "-";
+                
+                tr.innerHTML = 
+                    '<td class="col-sesi">' + (row.sesi || '-') + '</td>' +
+                    '<td class="col-guru">' + (row.guru || '-') + '</td>' +
+                    '<td>' + (row.ruang || '-') + '</td>' +
+                    '<td class="col-mapel">' + (row.mapel || '-') + '</td>' +
+                    '<td class="col-siswa">' + namaSiswa + '</td>';
+                
+                tbody.appendChild(tr);
+                currentPageData.push(row);
+                
+                // Cek apakah tabel melewati tinggi batas kotak putih
+                if (table.offsetHeight > (container.clientHeight - safeMargin)) {
+                    // Jika baru 1 baris tapi langsung kepanjangan, terpaksa simpan
+                    if (currentPageData.length === 1) {
+                        pages.push(currentPageData);
+                        currentPageData = [];
+                        tbody.innerHTML = '';
+                    } else {
+                        // Tarik baris terakhir karena membuat kepanjangan
+                        tbody.removeChild(tr);
+                        currentPageData.pop();
+                        
+                        // Simpan halaman yang ukurannya sudah pas
+                        pages.push(currentPageData);
+                        
+                        // Mulai halaman baru dengan baris yang ditarik tadi
+                        currentPageData = [row];
+                        tbody.innerHTML = '';
+                        tbody.appendChild(tr);
+                    }
+                }
+            }
+            
+            // Masukkan sisa baris ke halaman terakhir
+            if (currentPageData.length > 0) {
+                pages.push(currentPageData);
+            }
+            
+            tbody.innerHTML = ''; // Bersihkan layar simulasi
+            
+            // Tampilkan halaman pertama dan mulai rotasi
+            currentPageIndex = 0;
+            renderPage();
+            startPagination();
+        }
+
+        // MENAMPILKAN HALAMAN YANG SUDAH DIHITUNG
+        function renderPage() {
+            if (pages.length === 0) return;
+            
             var tbody = document.getElementById('table-body');
             tbody.innerHTML = ''; 
+            
+            document.getElementById('page-indicator').innerText = 'Halaman ' + (currentPageIndex + 1) + ' dari ' + pages.length;
 
-            var totalPages = Math.ceil(scheduleData.length / ITEMS_PER_PAGE);
-            document.getElementById('page-indicator').innerText = 'Halaman ' + (currentPage + 1) + ' dari ' + (totalPages || 1);
-
-            if (scheduleData.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="5" style="padding: 50px;">Tidak ada jadwal pada sesi ini.</td></tr>';
-                return;
-            }
-
-            var startIdx = currentPage * ITEMS_PER_PAGE;
-            var endIdx = startIdx + ITEMS_PER_PAGE;
-            var pageData = scheduleData.slice(startIdx, endIdx);
-
+            var pageData = pages[currentPageIndex];
             pageData.forEach(function(row) {
                 var tr = document.createElement('tr');
                 var namaSiswa = row.siswa ? String(row.siswa).replace(/\n/g, '<br>') : '-';
@@ -246,16 +296,15 @@
             });
         }
 
-        // MESIN PEMUTAR OTOMATIS
+        // PEMUTAR HALAMAN OTOMATIS
         function startPagination() {
             if(slideInterval !== null) clearInterval(slideInterval);
             
-            var totalPages = Math.ceil(scheduleData.length / ITEMS_PER_PAGE);
-            if (totalPages > 1) {
+            if (pages.length > 1) {
                 slideInterval = setInterval(function() {
-                    currentPage++;
-                    if (currentPage >= totalPages) currentPage = 0;
-                    renderTable();
+                    currentPageIndex++;
+                    if (currentPageIndex >= pages.length) currentPageIndex = 0;
+                    renderPage();
                 }, SLIDE_DURATION);
             }
         }

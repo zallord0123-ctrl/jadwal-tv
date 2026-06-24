@@ -3,266 +3,233 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jadwal Digital TV</title>
+    <title>Jadwal Digital TV - Bintang Pelajar</title>
     <style>
-        /* Tema Warna Bintang Pelajar */
+        /* --- TEMA WARNA & VARIABEL --- */
         :root {
-            --bp-teal-light: #48d1cc;
-            --bp-navy: #1e3a8a;
-            --bp-yellow: #fbbf24;
-            --bg-color: #f0fdfa;
-            --card-bg: #ffffff;
-            --text-main: #1e293b;
-            --text-dim: #64748b;
+            --primary: #1e3a8a;       /* Biru Navy BP */
+            --primary-light: #2a4365; /* Navy Terang untuk gradasi */
+            --secondary: #48d1cc;     /* Hijau Tosca BP */
+            --bg-gradient-1: #f0fdfa; /* Background atas */
+            --bg-gradient-2: #e2e8f0; /* Background bawah */
+            --text-dark: #1e293b;
+            --text-light: #64748b;
+            --danger: #ef4444;        /* Merah untuk jam & Sesi */
         }
 
+        /* --- PENGATURAN DASAR LAYAR TV --- */
+        * { box-sizing: border-box; }
         body {
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            font-family: 'Segoe UI', Tahoma, sans-serif;
+            background: linear-gradient(135deg, var(--bg-gradient-1), var(--bg-gradient-2));
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
-            padding: 10px; /* Padding dikurangi agar ruang lebih lega */
+            padding: 20px 25px; /* Memberi bingkai ruang di TV */
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
             overflow: hidden;
         }
 
+        /* --- HEADER CARD MODERN --- */
         .header {
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            margin-bottom: 10px; /* Jarak atas bawah diperkecil */
-            border-bottom: 3px solid var(--bp-teal-light);
-            padding-bottom: 5px;
+            justify-content: space-between;
+            background: #ffffff;
+            padding: 15px 30px;
+            border-radius: 15px; /* Sudut membulat */
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05); /* Bayangan lembut */
+            margin-bottom: 20px;
+            border-left: 8px solid var(--secondary); /* Aksen garis tosca di kiri */
         }
 
-        .logo-container { width: 120px; } /* Logo diperkecil sesuai permintaan */
-        .logo-container img { max-width: 100%; height: auto; }
+        .logo-container { width: 140px; }
+        .logo-container img { width: 100%; height: auto; }
 
+        .title-wrapper { text-align: right; }
         .header h1 {
-            font-size: 24px; /* Judul diperkecil */
+            font-size: 28px;
             margin: 0;
-            color: var(--bp-navy);
+            color: var(--primary);
             text-transform: uppercase;
+            letter-spacing: 1.5px;
+            font-weight: 800;
+        }
+        #clock {
+            font-size: 20px;
+            color: var(--danger);
+            font-weight: 700;
+            margin-top: 5px;
+            letter-spacing: 1px;
         }
 
-        .header .subtitle {
-            color: #ef4444;
-            font-size: 18px;
-            font-weight: bold;
+        /* --- TABLE CARD MODERN --- */
+        .table-container {
+            flex-grow: 1;
+            background: #ffffff;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08); /* Bayangan agar tabel melayang */
+            overflow: hidden; /* Memotong sudut tabel agar ikut membulat */
+            display: flex;
+            flex-direction: column;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
-            background-color: var(--card-bg);
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            table-layout: fixed;
         }
 
         th {
-            background-color: var(--bp-navy);
+            background: linear-gradient(90deg, var(--primary), var(--primary-light));
             color: #ffffff;
-            font-size: 20px; /* Header tabel diperkecil */
-            padding: 8px;
+            font-size: 20px;
+            padding: 16px 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 4px solid var(--secondary); /* Aksen batas header tabel */
         }
 
         td {
-            padding: 8px 10px; /* Padding diperkecil agar baris lebih rapat */
-            border: 1px solid #ddd;
-            font-size: 22px; /* Ukuran teks utama dikecilkan sedikit */
+            padding: 12px 10px;
+            font-size: 22px;
             text-align: center;
             vertical-align: middle;
-            color: var(--bp-navy);
+            color: var(--text-dark);
+            border-bottom: 1px solid #f1f5f9;
         }
 
-        /* KHUSUS SISWA: Dibuat lebih kecil agar tidak kepotong */
+        /* Zebra Striping (Warna baris selang-seling agar mudah dibaca) */
+        tbody tr:nth-child(even) {
+            background-color: #f8fafc;
+        }
+
+        /* --- TIPOGRAFI ISI TABEL --- */
         .col-siswa {
             text-align: left;
-            line-height: 1.2;
-            font-size: 20px; /* Ukuran font siswa dibuat lebih ramping */
+            font-size: 17px;
+            line-height: 1.3;
             font-weight: 500;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+        .col-sesi {
+            font-size: 30px;
+            font-weight: 900;
+            color: var(--danger);
+        }
+        .col-guru {
+            font-weight: 800;
+            color: var(--primary);
+        }
+        .col-mapel {
+            font-weight: bold;
+            color: var(--text-light);
         }
 
-        .col-sesi { font-size: 28px; font-weight: bold; color: #ef4444; }
-        .col-guru, .col-mapel { font-weight: bold; }
-
-        .footer {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 10px;
-            padding: 8px 15px;
-            background-color: var(--bp-navy);
-            color: white;
-            font-size: 16px;
-            border-radius: 5px;
+        /* --- ANIMASI MUNCUL HALUS (FADE IN) --- */
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
         }
+        tbody tr {
+            animation: fadeUp 0.6s ease-out forwards;
+        }
+
+        /* Membuat animasi bergiliran untuk tiap baris */
+        tbody tr:nth-child(1) { animation-delay: 0.1s; }
+        tbody tr:nth-child(2) { animation-delay: 0.2s; }
+        tbody tr:nth-child(3) { animation-delay: 0.3s; }
+        tbody tr:nth-child(4) { animation-delay: 0.4s; }
+        tbody tr:nth-child(5) { animation-delay: 0.5s; }
+
     </style>
 </head>
 <body>
 
     <div class="header">
         <div class="logo-container">
-            <img src="https://www.bintangpelajar.com/wp-content/uploads/2023/05/LOGO_BP_rev-2023.webp" alt="Bintang Pelajar">
+            <img src="https://www.bintangpelajar.com/wp-content/uploads/2023/05/LOGO_BP_rev-2023.webp" alt="Logo BP">
         </div>
-        <div class="title-container">
+        <div class="title-wrapper">
             <h1>Jadwal Kegiatan Pembelajaran</h1>
-            <div class="subtitle" id="clock">Memuat waktu...</div>
+            <div id="clock">Memuat Waktu...</div>
         </div>
     </div>
 
-    <div id="error-msg">Gagal terhubung ke server...</div>
-
-    <table id="schedule-table">
-        <thead>
-            <tr>
-                <th width="15%">SESI</th>
-                <th width="22%">GURU</th>
-                <th width="8%">RUANG</th>
-                <th width="20%">MAPEL/KELAS</th>
-                <th width="35%">NAMA SISWA</th>
-            </tr>
-        </thead>
-        <tbody id="table-body">
-            <tr>
-                <td colspan="5" class="loading">Menghubungkan ke Database Bintang Pelajar...</td>
-            </tr>
-        </tbody>
-    </table>
-
-    <div class="footer">
-        <div id="last-update">Update terakhir: -</div>
-        <div class="page-indicator" id="page-indicator">Halaman 1 / 1</div>
+    <div class="table-container">
+        <table id="schedule-table">
+            <thead>
+                <tr>
+                    <th width="12%">SESI</th>
+                    <th width="22%">GURU</th>
+                    <th width="8%">RUANG</th>
+                    <th width="18%">MAPEL/KELAS</th>
+                    <th width="40%">NAMA SISWA</th>
+                </tr>
+            </thead>
+            <tbody id="table-body">
+                <tr>
+                    <td colspan="5" style="padding: 50px; font-style: italic; color: #64748b;">
+                        Menghubungkan ke Database Bintang Pelajar...
+                    </td>
+                </tr>
+            </tbody>
+        </table>
     </div>
 
     <script>
-        /**
-         * PERBAIKAN: Menggunakan JavaScript Klasik (ES5) agar kompatibel dengan SEMUA SMART TV
-         */
+        // =========================================================================
+        // PENTING: MASUKKAN URL API (GOOGLE APPS SCRIPT) ANDA DI BAWAH INI
+        // =========================================================================
+        var API_URL = "URL_APPS_SCRIPT_ANDA_DISINI"; 
         
-        // -------------------------------------------------------------
-        // WAAJIB UBAH TULISAN DI BAWAH INI DENGAN URL API ANDA YANG ASLI
-        // -------------------------------------------------------------
-        var API_URL = "https://script.google.com/macros/s/AKfycbywopky_VUnmvfktok0xRaXDpQrzjuOMo7VjfAselVjzZI7G6FBwijJJh8G9LZWUCqqdw/exec"; 
-        
-        var ITEMS_PER_PAGE = 1;      
-        var SLIDE_DURATION = 7000;  
-        var REFRESH_DATA = 300000;   
-
-        var scheduleData = [];
-        var currentPage = 0;
-        var slideInterval = null;
-
-        // FUNGSI MENGAMBIL DATA (Menggunakan XMLHttpRequest karena TV jadul menolak Fetch API)
         function fetchData() {
             var xhr = new XMLHttpRequest();
             xhr.open("GET", API_URL, true);
             xhr.onreadystatechange = function() {
-                if (xhr.readyState === 4) {
-                    if (xhr.status === 200) {
-                        try {
-                            var data = JSON.parse(xhr.responseText);
-                            
-                            if(data.error) {
-                                showError("Error: " + data.error);
-                                return;
-                            }
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    try {
+                        var data = JSON.parse(xhr.responseText);
+                        var tbody = document.getElementById('table-body');
+                        
+                        // Menghapus isi tabel lama agar animasi CSS bisa berjalan ulang
+                        tbody.innerHTML = ''; 
 
-                            // Filter baris kosong
-                            var dataBersih = [];
-                            for(var i = 0; i < data.length; i++) {
-                                var guru = data[i].guru ? String(data[i].guru).trim() : "";
-                                if(guru !== "" && guru !== "-") {
-                                    dataBersih.push(data[i]);
-                                }
-                            }
-
-                            scheduleData = dataBersih;
-                            document.getElementById('error-msg').style.display = 'none';
-                            updateLastRefresh();
-                            
-                            currentPage = 0; 
-                            renderTable();
-                            startPagination();
-
-                        } catch(e) {
-                            showError("Gagal memproses data.");
+                        if (data.length === 0) {
+                            tbody.innerHTML = '<tr><td colspan="5" style="padding: 50px;">Tidak ada jadwal pada sesi ini.</td></tr>';
+                            return;
                         }
-                    } else {
-                        showError("Gagal terhubung ke API Sheets (Error " + xhr.status + "). Cek pengaturan Siapa Saja saat Deploy.");
+
+                        data.forEach(function(row) {
+                            var tr = document.createElement('tr');
+                            var namaSiswa = row.siswa ? String(row.siswa).replace(/\n/g, '<br>') : '-';
+                            if(namaSiswa.trim() === "") namaSiswa = "-";
+                            
+                            tr.innerHTML = 
+                                '<td class="col-sesi">' + (row.sesi || '-') + '</td>' +
+                                '<td class="col-guru">' + (row.guru || '-') + '</td>' +
+                                '<td>' + (row.ruang || '-') + '</td>' +
+                                '<td class="col-mapel">' + (row.mapel || '-') + '</td>' +
+                                '<td class="col-siswa">' + namaSiswa + '</td>';
+                            
+                            tbody.appendChild(tr);
+                        });
+                    } catch(e) {
+                        console.error("Gagal memproses data");
                     }
                 }
             };
             xhr.send();
         }
 
-        // FUNGSI MENGGAMBAR TABEL
-        function renderTable() {
-            var tbody = document.getElementById('table-body');
-            tbody.innerHTML = ''; 
-            
-            if (scheduleData.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="5" class="loading">Tidak ada jadwal pada sesi ini.</td></tr>';
-                document.getElementById('page-indicator').innerText = 'Halaman 0 / 0';
-                return;
-            }
-
-            var totalPages = Math.ceil(scheduleData.length / ITEMS_PER_PAGE);
-            document.getElementById('page-indicator').innerText = 'Halaman ' + (currentPage + 1) + ' / ' + totalPages;
-
-            var startIdx = currentPage * ITEMS_PER_PAGE;
-            var endIdx = startIdx + ITEMS_PER_PAGE;
-            var pageData = scheduleData.slice(startIdx, endIdx);
-
-            for(var i = 0; i < pageData.length; i++) {
-                var row = pageData[i];
-                var tr = document.createElement('tr');
-                
-                var namaSiswa = row.siswa ? String(row.siswa).replace(/\n/g, '<br>') : '-';
-                if(namaSiswa.trim() === "") namaSiswa = "-";
-                
-                tr.innerHTML = 
-                    '<td class="col-sesi">' + (row.sesi || '-') + '</td>' +
-                    '<td class="col-guru">' + (row.guru || '-') + '</td>' +
-                    '<td>' + (row.ruang || '-') + '</td>' +
-                    '<td class="col-mapel">' + (row.mapel || '-') + '</td>' +
-                    '<td class="col-siswa">' + namaSiswa + '</td>';
-                
-                tbody.appendChild(tr);
-            }
-        }
-
-        // FUNGSI SLIDESHOW HALAMAN
-        function startPagination() {
-            if(slideInterval !== null) {
-                clearInterval(slideInterval);
-            }
-            
-            var totalPages = Math.ceil(scheduleData.length / ITEMS_PER_PAGE);
-            if (totalPages > 1) {
-                slideInterval = setInterval(function() {
-                    currentPage++;
-                    if (currentPage >= totalPages) {
-                        currentPage = 0; 
-                    }
-                    renderTable();
-                }, SLIDE_DURATION);
-            }
-        }
-
-        // FUNGSI ERROR
-        function showError(msg) {
-            var errorEl = document.getElementById('error-msg');
-            errorEl.innerText = msg;
-            errorEl.style.display = 'block';
-        }
-
-        // FUNGSI JAM TV
         function updateClock() {
             var now = new Date();
             var days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
-            var day = days[now.getDay()];
+            var months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Ags', 'Sep', 'Okt', 'Nov', 'Des'];
             
-            // Format manual agar kompatibel
+            var day = days[now.getDay()];
             var date = now.getDate();
-            var months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
             var month = months[now.getMonth()];
             var year = now.getFullYear();
 
@@ -273,22 +240,11 @@
             document.getElementById('clock').innerText = day + ', ' + date + ' ' + month + ' ' + year + ' | ' + h + ':' + m + ':' + s + ' WIB';
         }
 
-        // FUNGSI WAKTU UPDATE
-        function updateLastRefresh() {
-            var now = new Date();
-            var h = ("0" + now.getHours()).slice(-2);
-            var m = ("0" + now.getMinutes()).slice(-2);
-            var s = ("0" + now.getSeconds()).slice(-2);
-            document.getElementById('last-update').innerText = 'Update terakhir: ' + h + ':' + m + ':' + s;
-        }
-
-        // JALANKAN PROGRAM
         setInterval(updateClock, 1000); 
         updateClock();
         
         fetchData(); 
-        setInterval(fetchData, REFRESH_DATA); 
-
+        setInterval(fetchData, 300000); // Tarik data setiap 5 menit
     </script>
 </body>
 </html>

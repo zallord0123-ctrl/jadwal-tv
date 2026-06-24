@@ -185,13 +185,17 @@
 
         function fetchData() {
             var xhr = new XMLHttpRequest();
-            xhr.open("GET", API_URL, true);
+            
+            // PERBAIKAN 1: ANTI-CACHE (Memaksa TV menarik data paling baru)
+            var urlAntiMacet = API_URL + (API_URL.indexOf('?') > -1 ? '&' : '?') + 'waktu=' + new Date().getTime();
+            
+            xhr.open("GET", urlAntiMacet, true); // Menggunakan URL anti macet
             xhr.onreadystatechange = function() {
                 if (xhr.readyState === 4 && xhr.status === 200) {
                     try {
                         scheduleData = JSON.parse(xhr.responseText);
                         if(scheduleData.length > 0) {
-                            calculateDynamicPages(); // Hitung kotak sebelum tampil
+                            calculateDynamicPages(); 
                         } else {
                             pages = [];
                             document.getElementById('table-body').innerHTML = '<tr><td colspan="5" style="padding: 50px;">Tidak ada jadwal pada sesi ini.</td></tr>';

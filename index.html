@@ -107,12 +107,13 @@
             border-radius: 15px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.08);
             padding: 30px;
-            display: none; /* Diatur via JS */
+            display: none; 
             flex-direction: column;
             align-items: center;
-            justify-content: flex-start;
+            justify-content: center; 
             border-left: 8px solid var(--danger);
             margin-bottom: 15px;
+            overflow: hidden;
         }
         .info-title {
             font-size: 32px;
@@ -133,6 +134,7 @@
             width: 95%;
             margin-bottom: 15px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.02);
+            text-align: center;
         }
 
         /* --- ANIMASI FADE IN --- */
@@ -140,7 +142,7 @@
             from { opacity: 0; transform: translateY(15px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        tbody tr, .info-card { animation: fadeUp 0.6s ease-out forwards; }
+        tbody tr, .info-card, .poster-img { animation: fadeUp 0.6s ease-out forwards; }
 
         /* --- RUNNING TEXT --- */
         .ticker-wrap {
@@ -159,7 +161,7 @@
 <body onclick="playMusic()">
 
     <audio id="bg-music" loop autoplay>
-        <source src="https://server16.mp3quran.net/a_sheim/Rewayat-Warsh-A-n-Nafi/018.mp3" type="audio/mpeg">
+        <source src="LINK_MUSIK_ANDA_DISINI.mp3" type="audio/mpeg">
     </audio>
 
     <div class="header">
@@ -195,8 +197,8 @@
     </div>
 
     <div id="info-container">
-        <div class="info-title">📢 INFO & PENGUMUMAN TERBARU</div>
-        <div id="info-list" style="width: 100%; display: flex; flex-direction: column; align-items: center;"></div>
+        <div class="info-title" id="info-header-title">📢 INFO & PENGUMUMAN TERBARU</div>
+        <div id="info-list" style="width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center;"></div>
     </div>
 
     <div class="ticker-wrap">
@@ -207,12 +209,17 @@
 
     <script>
         // =========================================================================
-        // PENTING: MASUKKAN URL API (GOOGLE APPS SCRIPT) ANDA DI BAWAH INI
+        // PENGATURAN UTAMA (ALAMAT API & SAKLAR ON/OFF)
         // =========================================================================
         var API_URL = "https://script.google.com/macros/s/AKfycbywopky_VUnmvfktok0xRaXDpQrzjuOMo7VjfAselVjzZI7G6FBwijJJh8G9LZWUCqqdw/exec"; 
         
-        var SLIDE_DURATION = 10000;  // 10 detik per putaran slide
-        var REFRESH_DATA = 60000;    // Tarik data baru dari Google tiap 1 menit
+        // 🌟 SAKLAR ON/OFF PENGUMUMAN 🌟
+        // ubah ke true  = Pengumuman/Poster AKTIF bergantian dengan jadwal.
+        // ubah ke false = Pengumuman/Poster MATI total (Layar fokus hanya pada Jadwal).
+        var ENABLE_INFO_SLIDE = true; 
+
+        var SLIDE_DURATION = 10000;  
+        var REFRESH_DATA = 60000;    
 
         var rawResponseData = null;
         var pages = []; 
@@ -250,7 +257,6 @@
             return teksBersih.trim() === "" ? "-" : teksBersih;
         }
 
-        // MESIN UTAMA PENGATUR PLAYLIST WAKTU PINTAR
         function calculateDynamicPages() {
             if (!rawResponseData) return;
 
@@ -258,7 +264,6 @@
             var infoData = rawResponseData.info || [];
             var activeSesiMinutes = rawResponseData.activeSesiMinutes || 0;
 
-            // Hitung menit saat ini di WIB (Anti-meleset)
             var now = new Date();
             var utc = now.getTime() + (now.getTimezoneOffset() * 60000);
             var wib = new Date(utc + (3600000 * 7));
@@ -266,17 +271,15 @@
 
             var diff = currentMinutes - activeSesiMinutes;
             
-            // LOGIKA ATURAN PEMBAGIAN WAKTU
+            // Baca status Saklar On/Off terlebih dahulu
             var mode = "JADWAL"; 
-            if (diff >= 30 && diff < 40) {
-                mode = "INFO";
-            } else if (diff >= 50 && diff < 70) {
-                mode = "INFO";
-            }
+            if (ENABLE_INFO_SLIDE === true) {
+                if (diff >= 30 && diff < 40) mode = "INFO";
+                else if (diff >= 50 && diff < 70) mode = "INFO";
 
-            // Pelindung jika data salah satu kosong
-            if (mode === "JADWAL" && scheduleData.length === 0 && infoData.length > 0) mode = "INFO";
-            if (mode === "INFO" && infoData.length === 0) mode = "JADWAL";
+                if (mode === "JADWAL" && scheduleData.length === 0 && infoData.length > 0) mode = "INFO";
+                if (mode === "INFO" && infoData.length === 0) mode = "JADWAL";
+            }
 
             currentMode = mode;
             pages = [];
@@ -334,14 +337,11 @@
                 if (currentPageData.length > 0) pages.push(currentPageData);
 
             } else {
-                // APABILA MASUK MODE INFO PENGUMUMAN
                 document.querySelector('.table-container').style.display = 'none';
                 document.getElementById('info-container').style.display = 'flex';
                 
-                // Tiap halaman info maksimal diisi 3 kartu biar tulisan bisa besar-besar
-                var ITEMS_PER_PAGE_INFO = 3;
-                for (var k = 0; k < infoData.length; k += ITEMS_PER_PAGE_INFO) {
-                    pages.push(infoData.slice(k, k + ITEMS_PER_PAGE_INFO));
+                for (var k = 0; k < infoData.length; k++) {
+                    pages.push([infoData[k]]);
                 }
             }
             
@@ -377,8 +377,31 @@
                 
                 pageData.forEach(function(text) {
                     var div = document.createElement('div');
-                    div.className = 'info-card';
-                    div.innerText = text;
+                    var textStr = String(text).trim();
+                    var imgUrl = "";
+
+                    if (textStr.indexOf('http') === 0) {
+                        imgUrl = textStr;
+                        if (imgUrl.includes("drive.google.com/file/d/")) {
+                            var fileId = imgUrl.split("/file/d/")[1].split("/")[0];
+                            imgUrl = "https://drive.google.com/uc?export=view&id=" + fileId;
+                        }
+                    }
+
+                    if (imgUrl !== "") {
+                        document.getElementById('info-header-title').style.display = 'none'; 
+                        div.style.width = '100%';
+                        div.style.height = '100%';
+                        div.style.display = 'flex';
+                        div.style.justifyContent = 'center';
+                        div.style.alignItems = 'center';
+                        div.innerHTML = '<img class="poster-img" src="' + imgUrl + '" style="max-width: 100%; max-height: 55vh; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); object-fit: contain;">';
+                    } else {
+                        document.getElementById('info-header-title').style.display = 'block'; 
+                        div.className = 'info-card';
+                        div.innerText = textStr;
+                    }
+                    
                     infoList.appendChild(div);
                 });
             }
@@ -411,7 +434,6 @@
 
             document.getElementById('clock').innerText = day + ', ' + date + ' ' + month + ' ' + year + ' | ' + h + ':' + m + ':' + s + ' WIB';
             
-            // Setiap menit berganti, periksa apakah mode layar harus berubah
             if (s === "00") calculateDynamicPages();
         }
 
@@ -421,8 +443,6 @@
         
         fetchData(); 
         setInterval(fetchData, REFRESH_DATA); 
-
-        // Auto-refresh sistem total setiap 3 jam
         setTimeout(function() { location.reload(); }, 10800000);
     </script>
 </body>

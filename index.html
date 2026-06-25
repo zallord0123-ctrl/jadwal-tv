@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jadwal Digital TV - Bintang Pelajar</title>
+    <title>Jadwal Digital TV - Bintang Pelajar PKD</title>
     <style>
         /* --- TEMA WARNA & VARIABEL --- */
         :root {
@@ -22,7 +22,7 @@
             background: linear-gradient(135deg, var(--bg-gradient-1), var(--bg-gradient-2));
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
-            padding: 20px 25px; 
+            padding: 15px 25px; 
             height: 100vh;
             display: flex;
             flex-direction: column;
@@ -35,19 +35,19 @@
             align-items: center;
             justify-content: space-between;
             background: #ffffff;
-            padding: 15px 30px;
+            padding: 10px 30px;
             border-radius: 15px; 
             box-shadow: 0 4px 15px rgba(0,0,0,0.05); 
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             border-left: 8px solid var(--secondary); 
         }
 
-        .logo-container { width: 140px; }
+        .logo-container { width: 130px; }
         .logo-container img { width: 100%; height: auto; }
 
         .title-wrapper { text-align: right; }
         .header h1 {
-            font-size: 28px;
+            font-size: 26px;
             margin: 0;
             color: var(--primary);
             text-transform: uppercase;
@@ -63,7 +63,7 @@
         }
         #page-indicator {
             color: var(--text-light);
-            font-size: 16px;
+            font-size: 15px;
             font-weight: bold;
             margin-top: 4px;
         }
@@ -77,47 +77,26 @@
             overflow: hidden; 
             display: flex;
             flex-direction: column;
+            margin-bottom: 15px; /* Jarak untuk teks berjalan */
         }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            table-layout: fixed;
-        }
-
+        table { width: 100%; border-collapse: collapse; table-layout: fixed; }
         th {
             background: linear-gradient(90deg, var(--primary), var(--primary-light));
-            color: #ffffff;
-            font-size: 20px;
-            padding: 16px 10px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            border-bottom: 4px solid var(--secondary); 
+            color: #ffffff; font-size: 20px; padding: 14px 10px;
+            text-transform: uppercase; border-bottom: 4px solid var(--secondary); 
         }
-
         td {
-            padding: 12px 10px;
-            font-size: 22px;
-            text-align: center;
-            vertical-align: middle;
-            color: var(--text-dark);
-            border-bottom: 1px solid #f1f5f9;
+            padding: 10px; font-size: 22px; text-align: center;
+            vertical-align: middle; color: var(--text-dark); border-bottom: 1px solid #f1f5f9;
         }
+        tbody tr:nth-child(even) { background-color: #f8fafc; }
 
-        tbody tr:nth-child(even) {
-            background-color: #f8fafc;
-        }
-
-        /* --- TIPOGRAFI ISI TABEL --- */
         .col-siswa {
-            text-align: left;
-            font-size: 21px; /* UKURAN DIPERBESAR */
-            line-height: 1.4;
-            font-weight: 600; /* DIBUAT LEBIH TEBAL AGAR JELAS */
-            word-wrap: break-word;
-            overflow-wrap: break-word;
+            text-align: left; font-size: 21px; line-height: 1.4; font-weight: 600; 
+            word-wrap: break-word; overflow-wrap: break-word;
         }
-        .col-sesi { font-size: 30px; font-weight: 900; color: var(--danger); }
+        .col-sesi { font-size: 28px; font-weight: 900; color: var(--danger); }
         .col-guru { font-weight: 800; color: var(--primary); }
         .col-mapel { font-weight: bold; color: var(--text-light); }
 
@@ -133,9 +112,40 @@
         tbody tr:nth-child(4) { animation-delay: 0.4s; }
         tbody tr:nth-child(5) { animation-delay: 0.5s; }
         tbody tr:nth-child(6) { animation-delay: 0.6s; }
+
+        /* --- TEKS BERJALAN (MARQUEE MODERN) --- */
+        .ticker-wrap {
+            width: 100%;
+            background-color: var(--primary);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            position: relative;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            border-left: 5px solid var(--secondary);
+            border-right: 5px solid var(--secondary);
+        }
+        .ticker-content {
+            display: inline-block;
+            white-space: nowrap;
+            color: #ffffff;
+            font-size: 22px;
+            font-weight: bold;
+            padding-left: 100%;
+            animation: ticker-anim 25s linear infinite; /* 25 detik kecepatan berjalan */
+        }
+        @keyframes ticker-anim {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-100%); }
+        }
+
     </style>
 </head>
-<body>
+<body onclick="playMusic()"> <audio id="bg-music" loop autoplay>
+        <source src="https://server16.mp3quran.net/a_sheim/Rewayat-Warsh-A-n-Nafi/055.mp3" type="audio/mpeg">
+    </audio>
 
     <div class="header">
         <div class="logo-container">
@@ -169,19 +179,35 @@
         </table>
     </div>
 
+    <div class="ticker-wrap">
+        <div class="ticker-content">
+            ✦ Selamat datang di Bintang Pelajar Cabang Pesona Khayangan! ✦ Persiapkan alat tulis Anda sebelum kelas dimulai ✦ Jangan lupa untuk selalu menjaga kebersihan ruang kelas dan protokol kesehatan ✦ Semangat belajar untuk meraih cita-cita! ✦
+        </div>
+    </div>
+
     <script>
         // =========================================================================
         // PENTING: MASUKKAN URL API (GOOGLE APPS SCRIPT) ANDA DI BAWAH INI
         // =========================================================================
         var API_URL = "https://script.google.com/macros/s/AKfycbywopky_VUnmvfktok0xRaXDpQrzjuOMo7VjfAselVjzZI7G6FBwijJJh8G9LZWUCqqdw/exec"; 
         
-        var SLIDE_DURATION = 10000;  // 10 detik per slide
-        var REFRESH_DATA = 60000;    // Update data dari Google tiap 1 menit
+        var SLIDE_DURATION = 10000;  
+        var REFRESH_DATA = 60000;    
 
         var scheduleData = [];
         var pages = []; 
         var currentPageIndex = 0;
         var slideInterval = null;
+
+        // FUNGSI MEMUTAR MUSIK (Diperlukan untuk mengatasi blokir Autoplay TV)
+        function playMusic() {
+            var music = document.getElementById("bg-music");
+            if (music.paused) {
+                music.play().catch(function(error) {
+                    console.log("Musik diblokir oleh browser sampai layar di-klik.");
+                });
+            }
+        }
 
         function fetchData() {
             var xhr = new XMLHttpRequest();
@@ -207,13 +233,10 @@
             xhr.send();
         }
 
-        // FUNGSI PEMBERSIH NAMA SEKOLAH
         function bersihkanNamaSiswa(teksMentah) {
             if (!teksMentah) return "-";
             var teksBersih = String(teksMentah);
-            // Menghapus teks dalam kurung beserta spasi di depannya
             teksBersih = teksBersih.replace(/\s*\([^)]*\)/g, '');
-            // Mengubah baris baru (enter) menjadi tag <br> untuk HTML
             teksBersih = teksBersih.replace(/\n/g, '<br>');
             return teksBersih.trim() === "" ? "-" : teksBersih;
         }
@@ -233,7 +256,6 @@
                 var row = scheduleData[i];
                 var tr = document.createElement('tr');
                 
-                // Panggil fungsi pembersih di sini
                 var namaSiswa = bersihkanNamaSiswa(row.siswa);
                 
                 tr.innerHTML = 
@@ -280,7 +302,6 @@
             var pageData = pages[currentPageIndex];
             pageData.forEach(function(row) {
                 var tr = document.createElement('tr');
-                // Panggil fungsi pembersih di sini juga
                 var namaSiswa = bersihkanNamaSiswa(row.siswa);
                 
                 tr.innerHTML = 
@@ -322,13 +343,15 @@
             document.getElementById('clock').innerText = day + ', ' + date + ' ' + month + ' ' + year + ' | ' + h + ':' + m + ':' + s + ' WIB';
         }
 
+        // Coba mainkan musik otomatis saat web dibuka
+        setTimeout(playMusic, 2000);
+
         setInterval(updateClock, 1000); 
         updateClock();
         
         fetchData(); 
         setInterval(fetchData, REFRESH_DATA); 
 
-        // Refresh seluruh halaman TV otomatis setiap 3 jam agar animasi tetap mulus
         setTimeout(function() { location.reload(); }, 10800000);
 
     </script>

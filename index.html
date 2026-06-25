@@ -111,9 +111,9 @@
         /* --- TIPOGRAFI ISI TABEL --- */
         .col-siswa {
             text-align: left;
-            font-size: 17px;
-            line-height: 1.3;
-            font-weight: 500;
+            font-size: 21px; /* UKURAN DIPERBESAR */
+            line-height: 1.4;
+            font-weight: 600; /* DIBUAT LEBIH TEBAL AGAR JELAS */
             word-wrap: break-word;
             overflow-wrap: break-word;
         }
@@ -173,23 +173,21 @@
         // =========================================================================
         // PENTING: MASUKKAN URL API (GOOGLE APPS SCRIPT) ANDA DI BAWAH INI
         // =========================================================================
-        var API_URL = "https://script.google.com/macros/s/AKfycbywopky_VUnmvfktok0xRaXDpQrzjuOMo7VjfAselVjzZI7G6FBwijJJh8G9LZWUCqqdw/exec"; 
+        var API_URL = "URL_APPS_SCRIPT_ANDA_DISINI"; 
         
-        var SLIDE_DURATION = 5000;  // 5 detik per slide
-        var REFRESH_DATA = 60000;   // Update data dari Google tiap 1 menit
+        var SLIDE_DURATION = 10000;  // 10 detik per slide
+        var REFRESH_DATA = 60000;    // Update data dari Google tiap 1 menit
 
         var scheduleData = [];
-        var pages = []; // Menyimpan data per halaman yang sudah dihitung
+        var pages = []; 
         var currentPageIndex = 0;
         var slideInterval = null;
 
         function fetchData() {
             var xhr = new XMLHttpRequest();
-            
-            // PERBAIKAN 1: ANTI-CACHE (Memaksa TV menarik data paling baru)
             var urlAntiMacet = API_URL + (API_URL.indexOf('?') > -1 ? '&' : '?') + 'waktu=' + new Date().getTime();
             
-            xhr.open("GET", urlAntiMacet, true); // Menggunakan URL anti macet
+            xhr.open("GET", urlAntiMacet, true); 
             xhr.onreadystatechange = function() {
                 if (xhr.readyState === 4 && xhr.status === 200) {
                     try {
@@ -209,7 +207,17 @@
             xhr.send();
         }
 
-        // MESIN CERDAS PEMOTONG HALAMAN (SMART PAGINATION)
+        // FUNGSI PEMBERSIH NAMA SEKOLAH
+        function bersihkanNamaSiswa(teksMentah) {
+            if (!teksMentah) return "-";
+            var teksBersih = String(teksMentah);
+            // Menghapus teks dalam kurung beserta spasi di depannya
+            teksBersih = teksBersih.replace(/\s*\([^)]*\)/g, '');
+            // Mengubah baris baru (enter) menjadi tag <br> untuk HTML
+            teksBersih = teksBersih.replace(/\n/g, '<br>');
+            return teksBersih.trim() === "" ? "-" : teksBersih;
+        }
+
         function calculateDynamicPages() {
             var tbody = document.getElementById('table-body');
             var container = document.querySelector('.table-container');
@@ -219,14 +227,14 @@
             tbody.innerHTML = ''; 
             
             var currentPageData = [];
-            var safeMargin = 15; // Jarak aman sebelum menyentuh batas bawah kotak
+            var safeMargin = 15; 
             
             for (var i = 0; i < scheduleData.length; i++) {
                 var row = scheduleData[i];
                 var tr = document.createElement('tr');
                 
-                var namaSiswa = row.siswa ? String(row.siswa).replace(/\n/g, '<br>') : '-';
-                if(namaSiswa.trim() === "") namaSiswa = "-";
+                // Panggil fungsi pembersih di sini
+                var namaSiswa = bersihkanNamaSiswa(row.siswa);
                 
                 tr.innerHTML = 
                     '<td class="col-sesi">' + (row.sesi || '-') + '</td>' +
@@ -238,22 +246,15 @@
                 tbody.appendChild(tr);
                 currentPageData.push(row);
                 
-                // Cek apakah tabel melewati tinggi batas kotak putih
                 if (table.offsetHeight > (container.clientHeight - safeMargin)) {
-                    // Jika baru 1 baris tapi langsung kepanjangan, terpaksa simpan
                     if (currentPageData.length === 1) {
                         pages.push(currentPageData);
                         currentPageData = [];
                         tbody.innerHTML = '';
                     } else {
-                        // Tarik baris terakhir karena membuat kepanjangan
                         tbody.removeChild(tr);
                         currentPageData.pop();
-                        
-                        // Simpan halaman yang ukurannya sudah pas
                         pages.push(currentPageData);
-                        
-                        // Mulai halaman baru dengan baris yang ditarik tadi
                         currentPageData = [row];
                         tbody.innerHTML = '';
                         tbody.appendChild(tr);
@@ -261,23 +262,16 @@
                 }
             }
             
-            // Masukkan sisa baris ke halaman terakhir
-            if (currentPageData.length > 0) {
-                pages.push(currentPageData);
-            }
+            if (currentPageData.length > 0) pages.push(currentPageData);
             
-            tbody.innerHTML = ''; // Bersihkan layar simulasi
-            
-            // Tampilkan halaman pertama dan mulai rotasi
+            tbody.innerHTML = ''; 
             currentPageIndex = 0;
             renderPage();
             startPagination();
         }
 
-        // MENAMPILKAN HALAMAN YANG SUDAH DIHITUNG
         function renderPage() {
             if (pages.length === 0) return;
-            
             var tbody = document.getElementById('table-body');
             tbody.innerHTML = ''; 
             
@@ -286,8 +280,8 @@
             var pageData = pages[currentPageIndex];
             pageData.forEach(function(row) {
                 var tr = document.createElement('tr');
-                var namaSiswa = row.siswa ? String(row.siswa).replace(/\n/g, '<br>') : '-';
-                if(namaSiswa.trim() === "") namaSiswa = "-";
+                // Panggil fungsi pembersih di sini juga
+                var namaSiswa = bersihkanNamaSiswa(row.siswa);
                 
                 tr.innerHTML = 
                     '<td class="col-sesi">' + (row.sesi || '-') + '</td>' +
@@ -300,10 +294,8 @@
             });
         }
 
-        // PEMUTAR HALAMAN OTOMATIS
         function startPagination() {
             if(slideInterval !== null) clearInterval(slideInterval);
-            
             if (pages.length > 1) {
                 slideInterval = setInterval(function() {
                     currentPageIndex++;
@@ -313,7 +305,6 @@
             }
         }
 
-        // JAM DIGITAL
         function updateClock() {
             var now = new Date();
             var days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
@@ -336,8 +327,10 @@
         
         fetchData(); 
         setInterval(fetchData, REFRESH_DATA); 
+
         // Refresh seluruh halaman TV otomatis setiap 3 jam agar animasi tetap mulus
         setTimeout(function() { location.reload(); }, 10800000);
+
     </script>
 </body>
 </html>

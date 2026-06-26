@@ -268,17 +268,14 @@
         var prayerTimeout = null;
 
         function fetchPrayerTimes() {
-                        prayerTimes = {
-                            "Subuh": "11:26",
-                            "Dzuhur": "11:30",
-                            "Ashar": "11:36",
-                            "Maghrib": "11:46",
-                            "Isya": "11:56"
-                        };
-                    } catch(e) {}
-                }
+            prayerTimes = {
+                "Subuh": "11:26",
+                "Dzuhur": "11:35", // <-- Ganti angka ini jadi 2 menit ke depan
+                "Ashar": "11:36",
+                "Maghrib": "11:46",
+                "Isya": "11:56"
             };
-            xhr.send();
+            console.log("Mode Uji Coba Aktif:", prayerTimes);
         }
 
         function showPrayerOverlay(sholatName) {

@@ -268,18 +268,12 @@
         var prayerTimeout = null;
 
         function fetchPrayerTimes() {
-            var xhr = new XMLHttpRequest();
-            xhr.open("GET", "https://api.aladhan.com/v1/timingsByCity?city=Depok&country=Indonesia&method=11", true);
-            xhr.onreadystatechange = function() {
-                if (xhr.readyState === 4 && xhr.status === 200) {
-                    try {
-                        var res = JSON.parse(xhr.responseText);
                         prayerTimes = {
                             "Subuh": "11:26",
-                            "Dzuhur": res.data.timings.Dhuhr,
-                            "Ashar": res.data.timings.Asr,
-                            "Maghrib": res.data.timings.Maghrib,
-                            "Isya": res.data.timings.Isha
+                            "Dzuhur": "11:30",
+                            "Ashar": "11:36",
+                            "Maghrib": "11:46",
+                            "Isya": "11:56"
                         };
                     } catch(e) {}
                 }

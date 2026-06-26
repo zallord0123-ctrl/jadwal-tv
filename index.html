@@ -137,12 +137,48 @@
             text-align: center;
         }
 
+        /* --- LAYAR PENGINGAT SHOLAT --- */
+        #prayer-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(30, 58, 138, 0.98); 
+            z-index: 9999;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            text-align: center;
+            backdrop-filter: blur(5px);
+        }
+        #prayer-overlay h1 {
+            font-size: 80px;
+            color: #fbbf24; 
+            margin: 0 0 10px 0;
+            letter-spacing: 3px;
+        }
+        #prayer-overlay h2 {
+            font-size: 50px;
+            margin: 10px 0 20px 0;
+        }
+        #prayer-overlay p {
+            font-size: 30px;
+            color: #e2e8f0;
+            margin: 5px 0;
+        }
+        #prayer-overlay .close-hint {
+            font-size: 16px;
+            color: #94a3b8;
+            margin-top: 50px;
+            font-style: italic;
+        }
+
         /* --- ANIMASI FADE IN --- */
         @keyframes fadeUp {
             from { opacity: 0; transform: translateY(15px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        tbody tr, .info-card, .poster-img { animation: fadeUp 0.6s ease-out forwards; }
+        tbody tr, .info-card, .poster-img, #prayer-overlay { animation: fadeUp 0.6s ease-out forwards; }
 
         /* --- RUNNING TEXT --- */
         .ticker-wrap {
@@ -163,6 +199,14 @@
     <audio id="bg-music" loop autoplay>
         <source src="https://server16.mp3quran.net/a_sheim/Rewayat-Warsh-A-n-Nafi/055.mp3" type="audio/mpeg">
     </audio>
+
+    <div id="prayer-overlay" onclick="hidePrayerOverlay()">
+        <h1>WAKTU SHOLAT</h1>
+        <h2>Saat ini memasuki waktu sholat <span id="prayer-name" style="color: var(--secondary);">...</span></h2>
+        <p>Untuk Wilayah Kota Depok dan Sekitarnya</p>
+        <p style="font-size: 24px; margin-top: 20px;">Mari persiapkan diri untuk menunaikan ibadah sholat.</p>
+        <p class="close-hint">(Klik di mana saja pada layar untuk menutup pesan ini)</p>
+    </div>
 
     <div class="header">
         <div class="logo-container">
@@ -213,11 +257,7 @@
         // =========================================================================
         var API_URL = "https://script.google.com/macros/s/AKfycbywopky_VUnmvfktok0xRaXDpQrzjuOMo7VjfAselVjzZI7G6FBwijJJh8G9LZWUCqqdw/exec"; 
         
-        // 🌟 SAKLAR ON/OFF PENGUMUMAN 🌟
-        // ubah ke true  = Pengumuman/Poster AKTIF bergantian dengan jadwal.
-        // ubah ke false = Pengumuman/Poster MATI total (Layar fokus hanya pada Jadwal).
         var ENABLE_INFO_SLIDE = true; 
-
         var SLIDE_DURATION = 10000;  
         var REFRESH_DATA = 60000;    
 
@@ -226,9 +266,54 @@
         var currentPageIndex = 0;
         var slideInterval = null;
         var currentMode = "JADWAL";
+        
+        var prayerTimes = {};
+        var prayerTimeout = null;
+
+        // FUNGSI TARIK JADWAL SHOLAT OTOMATIS (API KEMENAG / ALADHAN)
+        function fetchPrayerTimes() {
+            var xhr = new XMLHttpRequest();
+            xhr.open("GET", "https://api.aladhan.com/v1/timingsByCity?city=Depok&country=Indonesia&method=11", true);
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    try {
+                        var res = JSON.parse(xhr.responseText);
+                        prayerTimes = {
+                            "Subuh": res.data.timings.Fajr,
+                            "Dzuhur": res.data.timings.Dhuhr,
+                            "Ashar": res.data.timings.Asr,
+                            "Maghrib": res.data.timings.Maghrib,
+                            "Isya": res.data.timings.Isha
+                        };
+                        console.log("Jadwal Sholat Depok Tersimpan:", prayerTimes);
+                    } catch(e) {}
+                }
+            };
+            xhr.send();
+        }
+
+        // FUNGSI MEMUNCULKAN LAYAR SHOLAT
+        function showPrayerOverlay(sholatName) {
+            document.getElementById('prayer-name').innerText = sholatName.toUpperCase();
+            document.getElementById('prayer-overlay').style.display = 'flex';
+            
+            var music = document.getElementById("bg-music");
+            if (music && !music.paused) music.pause();
+
+            if(prayerTimeout) clearTimeout(prayerTimeout);
+            prayerTimeout = setTimeout(hidePrayerOverlay, 300000); 
+        }
+
+        // FUNGSI MENUTUP LAYAR SHOLAT
+        function hidePrayerOverlay() {
+            document.getElementById('prayer-overlay').style.display = 'none';
+            var music = document.getElementById("bg-music");
+            if (music && music.paused) music.play().catch(function(e){});
+        }
 
         function playMusic() {
             var music = document.getElementById("bg-music");
+            if (document.getElementById('prayer-overlay').style.display === 'flex') return;
             if (music.paused) music.play().catch(function(e){});
         }
 
@@ -242,9 +327,7 @@
                     try {
                         rawResponseData = JSON.parse(xhr.responseText);
                         calculateDynamicPages();
-                    } catch(e) {
-                        console.error("Gagal memproses data");
-                    }
+                    } catch(e) {}
                 }
             };
             xhr.send();
@@ -271,7 +354,6 @@
 
             var diff = currentMinutes - activeSesiMinutes;
             
-            // Baca status Saklar On/Off terlebih dahulu
             var mode = "JADWAL"; 
             if (ENABLE_INFO_SLIDE === true) {
                 if (diff >= 30 && diff < 40) mode = "INFO";
@@ -339,7 +421,6 @@
             } else {
                 document.querySelector('.table-container').style.display = 'none';
                 document.getElementById('info-container').style.display = 'flex';
-                
                 for (var k = 0; k < infoData.length; k++) {
                     pages.push([infoData[k]]);
                 }
@@ -351,7 +432,6 @@
 
         function renderPage() {
             if (pages.length === 0) return;
-            
             document.getElementById('page-indicator').innerText = 'Halaman ' + (currentPageIndex + 1) + ' dari ' + pages.length;
 
             if (currentMode === "JADWAL") {
@@ -390,18 +470,13 @@
 
                     if (imgUrl !== "") {
                         document.getElementById('info-header-title').style.display = 'none'; 
-                        div.style.width = '100%';
-                        div.style.height = '100%';
-                        div.style.display = 'flex';
-                        div.style.justifyContent = 'center';
-                        div.style.alignItems = 'center';
+                        div.style.width = '100%'; div.style.height = '100%';
+                        div.style.display = 'flex'; div.style.justifyContent = 'center'; div.style.alignItems = 'center';
                         div.innerHTML = '<img class="poster-img" src="' + imgUrl + '" style="max-width: 100%; max-height: 55vh; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); object-fit: contain;">';
                     } else {
                         document.getElementById('info-header-title').style.display = 'block'; 
-                        div.className = 'info-card';
-                        div.innerText = textStr;
+                        div.className = 'info-card'; div.innerText = textStr;
                     }
-                    
                     infoList.appendChild(div);
                 });
             }
@@ -434,13 +509,22 @@
 
             document.getElementById('clock').innerText = day + ', ' + date + ' ' + month + ' ' + year + ' | ' + h + ':' + m + ':' + s + ' WIB';
             
-            if (s === "00") calculateDynamicPages();
+            if (s === "00") {
+                calculateDynamicPages();
+                
+                var currentHM = h + ':' + m;
+                for (var sholat in prayerTimes) {
+                    if (prayerTimes[sholat] === currentHM) {
+                        showPrayerOverlay(sholat);
+                    }
+                }
+            }
         }
 
+        fetchPrayerTimes();
         setTimeout(playMusic, 2000);
         setInterval(updateClock, 1000); 
         updateClock();
-        
         fetchData(); 
         setInterval(fetchData, REFRESH_DATA); 
         setTimeout(function() { location.reload(); }, 10800000);

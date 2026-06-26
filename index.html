@@ -110,7 +110,7 @@
             display: none; 
             flex-direction: column;
             align-items: center;
-            justify-content: center; /* Diubah agar poster berada tepat di tengah */
+            justify-content: center; 
             border-left: 8px solid var(--danger);
             margin-bottom: 15px;
             overflow: hidden;
@@ -203,16 +203,21 @@
 
     <div class="ticker-wrap">
         <div class="ticker-content">
-            ✦ BINTANG PELAJAR: Prestasi Tinggi & Akhlak Terpuji! ✦ Dilengkapi pendampingan ibadah & akhlak Islami ✦ 1 kelas 5 siswa (lingkungan belajar ikhwan-akhwat terpisah) ✦ Program SMA/Alumni: Sukses SNBP, Tembus 10 PTN Favorit, PROSUS UI-ITB, hingga PROSUS Kedokteran! ✦ Program SMP: Jago Bidang Studi, Tembus MAN Unggulan & SMA Favorit ✦ Program SD: Persiapan TKA & Kelas Internasional (Cambridge) ✦ Mari raih cita-citamu bersama kami! ✦
+            ✦ BINTANG PELAJAR: Prestasi Tinggi & Akhlak Terpuji! ✦ Dilengkapi pendampingan ibadah & akhlak Islami ✦ Tersedia pilihan eksklusif 1 kelas 5 siswa (lingkungan belajar putra-putri terpisah) ✦ Program SMA/Alumni: Sukses SNBP, Tembus 10 PTN Favorit, PROSUS UI-ITB, hingga PROSUS Kedokteran! ✦ Program SMP: Jago Bidang Studi, Tembus MAN Unggulan & SMA Favorit ✦ Program SD: Persiapan TKA & Kelas Internasional (Cambridge) ✦ Mari raih cita-citamu bersama kami! ✦
         </div>
     </div>
 
     <script>
         // =========================================================================
-        // PENTING: MASUKKAN URL API (GOOGLE APPS SCRIPT) ANDA DI BAWAH INI
+        // PENGATURAN UTAMA (ALAMAT API & SAKLAR ON/OFF)
         // =========================================================================
         var API_URL = "https://script.google.com/macros/s/AKfycbywopky_VUnmvfktok0xRaXDpQrzjuOMo7VjfAselVjzZI7G6FBwijJJh8G9LZWUCqqdw/exec"; 
         
+        // 🌟 SAKLAR ON/OFF PENGUMUMAN 🌟
+        // ubah ke true  = Pengumuman/Poster AKTIF bergantian dengan jadwal.
+        // ubah ke false = Pengumuman/Poster MATI total (Layar fokus hanya pada Jadwal).
+        var ENABLE_INFO_SLIDE = true; 
+
         var SLIDE_DURATION = 10000;  
         var REFRESH_DATA = 60000;    
 
@@ -266,12 +271,15 @@
 
             var diff = currentMinutes - activeSesiMinutes;
             
+            // Baca status Saklar On/Off terlebih dahulu
             var mode = "JADWAL"; 
-            if (diff >= 30 && diff < 40) mode = "INFO";
-            else if (diff >= 50 && diff < 70) mode = "INFO";
+            if (ENABLE_INFO_SLIDE === true) {
+                if (diff >= 30 && diff < 40) mode = "INFO";
+                else if (diff >= 50 && diff < 70) mode = "INFO";
 
-            if (mode === "JADWAL" && scheduleData.length === 0 && infoData.length > 0) mode = "INFO";
-            if (mode === "INFO" && infoData.length === 0) mode = "JADWAL";
+                if (mode === "JADWAL" && scheduleData.length === 0 && infoData.length > 0) mode = "INFO";
+                if (mode === "INFO" && infoData.length === 0) mode = "JADWAL";
+            }
 
             currentMode = mode;
             pages = [];
@@ -332,7 +340,6 @@
                 document.querySelector('.table-container').style.display = 'none';
                 document.getElementById('info-container').style.display = 'flex';
                 
-                // Pisahkan tiap info menjadi 1 slide agar gambar/poster bisa tayang penuh
                 for (var k = 0; k < infoData.length; k++) {
                     pages.push([infoData[k]]);
                 }
@@ -373,19 +380,16 @@
                     var textStr = String(text).trim();
                     var imgUrl = "";
 
-                    // DETEKSI LOGIKA GAMBAR & AUTO CONVERT GOOGLE DRIVE
                     if (textStr.indexOf('http') === 0) {
                         imgUrl = textStr;
-                        // Ubah link view Google Drive jadi link direct image
                         if (imgUrl.includes("drive.google.com/file/d/")) {
                             var fileId = imgUrl.split("/file/d/")[1].split("/")[0];
-                            imgUrl = "https://drive.google.com/file/d/1IaUPXwKjoYlVqszQxqdpMjiVApFNNz8b/view?usp=sharing" + fileId;
+                            imgUrl = "https://drive.google.com/file/d/1IaUPXwKjoYlVqszQxqdpMjiVApFNNz8b/view?usp=drive_link" + fileId;
                         }
                     }
 
                     if (imgUrl !== "") {
-                        // JIKA BERUPA GAMBAR / POSTER
-                        document.getElementById('info-header-title').style.display = 'none'; // Sembunyikan judul info agar gambar penuh
+                        document.getElementById('info-header-title').style.display = 'none'; 
                         div.style.width = '100%';
                         div.style.height = '100%';
                         div.style.display = 'flex';
@@ -393,8 +397,7 @@
                         div.style.alignItems = 'center';
                         div.innerHTML = '<img class="poster-img" src="' + imgUrl + '" style="max-width: 100%; max-height: 55vh; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); object-fit: contain;">';
                     } else {
-                        // JIKA BERUPA TEKS BIASA
-                        document.getElementById('info-header-title').style.display = 'block'; // Munculkan kembali judul
+                        document.getElementById('info-header-title').style.display = 'block'; 
                         div.className = 'info-card';
                         div.innerText = textStr;
                     }

@@ -284,7 +284,7 @@
         function fetchPrayerTimes() {
             var xhr = new XMLHttpRequest();
             // GANTI KOTA MENJADI BANDA ACEH (Gunakan %20 sebagai spasi)
-            xhr.open("GET", "https://api.aladhan.com/v1/timingsByCity?city=Banda%20Aceh&country=Indonesia&method=20", true);
+            xhr.open("GET", "https://api.aladhan.com/v1/timingsByCity?city=Depok&country=Indonesia&method=20", true);
             xhr.onreadystatechange = function() {
                 if (xhr.readyState === 4 && xhr.status === 200) {
                     try {
@@ -312,7 +312,7 @@
                 
                 // Menampilkan Status Diagnostik API
                 if(prayerTimes && prayerTimes["Ashar"]) {
-                    debugEl.innerText = "Jadwal API Kemenag Hari Ini | Dzuhur: " + prayerTimes["Dzuhur"] + " | Ashar: " + prayerTimes["Ashar"] + " | Maghrib: " + prayerTimes["Maghrib"];
+                    debugEl.innerText = "Jadwal Adzan Kemenag Hari Ini | Dzuhur: " + prayerTimes["Dzuhur"] + " | Ashar: " + prayerTimes["Ashar"] + " | Maghrib: " + prayerTimes["Maghrib"];
                     debugEl.style.color = "#48d1cc"; 
                 } else {
                     debugEl.innerText = "⚠️ API Gagal Ditarik (Cek Koneksi Internet / Diblokir Jaringan)";

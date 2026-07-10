@@ -283,8 +283,8 @@
 
         function fetchPrayerTimes() {
             var xhr = new XMLHttpRequest();
-            // Method 20 adalah kalender resmi Kementerian Agama RI
-            xhr.open("GET", "https://api.aladhan.com/v1/timingsByCity?city=Depok&country=Indonesia&method=20", true);
+            // GANTI KOTA MENJADI BANDA ACEH (Gunakan %20 sebagai spasi)
+            xhr.open("GET", "https://api.aladhan.com/v1/timingsByCity?city=Banda%20Aceh&country=Indonesia&method=20", true);
             xhr.onreadystatechange = function() {
                 if (xhr.readyState === 4 && xhr.status === 200) {
                     try {

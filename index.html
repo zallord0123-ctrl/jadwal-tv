@@ -42,7 +42,9 @@
             border-left: 8px solid var(--secondary); 
         }
 
-        .logo-container { width: 130px; }
+        /* TOMBOL RAHASIA DI LOGO */
+        .logo-container { width: 130px; cursor: pointer; transition: transform 0.2s; }
+        .logo-container:active { transform: scale(0.95); }
         .logo-container img { width: 100%; height: auto; }
 
         .title-wrapper { text-align: right; }
@@ -150,6 +152,7 @@
             color: white;
             text-align: center;
             backdrop-filter: blur(5px);
+            cursor: pointer;
         }
         #prayer-overlay h1 {
             font-size: 80px;
@@ -169,8 +172,16 @@
         #prayer-overlay .close-hint {
             font-size: 16px;
             color: #94a3b8;
-            margin-top: 50px;
+            margin-top: 30px;
             font-style: italic;
+        }
+        #api-debug-info {
+            font-size: 18px;
+            margin-top: 40px;
+            padding: 10px 20px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 8px;
+            font-family: monospace;
         }
 
         /* --- ANIMASI FADE IN --- */
@@ -204,12 +215,15 @@
         <h1>WAKTU SHOLAT</h1>
         <h2>Saat ini memasuki waktu sholat <span id="prayer-name" style="color: var(--secondary);">...</span></h2>
         <p>Untuk Wilayah Kota Depok dan Sekitarnya</p>
-        <p style="font-size: 24px; margin-top: 20px;">Mari persiapkan diri untuk menunaikan ibadah sholat.</p>
+        <p style="font-size: 24px; margin-top: 15px;">Mari persiapkan diri untuk menunaikan ibadah sholat.</p>
+        
+        <div id="api-debug-info">Memeriksa Status API Kemenag...</div>
+        
         <p class="close-hint">(Klik di mana saja pada layar untuk menutup pesan ini)</p>
     </div>
 
     <div class="header">
-        <div class="logo-container">
+        <div class="logo-container" onclick="showPrayerOverlay('TESTING UI')" title="Klik untuk Tes Layar Sholat">
             <img src="https://www.bintangpelajar.com/wp-content/uploads/2023/05/LOGO_BP_rev-2023.webp" alt="Logo BP">
         </div>
         <div class="title-wrapper">
@@ -254,7 +268,7 @@
     <script>
         var API_URL = "https://script.google.com/macros/s/AKfycbywopky_VUnmvfktok0xRaXDpQrzjuOMo7VjfAselVjzZI7G6FBwijJJh8G9LZWUCqqdw/exec"; 
         
-        var ENABLE_INFO_SLIDE = false; 
+        var ENABLE_INFO_SLIDE = true; 
         var SLIDE_DURATION = 10000;  
         var REFRESH_DATA = 60000;    
 
@@ -269,7 +283,8 @@
 
         function fetchPrayerTimes() {
             var xhr = new XMLHttpRequest();
-            xhr.open("GET", "https://api.aladhan.com/v1/timingsByCity?city=Depok&country=Indonesia&method=11", true);
+            // Method 20 adalah kalender resmi Kementerian Agama RI
+            xhr.open("GET", "https://api.aladhan.com/v1/timingsByCity?city=Depok&country=Indonesia&method=20", true);
             xhr.onreadystatechange = function() {
                 if (xhr.readyState === 4 && xhr.status === 200) {
                     try {
@@ -290,8 +305,20 @@
         function showPrayerOverlay(sholatName) {
             var prayerNameEl = document.getElementById('prayer-name');
             var overlayEl = document.getElementById('prayer-overlay');
+            var debugEl = document.getElementById('api-debug-info');
+
             if(prayerNameEl && overlayEl) {
                 prayerNameEl.innerText = sholatName.toUpperCase();
+                
+                // Menampilkan Status Diagnostik API
+                if(prayerTimes && prayerTimes["Ashar"]) {
+                    debugEl.innerText = "Jadwal API Kemenag Hari Ini | Dzuhur: " + prayerTimes["Dzuhur"] + " | Ashar: " + prayerTimes["Ashar"] + " | Maghrib: " + prayerTimes["Maghrib"];
+                    debugEl.style.color = "#48d1cc"; 
+                } else {
+                    debugEl.innerText = "⚠️ API Gagal Ditarik (Cek Koneksi Internet / Diblokir Jaringan)";
+                    debugEl.style.color = "#ef4444"; 
+                }
+
                 overlayEl.style.display = 'flex';
             }
             
@@ -534,7 +561,6 @@
             }
         }
 
-        // Tembakan Awal
         fetchPrayerTimes();
         setTimeout(playMusic, 2000);
         setInterval(updateClock, 1000); 

@@ -521,9 +521,9 @@
                         }
 
                         if (isVideo && fileId !== "") {
-                            // JIKA VIDEO (Gunakan tag HTML5 Video Muted agar otomatis jalan)
-                            var videoSrc = "https://drive.google.com/uc?export=download&id=" + fileId;
-                            div.innerHTML = '<video class="video-content" autoplay loop muted style="max-width: 100%; max-height: 60vh; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); object-fit: contain;"><source src="' + videoSrc + '" type="video/mp4"></video>';
+                            // MENGGUNAKAN IFRAME KHUSUS GOOGLE DRIVE
+                            var iframeSrc = "https://drive.google.com/file/d/" + fileId + "/preview?autoplay=1&mute=1";
+                            div.innerHTML = '<iframe class="video-content" src="' + iframeSrc + '" allow="autoplay" style="width: 80%; height: 65vh; border: none; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.15);"></iframe>';
                         } else if (!isVideo && fileId !== "") {
                             // JIKA FOTO/POSTER (Tetap menggunakan tag IMG)
                             var imgSrc = "https://lh3.googleusercontent.com/d/" + fileId;

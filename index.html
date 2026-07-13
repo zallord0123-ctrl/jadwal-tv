@@ -390,18 +390,19 @@
 
             var diff = currentMinutes - activeSesiMinutes;
             
-            var mode = "JADWAL"; 
+            var newMode = "JADWAL"; 
             if (ENABLE_INFO_SLIDE === true) {
-                if (diff >= 30 && diff < 40) mode = "INFO";
-                else if (diff >= 50 && diff < 70) mode = "INFO";
+                if (diff >= 30 && diff < 40) newMode = "INFO";
+                else if (diff >= 50 && diff < 70) newMode = "INFO";
 
-                if (mode === "JADWAL" && scheduleData.length === 0 && infoData.length > 0) mode = "INFO";
-                if (mode === "INFO" && infoData.length === 0) mode = "JADWAL";
+                if (newMode === "JADWAL" && scheduleData.length === 0 && infoData.length > 0) newMode = "INFO";
+                if (newMode === "INFO" && infoData.length === 0) newMode = "JADWAL";
             }
 
-            currentMode = mode;
-            pages = [];
-            currentPageIndex = 0;
+            var isModeChanged = (currentMode !== newMode);
+            currentMode = newMode;
+            
+            var tempPages = [];
 
             if (currentMode === "JADWAL") {
                 document.getElementById('info-container').style.display = 'none';
@@ -410,62 +411,46 @@
                 var tbody = document.getElementById('table-body');
                 var container = document.querySelector('.table-container');
                 var table = document.getElementById('schedule-table');
-                if(!tbody || !container || !table) return;
-                
-                tbody.innerHTML = '';
                 
                 if (scheduleData.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="5" style="padding: 50px;">Tidak ada jadwal pada sesi ini.</td></tr>';
-                    document.getElementById('page-indicator').innerText = 'Halaman 0 dari 0';
-                    if(slideInterval !== null) clearInterval(slideInterval);
-                    return;
-                }
-
-                var currentPageData = [];
-                var safeMargin = 15;
-
-                for (var i = 0; i < scheduleData.length; i++) {
-                    var row = scheduleData[i];
-                    var tr = document.createElement('tr');
-                    var namaSiswa = bersihkanNamaSiswa(row.siswa);
+                    tempPages.push([{ "empty": true }]);
+                } else {
+                    var currentPageData = [];
+                    var safeMargin = 15;
+                    var dummyTr = document.createElement('tr'); // Dummy untuk ukur tinggi
                     
-                    tr.innerHTML = 
-                        '<td class="col-sesi">' + (row.sesi || '-') + '</td>' +
-                        '<td class="col-guru">' + (row.guru || '-') + '</td>' +
-                        '<td>' + (row.ruang || '-') + '</td>' +
-                        '<td class="col-mapel">' + (row.mapel || '-') + '</td>' +
-                        '<td class="col-siswa">' + namaSiswa + '</td>';
-                    
-                    tbody.appendChild(tr);
-                    currentPageData.push(row);
-                    
-                    if (table.offsetHeight > (container.clientHeight - safeMargin)) {
-                        if (currentPageData.length === 1) {
-                            pages.push(currentPageData);
+                    // Kita kumpulkan data halamannya (Logika pagination tabel)
+                    for (var i = 0; i < scheduleData.length; i++) {
+                        currentPageData.push(scheduleData[i]);
+                        if (currentPageData.length >= 8) { // Maksimal baris amannya kita set statis
+                            tempPages.push(currentPageData);
                             currentPageData = [];
-                            tbody.innerHTML = '';
-                        } else {
-                            tbody.removeChild(tr);
-                            currentPageData.pop();
-                            pages.push(currentPageData);
-                            currentPageData = [row];
-                            tbody.innerHTML = '';
-                            tbody.appendChild(tr);
                         }
                     }
+                    if (currentPageData.length > 0) tempPages.push(currentPageData);
                 }
-                if (currentPageData.length > 0) pages.push(currentPageData);
-
             } else {
                 document.querySelector('.table-container').style.display = 'none';
                 document.getElementById('info-container').style.display = 'flex';
                 for (var k = 0; k < infoData.length; k++) {
-                    pages.push([infoData[k]]);
+                    tempPages.push([infoData[k]]);
                 }
             }
             
-            renderPage();
-            startPagination();
+            pages = tempPages;
+
+            // KUNCI ANTI-RESTART VIDEO
+            if (isModeChanged) {
+                // Jika ganti mode (dari Jadwal ke Info atau sebaliknya), wajar di-render ulang
+                currentPageIndex = 0;
+                renderPage();
+                startPagination();
+            } else if (currentMode === "JADWAL") {
+                // Jika sedang di layar Jadwal, aman untuk di-refresh agar namanya terupdate
+                renderPage();
+                startPagination();
+            }
+            // Jika currentMode == "INFO" dan tidak berubah, kita DIAMKAN saja layarnya agar video terus berputar!
         }
 
         function renderPage() {
@@ -479,6 +464,12 @@
                 tbody.innerHTML = ''; 
                 var pageData = pages[currentPageIndex];
                 
+                if(pageData[0] && pageData[0].empty) {
+                     tbody.innerHTML = '<tr><td colspan="5" style="padding: 50px;">Tidak ada jadwal pada sesi ini.</td></tr>';
+                     if(indicator) indicator.innerText = 'Halaman 0 dari 0';
+                     return;
+                }
+
                 pageData.forEach(function(row) {
                     var tr = document.createElement('tr');
                     var namaSiswa = bersihkanNamaSiswa(row.siswa);
@@ -505,7 +496,7 @@
                     // DETEKSI APAKAH INI VIDEO ATAU FOTO
                     if (textStr.toUpperCase().indexOf('VIDEO:') === 0) {
                         isVideo = true;
-                        mediaUrl = textStr.substring(6).trim(); // Buang kata "VIDEO:" dan ambil linknya
+                        mediaUrl = textStr.substring(6).trim(); 
                     } else if (textStr.indexOf('http') === 0) {
                         mediaUrl = textStr;
                     }
@@ -515,22 +506,27 @@
                         div.style.width = '100%'; div.style.height = '100%';
                         div.style.display = 'flex'; div.style.justifyContent = 'center'; div.style.alignItems = 'center';
                         
-                        var fileId = "";
-                        if (mediaUrl.includes("drive.google.com/file/d/")) {
-                            fileId = mediaUrl.split("/file/d/")[1].split("/")[0];
-                        }
-
-                        if (isVideo && fileId !== "") {
-                            // MENGGUNAKAN IFRAME KHUSUS GOOGLE DRIVE
-                            var iframeSrc = "https://drive.google.com/file/d/" + fileId + "/preview?autoplay=1&mute=1";
-                            div.innerHTML = '<iframe class="video-content" src="' + iframeSrc + '" allow="autoplay" style="width: 80%; height: 65vh; border: none; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.15);"></iframe>';
-                        } else if (!isVideo && fileId !== "") {
-                            // JIKA FOTO/POSTER (Tetap menggunakan tag IMG)
-                            var imgSrc = "https://lh3.googleusercontent.com/d/" + fileId;
-                            div.innerHTML = '<img class="poster-img" src="' + imgSrc + '" style="max-width: 100%; max-height: 55vh; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); object-fit: contain;">';
+                        if (isVideo) {
+                            if (mediaUrl.includes("drive.google.com")) {
+                                // VIDEO DARI GOOGLE DRIVE
+                                var fileId = "";
+                                if (mediaUrl.includes("/file/d/")) {
+                                    fileId = mediaUrl.split("/file/d/")[1].split("/")[0];
+                                }
+                                var iframeSrc = "https://drive.google.com/file/d/" + fileId + "/preview?autoplay=1&mute=1";
+                                div.innerHTML = '<iframe class="video-content" src="' + iframeSrc + '" allow="autoplay" style="width: 80%; height: 65vh; border: none; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.15);"></iframe>';
+                            } else {
+                                // VIDEO OFFLINE / LOCAL (Bukan dari GDrive)
+                                div.innerHTML = '<video class="video-content" autoplay loop muted style="max-width: 100%; max-height: 60vh; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); object-fit: contain;"><source src="' + mediaUrl + '" type="video/mp4"></video>';
+                            }
                         } else {
-                            // Jika format link tidak dikenali
-                            div.innerHTML = '<div class="info-card">Media gagal dimuat: Link tidak valid.</div>';
+                            // JIKA FOTO/POSTER
+                            var fileIdPhoto = "";
+                            if (mediaUrl.includes("drive.google.com/file/d/")) {
+                                fileIdPhoto = mediaUrl.split("/file/d/")[1].split("/")[0];
+                                mediaUrl = "https://lh3.googleusercontent.com/d/" + fileIdPhoto;
+                            }
+                            div.innerHTML = '<img class="poster-img" src="' + mediaUrl + '" style="max-width: 100%; max-height: 55vh; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); object-fit: contain;">';
                         }
                     } else {
                         // JIKA TEKS BIASA

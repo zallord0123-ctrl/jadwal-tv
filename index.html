@@ -1,614 +1,107 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jadwal Digital TV - Bintang Pelajar</title>
-    <style>
-        /* --- TEMA WARNA & VARIABEL --- */
-        :root {
-            --primary: #1e3a8a;       
-            --primary-light: #2a4365; 
-            --secondary: #48d1cc;     
-            --bg-gradient-1: #f0fdfa; 
-            --bg-gradient-2: #e2e8f0; 
-            --text-dark: #1e293b;
-            --text-light: #64748b;
-            --danger: #ef4444;        
-        }
+var NAMA_SHEET_TARGET = "Jadwal TV";
 
-        * { box-sizing: border-box; }
-        body {
-            background: linear-gradient(135deg, var(--bg-gradient-1), var(--bg-gradient-2));
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            padding: 15px 25px; 
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
+function onOpen() {
+  SpreadsheetApp.getUi().createMenu('📺 UPDATE TV')
+    .addItem('Kirim Sheet Ini ke TV', 'otomasiPindahJadwal')
+    .addToUi();
+}
 
-        /* --- HEADER CARD --- */
-        .header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            background: #ffffff;
-            padding: 10px 30px;
-            border-radius: 15px; 
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05); 
-            margin-bottom: 15px;
-            border-left: 8px solid var(--secondary); 
-        }
+function otomasiPindahJadwal() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sourceSheet = ss.getActiveSheet();
+  var targetSheet = ss.getSheetByName(NAMA_SHEET_TARGET);
+  
+  if (!targetSheet) {
+      SpreadsheetApp.getUi().alert("Sheet '" + NAMA_SHEET_TARGET + "' tidak ditemukan!");
+      return;
+  }
 
-        .logo-container { width: 130px; cursor: pointer; transition: transform 0.2s; }
-        .logo-container:active { transform: scale(0.95); }
-        .logo-container img { width: 100%; height: auto; }
+  var data = sourceSheet.getDataRange().getDisplayValues();
+  var result = [];
 
-        .title-wrapper { text-align: right; }
-        .header h1 {
-            font-size: 26px;
-            margin: 0;
-            color: var(--primary);
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            font-weight: 800;
-        }
-        #clock {
-            font-size: 20px;
-            color: var(--danger);
-            font-weight: 700;
-            margin-top: 5px;
-            letter-spacing: 1px;
-        }
-        #page-indicator {
-            color: var(--text-light);
-            font-size: 15px;
-            font-weight: bold;
-            margin-top: 4px;
-        }
+  // Looping membaca seluruh baris dari atas ke bawah
+  for (var i = 0; i < data.length; i++) {
+    var colA = String(data[i][0]).trim().toLowerCase();
+    var colB = String(data[i][1]).trim().toLowerCase();
 
-        /* --- JADWAL TABEL CONTAINER --- */
-        .table-container {
-            flex-grow: 1;
-            background: #ffffff;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.08); 
-            overflow: hidden; 
-            display: flex;
-            flex-direction: column;
-            margin-bottom: 15px;
-        }
+    // 1. CARI BARIS JANGKAR: "Hari/Sesi"
+    if (colA.includes("hari/sesi") || colB.includes("hari/sesi") || colA.includes("hari / sesi") || colB.includes("hari / sesi")) {
 
-        table { width: 100%; border-collapse: collapse; table-layout: fixed; }
-        th {
-            background: linear-gradient(90deg, var(--primary), var(--primary-light));
-            color: #ffffff; font-size: 20px; padding: 14px 10px;
-            text-transform: uppercase; border-bottom: 4px solid var(--secondary); 
+      var sesiTime = null;
+      for (var c = 0; c < data[i].length; c++) {
+        var match = String(data[i][c]).match(/\d{2}\.\d{2}/);
+        if (match) {
+          sesiTime = match[0];
+          break;
         }
-        td {
-            padding: 10px; font-size: 22px; text-align: center;
-            vertical-align: middle; color: var(--text-dark); border-bottom: 1px solid #f1f5f9;
-        }
-        tbody tr:nth-child(even) { background-color: #f8fafc; }
+      }
+      if (!sesiTime) continue;
 
-        .col-siswa {
-            text-align: left; font-size: 21px; line-height: 1.4; font-weight: 600; 
-            word-wrap: break-word; overflow-wrap: break-word;
-        }
-        .col-sesi { font-size: 28px; font-weight: 900; color: var(--danger); }
-        .col-guru { font-weight: 800; color: var(--primary); }
-        .col-mapel { font-weight: bold; color: var(--text-light); }
+      // 2. SCAN KE BAWAH (Mencari Ruang, Mapel, dan Guru milik sesi tersebut)
+      var roomRow = -1, mapelRow = -1, guruRow = -1;
 
-        /* --- INFO PENGUMUMAN WADAH --- */
-        #info-container {
-            flex-grow: 1;
-            background: #ffffff;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-            padding: 30px;
-            display: none; 
-            flex-direction: column;
-            align-items: center;
-            justify-content: center; 
-            border-left: 8px solid var(--danger);
-            margin-bottom: 15px;
-            overflow: hidden;
-        }
-        .info-title {
-            font-size: 32px;
-            color: var(--primary);
-            font-weight: 800;
-            margin-bottom: 25px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-        .info-card {
-            background: #f8fafc;
-            border-left: 6px solid var(--secondary);
-            padding: 20px 35px;
-            border-radius: 10px;
-            font-size: 26px;
-            color: var(--text-dark);
-            font-weight: 600;
-            width: 95%;
-            margin-bottom: 15px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.02);
-            text-align: center;
-        }
+      // Scan ke bawah mencari baris "Sesi / Rg"
+      for (var down = i; down <= Math.min(i + 8, data.length - 1); down++) {
+         var label = String(data[down][1]).trim().toLowerCase();
+         if (label.includes("sesi / rg") || label.includes("sesi/rg") || label.includes("sesi/ruang")) {
+             roomRow = down;
+             break;
+         }
+      }
 
-        /* --- LAYAR PENGINGAT SHOLAT --- */
-        #prayer-overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(30, 58, 138, 0.98); 
-            z-index: 9999;
-            display: none;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            color: white;
-            text-align: center;
-            backdrop-filter: blur(5px);
-            cursor: pointer;
-        }
-        #prayer-overlay h1 {
-            font-size: 80px;
-            color: #fbbf24; 
-            margin: 0 0 10px 0;
-            letter-spacing: 3px;
-        }
-        #prayer-overlay h2 {
-            font-size: 50px;
-            margin: 10px 0 20px 0;
-        }
-        #prayer-overlay p {
-            font-size: 30px;
-            color: #e2e8f0;
-            margin: 5px 0;
-        }
-        #prayer-overlay .close-hint {
-            font-size: 16px;
-            color: #94a3b8;
-            margin-top: 30px;
-            font-style: italic;
-        }
-        #api-debug-info {
-            font-size: 18px;
-            margin-top: 40px;
-            padding: 10px 20px;
-            background: rgba(0,0,0,0.3);
-            border-radius: 8px;
-            font-family: monospace;
-        }
+      if (roomRow === -1) continue;
 
-        /* --- ANIMASI FADE IN --- */
-        @keyframes fadeUp {
-            from { opacity: 0; transform: translateY(15px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        tbody tr, .info-card, .poster-img, .video-content, #prayer-overlay { animation: fadeUp 0.6s ease-out forwards; }
+      // Scan ke bawah mencari baris Mapel dan Guru
+      for (var down = roomRow + 1; down <= Math.min(roomRow + 25, data.length - 1); down++) {
+         var label = String(data[down][1]).trim().toLowerCase();
+         if (label.includes("b.studi/kls") || label.includes("b.studi / kls") || label.includes("b. studi")) {
+             mapelRow = down;
+         }
+         else if (label.includes("guru tetap") || label.includes("guru")) {
+             guruRow = down;
+             break; 
+         }
+      }
 
-        /* --- RUNNING TEXT --- */
-        .ticker-wrap {
-            width: 100%; background-color: var(--primary); border-radius: 10px;
-            overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            position: relative; height: 50px; display: flex; align-items: center;
-            border-left: 5px solid var(--secondary); border-right: 5px solid var(--secondary);
-        }
-        .ticker-content {
-            display: inline-block; white-space: nowrap; color: #ffffff; font-size: 22px;
-            font-weight: bold; padding-left: 100%; animation: ticker-anim 50s linear infinite;
-        }
-        @keyframes ticker-anim { 0% { transform: translateX(0); } 100% { transform: translateX(-100%); } }
-    </style>
-</head>
-<body onclick="playMusic()">
+      if (mapelRow === -1 || guruRow === -1) continue;
 
-    <!-- MUSIK MUROTTAL -->
-    <audio id="bg-music" loop autoplay>
-        <source src="https://server16.mp3quran.net/a_sheim/Rewayat-Warsh-A-n-Nafi/055.mp3" type="audio/mpeg">
-    </audio>
+      // Batas baris nama siswa
+      var studentStart = roomRow + 1;
+      var studentEnd = mapelRow - 1;
 
-    <!-- LAYAR OVERLAY SHOLAT -->
-    <div id="prayer-overlay" onclick="hidePrayerOverlay()">
-        <h1>WAKTU SHOLAT</h1>
-        <h2>Saat ini memasuki waktu sholat <span id="prayer-name" style="color: var(--secondary);">...</span></h2>
-        <p>Untuk Wilayah Kota Depok dan Sekitarnya</p>
-        <p style="font-size: 24px; margin-top: 15px;">Mari persiapkan diri untuk menunaikan ibadah sholat.</p>
-        <div id="api-debug-info">Memeriksa Status API Kemenag...</div>
-        <p class="close-hint">(Klik di mana saja pada layar untuk menutup pesan ini)</p>
-    </div>
+      // 3. AMBIL SEMUA KOLOM (Tanpa Batas Kaku, otomatis sampai Ruang Komik)
+      for (var c = 2; c < data[roomRow].length; c++) {
+        var roomName = String(data[roomRow][c]).trim();
+        if (!roomName || roomName === "-") continue;
 
-    <!-- HEADER & LOGO -->
-    <div class="header">
-        <div class="logo-container" onclick="showPrayerOverlay('SIMULASI')" title="Klik untuk Tes Layar Sholat">
-            <img src="https://www.bintangpelajar.com/wp-content/uploads/2023/05/LOGO_BP_rev-2023.webp" alt="Logo BP">
-        </div>
-        <div class="title-wrapper">
-            <h1>Jadwal Kegiatan Pembelajaran</h1>
-            <div id="clock">Memuat Waktu...</div>
-            <div id="page-indicator">Halaman - dari -</div>
-        </div>
-    </div>
-
-    <!-- WADAH 1: TABEL JADWAL -->
-    <div class="table-container">
-        <table id="schedule-table">
-            <thead>
-                <tr>
-                    <th width="12%">SESI</th>
-                    <th width="22%">GURU</th>
-                    <th width="8%">RUANG</th>
-                    <th width="18%">MAPEL/KELAS</th>
-                    <th width="40%">NAMA SISWA</th>
-                </tr>
-            </thead>
-            <tbody id="table-body">
-                <tr>
-                    <td colspan="5" style="padding: 50px; font-style: italic; color: #64748b;">
-                        Menghubungkan ke Database Bintang Pelajar...
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-
-    <!-- WADAH 2: INFO PENGUMUMAN & INFOGRAFIS/VIDEO -->
-    <div id="info-container">
-        <div class="info-title" id="info-header-title">📢 INFO & PENGUMUMAN TERBARU</div>
-        <div id="info-list" style="width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center;"></div>
-    </div>
-
-    <!-- RUNNING TEXT -->
-    <div class="ticker-wrap">
-        <div class="ticker-content">
-            ✦ BINTANG PELAJAR: Prestasi Tinggi & Akhlak Terpuji! ✦ Dilengkapi pendampingan ibadah & akhlak Islami ✦ Tersedia pilihan eksklusif 1 kelas 5 siswa (lingkungan belajar putra-putri terpisah) ✦ Program SMA/Alumni: Sukses SNBP, Tembus 10 PTN Favorit, PROSUS UI-ITB, hingga PROSUS Kedokteran! ✦ Program SMP: Jago Bidang Studi, Tembus MAN Unggulan & SMA Favorit ✦ Program SD: Persiapan TKA & Kelas Internasional (Cambridge) ✦ Mari raih cita-citamu bersama kami! ✦
-        </div>
-    </div>
-
-    <!-- LOGIKA JAVASCRIPT -->
-    <script>
-        var API_URL = "https://script.google.com/macros/s/AKfycbywopky_VUnmvfktok0xRaXDpQrzjuOMo7VjfAselVjzZI7G6FBwijJJh8G9LZWUCqqdw/exec"; 
+        var guruName = String(data[guruRow][c]).trim();
         
-        var ENABLE_INFO_SLIDE = true; 
-        var SLIDE_DURATION = 10000;  
-        var REFRESH_DATA = 60000;    
+        // PENTING: Jangan masukkan ke TV jika Guru tidak ada atau tertulis "Kosong"
+        if (!guruName || guruName === "-" || guruName.toLowerCase() === "kosong") continue;
 
-        var rawResponseData = null;
-        var pages = []; 
-        var currentPageIndex = 0;
-        var slideInterval = null;
-        var currentMode = "JADWAL";
-        
-        var prayerTimes = {};
-        var prayerTimeout = null;
+        var mapelName = String(data[mapelRow][c]).trim();
 
-        function fetchPrayerTimes() {
-            var xhr = new XMLHttpRequest();
-            xhr.open("GET", "https://api.aladhan.com/v1/timingsByCity?city=Depok&country=Indonesia&method=20", true);
-            xhr.onreadystatechange = function() {
-                if (xhr.readyState === 4 && xhr.status === 200) {
-                    try {
-                        var res = JSON.parse(xhr.responseText);
-                        prayerTimes = {
-                            "Subuh": res.data.timings.Fajr,
-                            "Dzuhur": res.data.timings.Dhuhr,
-                            "Ashar": res.data.timings.Asr,
-                            "Maghrib": res.data.timings.Maghrib,
-                            "Isya": res.data.timings.Isha
-                        };
-                    } catch(e) {}
-                }
-            };
-            xhr.send();
+        // Gabungkan nama siswa di ruangan tersebut
+        var students = [];
+        for (var r = studentStart; r <= studentEnd; r++) {
+          var sName = String(data[r][c]).trim();
+          if (sName && sName !== "-") {
+            students.push(sName);
+          }
         }
 
-        function showPrayerOverlay(sholatName) {
-            var prayerNameEl = document.getElementById('prayer-name');
-            var overlayEl = document.getElementById('prayer-overlay');
-            var debugEl = document.getElementById('api-debug-info');
+        result.push([sesiTime, guruName, roomName, mapelName, students.join("\n")]);
+      }
+    }
+  }
 
-            if(prayerNameEl && overlayEl) {
-                prayerNameEl.innerText = sholatName.toUpperCase();
-                
-                if(prayerTimes && prayerTimes["Ashar"]) {
-                    debugEl.innerText = "Jadwal API Kemenag Hari Ini | Dzuhur: " + prayerTimes["Dzuhur"] + " | Ashar: " + prayerTimes["Ashar"] + " | Maghrib: " + prayerTimes["Maghrib"];
-                    debugEl.style.color = "#48d1cc"; 
-                } else {
-                    debugEl.innerText = "⚠️ API Gagal Ditarik (Cek Koneksi Internet / Diblokir Jaringan)";
-                    debugEl.style.color = "#ef4444"; 
-                }
+  // 4. BERSIHKAN & MASUKKAN DATA KE "Jadwal TV"
+  targetSheet.clearContents();
+  targetSheet.appendRow(["sesi", "guru", "ruang", "mapel", "siswa"]); 
+  
+  if (result.length > 0) {
+    targetSheet.getRange(2, 1, result.length, 5).setValues(result);
+  }
 
-                overlayEl.style.display = 'flex';
-            }
-            
-            var music = document.getElementById("bg-music");
-            if (music && !music.paused) music.pause();
-
-            if(prayerTimeout) clearTimeout(prayerTimeout);
-            prayerTimeout = setTimeout(hidePrayerOverlay, 300000); 
-        }
-
-        function hidePrayerOverlay() {
-            var overlayEl = document.getElementById('prayer-overlay');
-            if(overlayEl) overlayEl.style.display = 'none';
-            
-            var music = document.getElementById("bg-music");
-            if (music && music.paused) {
-                var playPromise = music.play();
-                if(playPromise !== undefined) playPromise.catch(function(e){});
-            }
-        }
-
-        function playMusic() {
-            var music = document.getElementById("bg-music");
-            var overlayEl = document.getElementById('prayer-overlay');
-            if (overlayEl && overlayEl.style.display === 'flex') return;
-            
-            if (music && music.paused) {
-                var playPromise = music.play();
-                if(playPromise !== undefined) playPromise.catch(function(e){});
-            }
-        }
-
-        function fetchData() {
-            var xhr = new XMLHttpRequest();
-            var urlAntiMacet = API_URL + (API_URL.indexOf('?') > -1 ? '&' : '?') + 'waktu=' + new Date().getTime();
-            
-            xhr.open("GET", urlAntiMacet, true); 
-            xhr.onreadystatechange = function() {
-                if (xhr.readyState === 4 && xhr.status === 200) {
-                    try {
-                        rawResponseData = JSON.parse(xhr.responseText);
-                        calculateDynamicPages();
-                    } catch(e) {}
-                }
-            };
-            xhr.send();
-        }
-
-        function bersihkanNamaSiswa(teksMentah) {
-            if (!teksMentah) return "-";
-            var teksBersih = String(teksMentah);
-            teksBersih = teksBersih.replace(/\s*\([^)]*\)/g, '').replace(/\n/g, '<br>');
-            return teksBersih.trim() === "" ? "-" : teksBersih;
-        }
-
-        function calculateDynamicPages() {
-            if (!rawResponseData) return;
-
-            var scheduleData = rawResponseData.jadwal || [];
-            var infoData = rawResponseData.info || [];
-            var activeSesiMinutes = rawResponseData.activeSesiMinutes || 0;
-
-            var now = new Date();
-            var utc = now.getTime() + (now.getTimezoneOffset() * 60000);
-            var wib = new Date(utc + (3600000 * 7));
-            var currentMinutes = wib.getHours() * 60 + wib.getMinutes();
-
-            var diff = currentMinutes - activeSesiMinutes;
-            
-            var newMode = "JADWAL"; 
-            if (ENABLE_INFO_SLIDE === true) {
-                if (diff >= 30 && diff < 40) newMode = "INFO";
-                else if (diff >= 50 && diff < 70) newMode = "INFO";
-
-                if (newMode === "JADWAL" && scheduleData.length === 0 && infoData.length > 0) newMode = "INFO";
-                if (newMode === "INFO" && infoData.length === 0) newMode = "JADWAL";
-            }
-
-            var isModeChanged = (currentMode !== newMode);
-            currentMode = newMode;
-            
-            var tempPages = [];
-
-            if (currentMode === "JADWAL") {
-                document.getElementById('info-container').style.display = 'none';
-                document.querySelector('.table-container').style.display = 'flex';
-                
-                var tbody = document.getElementById('table-body');
-                var container = document.querySelector('.table-container');
-                var table = document.getElementById('schedule-table');
-                
-                if (scheduleData.length === 0) {
-                    tempPages.push([{ "empty": true }]);
-                } else {
-                    var currentPageData = [];
-                    var safeMargin = 25; // Margin batas aman agar tidak menyentuh running text
-                    
-                    // Kosongkan tbody untuk mulai simulasi pengukuran
-                    tbody.innerHTML = '';
-                    
-                    for (var i = 0; i < scheduleData.length; i++) {
-                        var row = scheduleData[i];
-                        currentPageData.push(row);
-                        
-                        // Buat elemen tr virtual untuk mengukur tingginya
-                        var tr = document.createElement('tr');
-                        var namaSiswa = bersihkanNamaSiswa(row.siswa);
-                        tr.innerHTML = 
-                            '<td class="col-sesi">' + (row.sesi || '-') + '</td>' +
-                            '<td class="col-guru">' + (row.guru || '-') + '</td>' +
-                            '<td>' + (row.ruang || '-') + '</td>' +
-                            '<td class="col-mapel">' + (row.mapel || '-') + '</td>' +
-                            '<td class="col-siswa">' + namaSiswa + '</td>';
-                        
-                        tbody.appendChild(tr);
-                        
-                        // CEK DINAMIS: Jika tabel sudah kelebihan batas tinggi penampungnya
-                        if (table.offsetHeight > (container.clientHeight - safeMargin)) {
-                            // Hapus elemen terakhir dari layar ukur
-                            tbody.removeChild(tr);
-                            // Keluarkan data terakhir karena tidak muat
-                            currentPageData.pop();
-                            
-                            // Simpan baris-baris yang muat sebagai 1 halaman penuh
-                            if (currentPageData.length > 0) tempPages.push(currentPageData);
-                            
-                            // Mulai halaman baru dengan data yang tidak muat tadi
-                            currentPageData = [row];
-                            tbody.innerHTML = ''; // Bersihkan layar ukur
-                            tbody.appendChild(tr); // Masukkan lagi untuk diukur di halaman baru
-                        }
-                    }
-                    // Masukkan sisa data ke halaman terakhir
-                    if (currentPageData.length > 0) tempPages.push(currentPageData);
-                    
-                    // Bersihkan kembali tbody, karena akan dirender ulang oleh fungsi renderPage()
-                    tbody.innerHTML = '';
-                }
-            } else {
-                document.querySelector('.table-container').style.display = 'none';
-                document.getElementById('info-container').style.display = 'flex';
-                for (var k = 0; k < infoData.length; k++) {
-                    tempPages.push([infoData[k]]);
-                }
-            }
-            
-            pages = tempPages;
-
-            // KUNCI ANTI-RESTART VIDEO
-            if (isModeChanged) {
-                currentPageIndex = 0;
-                renderPage();
-                startPagination();
-            } else if (currentMode === "JADWAL") {
-                if (currentPageIndex >= pages.length) currentPageIndex = 0;
-                renderPage();
-                startPagination();
-            }
-        }
-
-        function renderPage() {
-            if (pages.length === 0) return;
-            var indicator = document.getElementById('page-indicator');
-            if(indicator) indicator.innerText = 'Halaman ' + (currentPageIndex + 1) + ' dari ' + pages.length;
-
-            if (currentMode === "JADWAL") {
-                var tbody = document.getElementById('table-body');
-                if(!tbody) return;
-                tbody.innerHTML = ''; 
-                var pageData = pages[currentPageIndex];
-                
-                if(pageData[0] && pageData[0].empty) {
-                     tbody.innerHTML = '<tr><td colspan="5" style="padding: 50px;">Tidak ada jadwal pada sesi ini.</td></tr>';
-                     if(indicator) indicator.innerText = 'Halaman 0 dari 0';
-                     return;
-                }
-
-                pageData.forEach(function(row) {
-                    var tr = document.createElement('tr');
-                    var namaSiswa = bersihkanNamaSiswa(row.siswa);
-                    tr.innerHTML = 
-                        '<td class="col-sesi">' + (row.sesi || '-') + '</td>' +
-                        '<td class="col-guru">' + (row.guru || '-') + '</td>' +
-                        '<td>' + (row.ruang || '-') + '</td>' +
-                        '<td class="col-mapel">' + (row.mapel || '-') + '</td>' +
-                        '<td class="col-siswa">' + namaSiswa + '</td>';
-                    tbody.appendChild(tr);
-                });
-            } else {
-                var infoList = document.getElementById('info-list');
-                if(!infoList) return;
-                infoList.innerHTML = '';
-                var pageData = pages[currentPageIndex];
-                
-                pageData.forEach(function(text) {
-                    var div = document.createElement('div');
-                    var textStr = String(text).trim();
-                    var isVideo = false;
-                    var mediaUrl = "";
-
-                    // DETEKSI APAKAH INI VIDEO ATAU FOTO
-                    if (textStr.toUpperCase().indexOf('VIDEO:') === 0) {
-                        isVideo = true;
-                        mediaUrl = textStr.substring(6).trim(); 
-                    } else if (textStr.indexOf('http') === 0) {
-                        mediaUrl = textStr;
-                    }
-
-                    if (mediaUrl !== "") {
-                        document.getElementById('info-header-title').style.display = 'none'; 
-                        div.style.width = '100%'; div.style.height = '100%';
-                        div.style.display = 'flex'; div.style.justifyContent = 'center'; div.style.alignItems = 'center';
-                        
-                        if (isVideo) {
-                            if (mediaUrl.includes("drive.google.com")) {
-                                var fileId = "";
-                                if (mediaUrl.includes("/file/d/")) {
-                                    fileId = mediaUrl.split("/file/d/")[1].split("/")[0];
-                                }
-                                var iframeSrc = "https://drive.google.com/file/d/" + fileId + "/preview?autoplay=1&mute=1";
-                                div.innerHTML = '<iframe class="video-content" src="' + iframeSrc + '" allow="autoplay" style="width: 80%; height: 65vh; border: none; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.15);"></iframe>';
-                            } else {
-                                div.innerHTML = '<video class="video-content" autoplay loop muted style="max-width: 100%; max-height: 60vh; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); object-fit: contain;"><source src="' + mediaUrl + '" type="video/mp4"></video>';
-                            }
-                        } else {
-                            var fileIdPhoto = "";
-                            if (mediaUrl.includes("drive.google.com/file/d/")) {
-                                fileIdPhoto = mediaUrl.split("/file/d/")[1].split("/")[0];
-                                mediaUrl = "https://lh3.googleusercontent.com/d/" + fileIdPhoto;
-                            }
-                            div.innerHTML = '<img class="poster-img" src="' + mediaUrl + '" style="max-width: 100%; max-height: 55vh; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); object-fit: contain;">';
-                        }
-                    } else {
-                        document.getElementById('info-header-title').style.display = 'block'; 
-                        div.className = 'info-card'; div.innerText = textStr;
-                    }
-                    infoList.appendChild(div);
-                });
-            }
-        }
-
-        function startPagination() {
-            if(slideInterval !== null) clearInterval(slideInterval);
-            if (pages.length > 1) {
-                slideInterval = setInterval(function() {
-                    currentPageIndex++;
-                    if (currentPageIndex >= pages.length) currentPageIndex = 0;
-                    renderPage();
-                }, SLIDE_DURATION);
-            }
-        }
-
-        function updateClock() {
-            var now = new Date();
-            var days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
-            var months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Ags', 'Sep', 'Okt', 'Nov', 'Des'];
-            
-            var day = days[now.getDay()];
-            var date = now.getDate();
-            var month = months[now.getMonth()];
-            var year = now.getFullYear();
-
-            var h = ("0" + now.getHours()).slice(-2);
-            var m = ("0" + now.getMinutes()).slice(-2);
-            var s = ("0" + now.getSeconds()).slice(-2);
-
-            var clockEl = document.getElementById('clock');
-            if(clockEl) clockEl.innerText = day + ', ' + date + ' ' + month + ' ' + year + ' | ' + h + ':' + m + ':' + s + ' WIB';
-            
-            if (s === "00") {
-                calculateDynamicPages();
-                
-                var currentHM = h + ':' + m;
-                for (var sholat in prayerTimes) {
-                    if (prayerTimes[sholat] === currentHM) {
-                        showPrayerOverlay(sholat);
-                    }
-                }
-            }
-        }
-
-        fetchPrayerTimes();
-        setTimeout(playMusic, 2000);
-        setInterval(updateClock, 1000); 
-        updateClock();
-        fetchData(); 
-        setInterval(fetchData, REFRESH_DATA); 
-        setTimeout(function() { location.reload(); }, 10800000);
-    </script>
-</body>
-</html>
+  SpreadsheetApp.getUi().alert("✅ UPDATE BERHASIL!\n\nJadwal sudah kembali sinkron secara presisi.\nRuang 14 & Ruang Komik dipastikan masuk!");
+}

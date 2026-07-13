@@ -42,7 +42,6 @@
             border-left: 8px solid var(--secondary); 
         }
 
-        /* TOMBOL RAHASIA DI LOGO */
         .logo-container { width: 130px; cursor: pointer; transition: transform 0.2s; }
         .logo-container:active { transform: scale(0.95); }
         .logo-container img { width: 100%; height: auto; }
@@ -189,7 +188,7 @@
             from { opacity: 0; transform: translateY(15px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        tbody tr, .info-card, .poster-img, #prayer-overlay { animation: fadeUp 0.6s ease-out forwards; }
+        tbody tr, .info-card, .poster-img, .video-content, #prayer-overlay { animation: fadeUp 0.6s ease-out forwards; }
 
         /* --- RUNNING TEXT --- */
         .ticker-wrap {
@@ -207,23 +206,24 @@
 </head>
 <body onclick="playMusic()">
 
+    <!-- MUSIK MUROTTAL -->
     <audio id="bg-music" loop autoplay>
         <source src="https://server16.mp3quran.net/a_sheim/Rewayat-Warsh-A-n-Nafi/055.mp3" type="audio/mpeg">
     </audio>
 
+    <!-- LAYAR OVERLAY SHOLAT -->
     <div id="prayer-overlay" onclick="hidePrayerOverlay()">
         <h1>WAKTU SHOLAT</h1>
         <h2>Saat ini memasuki waktu sholat <span id="prayer-name" style="color: var(--secondary);">...</span></h2>
         <p>Untuk Wilayah Kota Depok dan Sekitarnya</p>
         <p style="font-size: 24px; margin-top: 15px;">Mari persiapkan diri untuk menunaikan ibadah sholat.</p>
-        
         <div id="api-debug-info">Memeriksa Status API Kemenag...</div>
-        
         <p class="close-hint">(Klik di mana saja pada layar untuk menutup pesan ini)</p>
     </div>
 
+    <!-- HEADER & LOGO -->
     <div class="header">
-        <div class="logo-container" onclick="showPrayerOverlay('')" title="Klik untuk Tes Layar Sholat">
+        <div class="logo-container" onclick="showPrayerOverlay('SIMULASI')" title="Klik untuk Tes Layar Sholat">
             <img src="https://www.bintangpelajar.com/wp-content/uploads/2023/05/LOGO_BP_rev-2023.webp" alt="Logo BP">
         </div>
         <div class="title-wrapper">
@@ -233,6 +233,7 @@
         </div>
     </div>
 
+    <!-- WADAH 1: TABEL JADWAL -->
     <div class="table-container">
         <table id="schedule-table">
             <thead>
@@ -254,17 +255,20 @@
         </table>
     </div>
 
+    <!-- WADAH 2: INFO PENGUMUMAN & INFOGRAFIS/VIDEO -->
     <div id="info-container">
         <div class="info-title" id="info-header-title">📢 INFO & PENGUMUMAN TERBARU</div>
         <div id="info-list" style="width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center;"></div>
     </div>
 
+    <!-- RUNNING TEXT -->
     <div class="ticker-wrap">
         <div class="ticker-content">
             ✦ BINTANG PELAJAR: Prestasi Tinggi & Akhlak Terpuji! ✦ Dilengkapi pendampingan ibadah & akhlak Islami ✦ Tersedia pilihan eksklusif 1 kelas 5 siswa (lingkungan belajar putra-putri terpisah) ✦ Program SMA/Alumni: Sukses SNBP, Tembus 10 PTN Favorit, PROSUS UI-ITB, hingga PROSUS Kedokteran! ✦ Program SMP: Jago Bidang Studi, Tembus MAN Unggulan & SMA Favorit ✦ Program SD: Persiapan TKA & Kelas Internasional (Cambridge) ✦ Mari raih cita-citamu bersama kami! ✦
         </div>
     </div>
 
+    <!-- LOGIKA JAVASCRIPT -->
     <script>
         var API_URL = "https://script.google.com/macros/s/AKfycbywopky_VUnmvfktok0xRaXDpQrzjuOMo7VjfAselVjzZI7G6FBwijJJh8G9LZWUCqqdw/exec"; 
         
@@ -283,7 +287,6 @@
 
         function fetchPrayerTimes() {
             var xhr = new XMLHttpRequest();
-            // GANTI KOTA MENJADI BANDA ACEH (Gunakan %20 sebagai spasi)
             xhr.open("GET", "https://api.aladhan.com/v1/timingsByCity?city=Depok&country=Indonesia&method=20", true);
             xhr.onreadystatechange = function() {
                 if (xhr.readyState === 4 && xhr.status === 200) {
@@ -310,9 +313,8 @@
             if(prayerNameEl && overlayEl) {
                 prayerNameEl.innerText = sholatName.toUpperCase();
                 
-                // Menampilkan Status Diagnostik API
                 if(prayerTimes && prayerTimes["Ashar"]) {
-                    debugEl.innerText = "Jadwal Adzan Kemenag Hari Ini | Dzuhur: " + prayerTimes["Dzuhur"] + " | Ashar: " + prayerTimes["Ashar"] + " | Maghrib: " + prayerTimes["Maghrib"];
+                    debugEl.innerText = "Jadwal API Kemenag Hari Ini | Dzuhur: " + prayerTimes["Dzuhur"] + " | Ashar: " + prayerTimes["Ashar"] + " | Maghrib: " + prayerTimes["Maghrib"];
                     debugEl.style.color = "#48d1cc"; 
                 } else {
                     debugEl.innerText = "⚠️ API Gagal Ditarik (Cek Koneksi Internet / Diblokir Jaringan)";
@@ -497,22 +499,41 @@
                 pageData.forEach(function(text) {
                     var div = document.createElement('div');
                     var textStr = String(text).trim();
-                    var imgUrl = "";
+                    var isVideo = false;
+                    var mediaUrl = "";
 
-                    if (textStr.indexOf('http') === 0) {
-                        imgUrl = textStr;
-                        if (imgUrl.includes("drive.google.com/file/d/")) {
-                            var fileId = imgUrl.split("/file/d/")[1].split("/")[0];
-                            imgUrl = "https://lh3.googleusercontent.com/d/" + fileId;
-                        }
+                    // DETEKSI APAKAH INI VIDEO ATAU FOTO
+                    if (textStr.toUpperCase().indexOf('VIDEO:') === 0) {
+                        isVideo = true;
+                        mediaUrl = textStr.substring(6).trim(); // Buang kata "VIDEO:" dan ambil linknya
+                    } else if (textStr.indexOf('http') === 0) {
+                        mediaUrl = textStr;
                     }
 
-                    if (imgUrl !== "") {
+                    if (mediaUrl !== "") {
                         document.getElementById('info-header-title').style.display = 'none'; 
                         div.style.width = '100%'; div.style.height = '100%';
                         div.style.display = 'flex'; div.style.justifyContent = 'center'; div.style.alignItems = 'center';
-                        div.innerHTML = '<img class="poster-img" src="' + imgUrl + '" style="max-width: 100%; max-height: 55vh; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); object-fit: contain;">';
+                        
+                        var fileId = "";
+                        if (mediaUrl.includes("drive.google.com/file/d/")) {
+                            fileId = mediaUrl.split("/file/d/")[1].split("/")[0];
+                        }
+
+                        if (isVideo && fileId !== "") {
+                            // JIKA VIDEO (Gunakan tag HTML5 Video Muted agar otomatis jalan)
+                            var videoSrc = "https://drive.google.com/uc?export=download&id=" + fileId;
+                            div.innerHTML = '<video class="video-content" autoplay loop muted style="max-width: 100%; max-height: 60vh; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); object-fit: contain;"><source src="' + videoSrc + '" type="video/mp4"></video>';
+                        } else if (!isVideo && fileId !== "") {
+                            // JIKA FOTO/POSTER (Tetap menggunakan tag IMG)
+                            var imgSrc = "https://lh3.googleusercontent.com/d/" + fileId;
+                            div.innerHTML = '<img class="poster-img" src="' + imgSrc + '" style="max-width: 100%; max-height: 55vh; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); object-fit: contain;">';
+                        } else {
+                            // Jika format link tidak dikenali
+                            div.innerHTML = '<div class="info-card">Media gagal dimuat: Link tidak valid.</div>';
+                        }
                     } else {
+                        // JIKA TEKS BIASA
                         document.getElementById('info-header-title').style.display = 'block'; 
                         div.className = 'info-card'; div.innerText = textStr;
                     }

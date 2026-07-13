@@ -314,7 +314,7 @@
                 prayerNameEl.innerText = sholatName.toUpperCase();
                 
                 if(prayerTimes && prayerTimes["Ashar"]) {
-                    debugEl.innerText = "Jadwal Adzan Kemenag Hari Ini | Dzuhur: " + prayerTimes["Dzuhur"] + " | Ashar: " + prayerTimes["Ashar"] + " | Maghrib: " + prayerTimes["Maghrib"];
+                    debugEl.innerText = "Jadwal API Kemenag Hari Ini | Dzuhur: " + prayerTimes["Dzuhur"] + " | Ashar: " + prayerTimes["Ashar"] + " | Maghrib: " + prayerTimes["Maghrib"];
                     debugEl.style.color = "#48d1cc"; 
                 } else {
                     debugEl.innerText = "⚠️ API Gagal Ditarik (Cek Koneksi Internet / Diblokir Jaringan)";
@@ -416,18 +416,48 @@
                     tempPages.push([{ "empty": true }]);
                 } else {
                     var currentPageData = [];
-                    var safeMargin = 15;
-                    var dummyTr = document.createElement('tr'); // Dummy untuk ukur tinggi
+                    var safeMargin = 25; // Margin batas aman agar tidak menyentuh running text
                     
-                    // Kita kumpulkan data halamannya (Logika pagination tabel)
+                    // Kosongkan tbody untuk mulai simulasi pengukuran
+                    tbody.innerHTML = '';
+                    
                     for (var i = 0; i < scheduleData.length; i++) {
-                        currentPageData.push(scheduleData[i]);
-                        if (currentPageData.length >= 8) { // Maksimal baris amannya kita set statis
-                            tempPages.push(currentPageData);
-                            currentPageData = [];
+                        var row = scheduleData[i];
+                        currentPageData.push(row);
+                        
+                        // Buat elemen tr virtual untuk mengukur tingginya
+                        var tr = document.createElement('tr');
+                        var namaSiswa = bersihkanNamaSiswa(row.siswa);
+                        tr.innerHTML = 
+                            '<td class="col-sesi">' + (row.sesi || '-') + '</td>' +
+                            '<td class="col-guru">' + (row.guru || '-') + '</td>' +
+                            '<td>' + (row.ruang || '-') + '</td>' +
+                            '<td class="col-mapel">' + (row.mapel || '-') + '</td>' +
+                            '<td class="col-siswa">' + namaSiswa + '</td>';
+                        
+                        tbody.appendChild(tr);
+                        
+                        // CEK DINAMIS: Jika tabel sudah kelebihan batas tinggi penampungnya
+                        if (table.offsetHeight > (container.clientHeight - safeMargin)) {
+                            // Hapus elemen terakhir dari layar ukur
+                            tbody.removeChild(tr);
+                            // Keluarkan data terakhir karena tidak muat
+                            currentPageData.pop();
+                            
+                            // Simpan baris-baris yang muat sebagai 1 halaman penuh
+                            if (currentPageData.length > 0) tempPages.push(currentPageData);
+                            
+                            // Mulai halaman baru dengan data yang tidak muat tadi
+                            currentPageData = [row];
+                            tbody.innerHTML = ''; // Bersihkan layar ukur
+                            tbody.appendChild(tr); // Masukkan lagi untuk diukur di halaman baru
                         }
                     }
+                    // Masukkan sisa data ke halaman terakhir
                     if (currentPageData.length > 0) tempPages.push(currentPageData);
+                    
+                    // Bersihkan kembali tbody, karena akan dirender ulang oleh fungsi renderPage()
+                    tbody.innerHTML = '';
                 }
             } else {
                 document.querySelector('.table-container').style.display = 'none';
@@ -441,16 +471,14 @@
 
             // KUNCI ANTI-RESTART VIDEO
             if (isModeChanged) {
-                // Jika ganti mode (dari Jadwal ke Info atau sebaliknya), wajar di-render ulang
                 currentPageIndex = 0;
                 renderPage();
                 startPagination();
             } else if (currentMode === "JADWAL") {
-                // Jika sedang di layar Jadwal, aman untuk di-refresh agar namanya terupdate
+                if (currentPageIndex >= pages.length) currentPageIndex = 0;
                 renderPage();
                 startPagination();
             }
-            // Jika currentMode == "INFO" dan tidak berubah, kita DIAMKAN saja layarnya agar video terus berputar!
         }
 
         function renderPage() {
@@ -508,7 +536,6 @@
                         
                         if (isVideo) {
                             if (mediaUrl.includes("drive.google.com")) {
-                                // VIDEO DARI GOOGLE DRIVE
                                 var fileId = "";
                                 if (mediaUrl.includes("/file/d/")) {
                                     fileId = mediaUrl.split("/file/d/")[1].split("/")[0];
@@ -516,11 +543,9 @@
                                 var iframeSrc = "https://drive.google.com/file/d/" + fileId + "/preview?autoplay=1&mute=1";
                                 div.innerHTML = '<iframe class="video-content" src="' + iframeSrc + '" allow="autoplay" style="width: 80%; height: 65vh; border: none; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.15);"></iframe>';
                             } else {
-                                // VIDEO OFFLINE / LOCAL (Bukan dari GDrive)
                                 div.innerHTML = '<video class="video-content" autoplay loop muted style="max-width: 100%; max-height: 60vh; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); object-fit: contain;"><source src="' + mediaUrl + '" type="video/mp4"></video>';
                             }
                         } else {
-                            // JIKA FOTO/POSTER
                             var fileIdPhoto = "";
                             if (mediaUrl.includes("drive.google.com/file/d/")) {
                                 fileIdPhoto = mediaUrl.split("/file/d/")[1].split("/")[0];
@@ -529,7 +554,6 @@
                             div.innerHTML = '<img class="poster-img" src="' + mediaUrl + '" style="max-width: 100%; max-height: 55vh; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); object-fit: contain;">';
                         }
                     } else {
-                        // JIKA TEKS BIASA
                         document.getElementById('info-header-title').style.display = 'block'; 
                         div.className = 'info-card'; div.innerText = textStr;
                     }

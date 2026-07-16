@@ -3,351 +3,272 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jadwal Digital TV - BP Pesona Khayangan</title>
+    <title>Jadwal Digital TV - Bintang Pelajar</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800;900&display=swap');
-
-        /* --- TEMA WARNA BINTANG PELAJAR --- */
+        /* --- TEMA WARNA & VARIABEL --- */
         :root {
-            --bg-utama: #0a3d6b;     /* Biru Dongker */
-            --kuning-bp: #ffd600;    /* Kuning Emas */
-            --tosca-bp: #008b8b;     /* Hijau Tosca */
-            --tosca-gelap: #004d4d;  /* Hijau Tosca Gelap untuk Gradasi */
-            --oranye-bp: #f97316;    /* Oranye Sesi */
-            --merah-bp: #b91c1c;     /* Merah Jam */
-            --bintang: #f59e0b;      /* Oranye Gelap untuk Bintang */
-            --putih: #ffffff;
+            --primary: #1e3a8a;       
+            --primary-light: #2a4365; 
+            --secondary: #48d1cc;     
+            --bg-gradient-1: #f0fdfa; 
+            --bg-gradient-2: #e2e8f0; 
+            --text-dark: #1e293b;
+            --text-light: #64748b;
+            --danger: #ef4444;        
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
-
+        * { box-sizing: border-box; }
         body {
-            background-color: var(--bg-utama);
-            color: #333;
+            background: linear-gradient(135deg, var(--bg-gradient-1), var(--bg-gradient-2));
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 15px 25px; 
             height: 100vh;
             display: flex;
             flex-direction: column;
             overflow: hidden;
         }
 
-        /* --- 1. HEADER (LENGKUNGAN KUNING & PUTIH) --- */
-        .top-bar {
+        /* --- HEADER CARD --- */
+        .header {
             display: flex;
-            height: 100px;
-            width: 100%;
-            background-color: var(--putih); /* Latar belakang putih sejajar sampai ujung */
-            z-index: 10;
-            box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
-        }
-
-        .header-yellow {
-            flex: 1;
-            background-color: var(--kuning-bp);
-            display: flex;
+            align-items: center;
             justify-content: space-between;
-            align-items: center;
-            padding: 0 50px;
-            /* Efek lengkungan besar di kanan bawah menimpa warna putih */
-            border-radius: 0 0 60px 0; 
-            box-shadow: 8px 0px 15px rgba(0,0,0,0.15);
-            z-index: 2;
+            background: #ffffff;
+            padding: 10px 30px;
+            border-radius: 15px; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05); 
+            margin-bottom: 15px;
+            border-left: 8px solid var(--secondary); 
         }
 
-        .header-title { font-size: 32px; font-weight: 900; color: var(--bg-utama); letter-spacing: 0.5px; }
-        
-        .header-date-container { text-align: right; }
-        #clock { font-size: 28px; font-weight: 900; color: var(--merah-bp); line-height: 1.2;}
+        .logo-container { width: 130px; cursor: pointer; transition: transform 0.2s; }
+        .logo-container:active { transform: scale(0.95); }
+        .logo-container img { width: 100%; height: auto; }
 
-        .logo-box {
-            width: 250px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1;
-            background-color: transparent; /* Menyatu dengan top-bar putih */
-            cursor: pointer;
+        .title-wrapper { text-align: right; }
+        .header h1 {
+            font-size: 26px;
+            margin: 0;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            font-weight: 800;
         }
-        .logo-box img { max-height: 75px; transition: transform 0.2s; }
-        .logo-box img:active { transform: scale(0.95); }
+        #clock {
+            font-size: 20px;
+            color: var(--danger);
+            font-weight: 700;
+            margin-top: 5px;
+            letter-spacing: 1px;
+        }
+        #page-indicator {
+            color: var(--text-light);
+            font-size: 15px;
+            font-weight: bold;
+            margin-top: 4px;
+        }
 
-        /* --- 2. MAIN LAYOUT (TABEL & SIDEBAR) --- */
-        .main-container {
+        /* --- JADWAL TABEL CONTAINER --- */
+        .table-container {
+            flex-grow: 1;
+            background: #ffffff;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08); 
+            overflow: hidden; 
             display: flex;
-            flex: 1;
-            width: 100%;
+            flex-direction: column;
+            margin-bottom: 15px;
+        }
+
+        table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+        th {
+            background: linear-gradient(90deg, var(--primary), var(--primary-light));
+            color: #ffffff; font-size: 20px; padding: 14px 10px;
+            text-transform: uppercase; border-bottom: 4px solid var(--secondary); 
+        }
+        td {
+            padding: 10px; font-size: 22px; text-align: center;
+            vertical-align: middle; color: var(--text-dark); border-bottom: 1px solid #f1f5f9;
+        }
+        tbody tr:nth-child(even) { background-color: #f8fafc; }
+
+        .col-siswa {
+            text-align: left; font-size: 21px; line-height: 1.4; font-weight: 600; 
+            word-wrap: break-word; overflow-wrap: break-word;
+        }
+        .col-sesi { font-size: 28px; font-weight: 900; color: var(--danger); }
+        .col-guru { font-weight: 800; color: var(--primary); }
+        .col-mapel { font-weight: bold; color: var(--text-light); }
+
+        /* --- INFO PENGUMUMAN WADAH --- */
+        #info-container {
+            flex-grow: 1;
+            background: #ffffff;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            padding: 30px;
+            display: none; 
+            flex-direction: column;
+            align-items: center;
+            justify-content: center; 
+            border-left: 8px solid var(--danger);
+            margin-bottom: 15px;
             overflow: hidden;
         }
-
-        /* KIRI: WADAH TABEL */
-        .left-content {
-            flex: 1;
-            padding: 25px 40px;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden; 
-        }
-
-        table { width: 100%; border-collapse: separate; border-spacing: 0 10px; }
-        
-        /* HEADER TABEL DENGAN EFEK TERPISAH */
-        thead th {
-            background-color: var(--tosca-bp);
-            color: white; 
-            padding: 18px 15px; 
-            font-size: 20px; 
+        .info-title {
+            font-size: 32px;
+            color: var(--primary);
             font-weight: 800;
-            text-transform: uppercase; 
-            letter-spacing: 1px;
-            /* Garis pemisah antar kolom menggunakan warna background utama */
-            border-right: 4px solid var(--bg-utama); 
+            margin-bottom: 25px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
         }
-        thead th:first-child { border-radius: 12px 0 0 12px; }
-        thead th:last-child { border-radius: 0 12px 12px 0; border-right: none; }
-        
-        tbody tr {
-            background: #ffffff;
-            box-shadow: 0 6px 10px rgba(0,0,0,0.15);
+        .info-card {
+            background: #f8fafc;
+            border-left: 6px solid var(--secondary);
+            padding: 20px 35px;
             border-radius: 10px;
-        }
-
-        tbody td {
-            padding: 12px 20px;
-            vertical-align: middle;
+            font-size: 26px;
+            color: var(--text-dark);
+            font-weight: 600;
+            width: 95%;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.02);
             text-align: center;
         }
-        tbody td:first-child { border-radius: 10px 0 0 10px; }
-        tbody td:last-child { border-radius: 0 10px 10px 0; }
 
-        /* --- DESAIN BADGE DALAM TABEL --- */
-        .badge-sesi {
-            background-color: var(--oranye-bp); color: white;
-            font-size: 26px; font-weight: 900; padding: 10px 20px;
-            border-radius: 8px; display: inline-block;
-        }
-        .badge-ruang {
-            background-color: var(--kuning-bp); color: #000;
-            font-size: 22px; font-weight: 900; padding: 8px 25px;
-            border-radius: 8px; display: inline-block;
-        }
-        .guru-name { font-size: 22px; font-weight: 800; color: var(--bg-utama); margin-bottom: 5px; }
-        .badge-mapel {
-            background-color: var(--tosca-bp); color: white; font-size: 14px;
-            font-weight: 700; padding: 4px 10px; border-radius: 6px; display: inline-block;
-        }
-        .siswa-list { text-align: left !important; font-size: 18px; font-weight: 600; color: #334155; line-height: 1.5; }
-        .empty-state { text-align: center; padding: 50px; font-size: 24px; font-weight: 700; color: white; background: transparent !important; box-shadow: none !important;}
-
-        /* --- KANAN: SIDEBAR GRADASI TOSCA & HADITS BINTANG --- */
-        .right-sidebar {
-            width: 350px;
-            /* Efek Gradasi pada Sidebar Kanan */
-            background: linear-gradient(135deg, var(--tosca-bp) 0%, var(--tosca-gelap) 100%);
-            border-radius: 40px 0 0 0;
-            margin-top: -25px; /* Menarik sidebar agar sembunyi di bawah lengkungan header */
-            padding: 50px 30px 20px 30px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            z-index: 0;
-            box-shadow: -5px 0 20px rgba(0,0,0,0.25);
-            position: relative;
-        }
-
-        .hadits-sidebar-box {
-            background-color: var(--kuning-bp);
-            border-radius: 20px; 
-            padding: 30px 20px;
-            text-align: center; 
-            width: 100%;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-            position: relative;
-            overflow: hidden; /* Penting: Untuk memotong bintang raksasa agar tidak keluar kotak */
-        }
-
-        /* Bintang Raksasa di Sudut Kanan Bawah */
-        .big-star-bg {
-            position: absolute;
-            bottom: -35px;
-            right: -30px;
-            width: 140px;
-            height: 140px;
-            opacity: 0.9;
-            transform: rotate(15deg);
-            z-index: 1;
-        }
-
-        .hadits-sidebar-title { 
-            font-size: 22px; 
-            font-weight: 900; 
-            color: var(--bg-utama); 
-            margin-bottom: 20px; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center;
-            gap: 8px;
-            position: relative;
-            z-index: 2; /* Agar teks berada di atas bintang raksasa */
-        }
-        
-        /* Ikon Bintang Kecil di Kanan Kiri Judul */
-        .title-star { width: 20px; height: 20px; }
-
-        .hadits-sidebar-text { 
-            font-size: 15px; 
-            font-weight: 700; 
-            color: #1e293b; 
-            font-style: italic; 
-            line-height: 1.6; 
-            position: relative;
-            z-index: 2; /* Agar teks berada di atas bintang raksasa */
-        }
-
-        #page-indicator {
-            margin-top: auto; color: white; font-weight: 700; font-size: 18px;
-            background: rgba(0,0,0,0.2); padding: 8px 25px; border-radius: 20px;
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-
-        /* --- 3. WADAH INFO & VIDEO (JS ASLI) --- */
-        #info-container {
-            flex-grow: 1; background: #ffffff; border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.08); padding: 30px;
-            display: none; flex-direction: column; align-items: center;
-            justify-content: center; border-left: 8px solid var(--oranye-bp);
-            margin: 15px 40px; overflow: hidden;
-        }
-        .info-title { font-size: 32px; color: var(--bg-utama); font-weight: 800; margin-bottom: 25px; }
-        .info-card {
-            background: #f8fafc; border-left: 6px solid var(--tosca-bp);
-            padding: 20px 35px; border-radius: 10px; font-size: 26px;
-            color: #1e293b; font-weight: 600; width: 95%; margin-bottom: 15px; text-align: center;
-        }
-
-        /* --- 4. LAYAR SHOLAT (JS ASLI) --- */
+        /* --- LAYAR PENGINGAT SHOLAT --- */
         #prayer-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(10, 61, 107, 0.98); /* Biru Dongker Transparan */
-            z-index: 9999; display: none; flex-direction: column;
-            justify-content: center; align-items: center; color: white;
-            text-align: center; backdrop-filter: blur(5px); cursor: pointer;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(30, 58, 138, 0.98); 
+            z-index: 9999;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            text-align: center;
+            backdrop-filter: blur(5px);
+            cursor: pointer;
         }
-        #prayer-overlay h1 { font-size: 80px; color: var(--kuning-bp); margin: 0 0 10px 0; letter-spacing: 3px; }
-        #prayer-overlay h2 { font-size: 50px; margin: 10px 0 20px 0; }
-        #prayer-overlay p { font-size: 30px; color: #e2e8f0; margin: 5px 0; }
-        .close-hint { font-size: 16px; color: #94a3b8; margin-top: 30px; font-style: italic; }
-        #api-debug-info { font-size: 18px; margin-top: 40px; padding: 10px 20px; background: rgba(0,0,0,0.3); border-radius: 8px; font-family: monospace; }
+        #prayer-overlay h1 {
+            font-size: 80px;
+            color: #fbbf24; 
+            margin: 0 0 10px 0;
+            letter-spacing: 3px;
+        }
+        #prayer-overlay h2 {
+            font-size: 50px;
+            margin: 10px 0 20px 0;
+        }
+        #prayer-overlay p {
+            font-size: 30px;
+            color: #e2e8f0;
+            margin: 5px 0;
+        }
+        #prayer-overlay .close-hint {
+            font-size: 16px;
+            color: #94a3b8;
+            margin-top: 30px;
+            font-style: italic;
+        }
+        #api-debug-info {
+            font-size: 18px;
+            margin-top: 40px;
+            padding: 10px 20px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 8px;
+            font-family: monospace;
+        }
 
-        /* --- 5. RUNNING TEXT (FOOTER) --- */
+        /* --- ANIMASI FADE IN --- */
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        tbody tr, .info-card, .poster-img, .video-content, #prayer-overlay { animation: fadeUp 0.6s ease-out forwards; }
+
+        /* --- RUNNING TEXT --- */
         .ticker-wrap {
-            width: 100%; background-color: var(--kuning-bp);
+            width: 100%; background-color: var(--primary); border-radius: 10px;
+            overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
             position: relative; height: 50px; display: flex; align-items: center;
-            border-left: 5px solid var(--tosca-bp); border-right: 5px solid var(--tosca-bp);
+            border-left: 5px solid var(--secondary); border-right: 5px solid var(--secondary);
         }
         .ticker-content {
-            display: inline-block; white-space: nowrap; color: var(--bg-utama); font-size: 22px;
-            font-weight: 900; padding-left: 100%; animation: ticker-anim 40s linear infinite;
+            display: inline-block; white-space: nowrap; color: #ffffff; font-size: 22px;
+            font-weight: bold; padding-left: 100%; animation: ticker-anim 50s linear infinite;
         }
         @keyframes ticker-anim { 0% { transform: translateX(0); } 100% { transform: translateX(-100%); } }
-
-        /* ANIMASI TABEL */
-        @keyframes fadeUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
-        tbody tr, .info-card, .poster-img, .video-content, #prayer-overlay { animation: fadeUp 0.6s ease-out forwards; }
     </style>
 </head>
 <body onclick="playMusic()">
 
-    <!-- MUSIK MUROTTAL (ASLI) -->
+    <!-- MUSIK MUROTTAL -->
     <audio id="bg-music" loop autoplay>
         <source src="https://server7.mp3quran.net/basit/002.mp3" type="audio/mpeg">
     </audio>
 
-    <!-- LAYAR OVERLAY SHOLAT (ASLI) -->
+    <!-- LAYAR OVERLAY SHOLAT -->
     <div id="prayer-overlay" onclick="hidePrayerOverlay()">
         <h1>WAKTU SHOLAT</h1>
-        <h2>Saat ini memasuki waktu sholat <span id="prayer-name" style="color: var(--kuning-bp);">...</span></h2>
+        <h2>Saat ini memasuki waktu sholat <span id="prayer-name" style="color: var(--secondary);">...</span></h2>
         <p>Untuk Wilayah Kota Depok dan Sekitarnya</p>
         <p style="font-size: 24px; margin-top: 15px;">Mari persiapkan diri untuk menunaikan ibadah sholat.</p>
         <div id="api-debug-info">Memeriksa Status API Kemenag...</div>
         <p class="close-hint">(Klik di mana saja pada layar untuk menutup pesan ini)</p>
     </div>
 
-    <!-- 1. HEADER & LOGO (DENGAN LENGKUNGAN KUNING) -->
-    <div class="top-bar">
-        <div class="header-yellow">
-            <div class="header-title">Bintang Pelajar Pesona Khayangan Depok</div>
-            <div class="header-date-container">
-                <div id="clock">Memuat Waktu...</div>
-            </div>
-        </div>
-        <div class="logo-box" onclick="showPrayerOverlay('SIMULASI')" title="Klik untuk Tes Layar Sholat">
+    <!-- HEADER & LOGO -->
+    <div class="header">
+        <div class="logo-container" onclick="showPrayerOverlay('SIMULASI')" title="Klik untuk Tes Layar Sholat">
             <img src="https://www.bintangpelajar.com/wp-content/uploads/2023/05/LOGO_BP_rev-2023.webp" alt="Logo BP">
         </div>
-    </div>
-
-    <!-- 2. MAIN CONTAINER -->
-    <div class="main-container">
-        
-        <!-- WADAH 1: TABEL JADWAL KIRI -->
-        <div class="left-content" id="tabel-wadah">
-            <table id="schedule-table">
-                <thead>
-                    <tr>
-                        <th style="width: 15%; text-align: center;">SESI</th>
-                        <th style="width: 15%; text-align: center;">RUANG</th>
-                        <th style="width: 25%; text-align: center;">GURU & MAPEL</th>
-                        <th style="width: 45%; text-align: left; padding-left: 30px;">NAMA SISWA</th>
-                    </tr>
-                </thead>
-                <tbody id="table-body">
-                    <tr><td colspan="4" class="empty-state">Menghubungkan ke Database Bintang Pelajar...</td></tr>
-                </tbody>
-            </table>
-        </div>
-
-        <!-- WADAH 2: INFO PENGUMUMAN (ASLI) -->
-        <div id="info-container">
-            <div class="info-title" id="info-header-title">📢 INFO & PENGUMUMAN TERBARU</div>
-            <div id="info-list" style="width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center;"></div>
-        </div>
-
-        <!-- AREA KANAN: SIDEBAR GRADASI TOSCA -->
-        <div class="right-sidebar">
-            <div class="hadits-sidebar-box">
-                
-                <!-- Bintang Raksasa (Background Vector) -->
-                <svg class="big-star-bg" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" fill="var(--bintang)"/>
-                </svg>
-
-                <div class="hadits-sidebar-title">
-                    <!-- Bintang Kecil Kiri -->
-                    <svg class="title-star" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M12 2L14.5 9.5L22 12L14.5 14.5L12 22L9.5 14.5L2 12L9.5 9.5L12 2Z" stroke="var(--bg-utama)" stroke-width="2" fill="none" stroke-linejoin="round"/>
-                    </svg>
-                    Hadits of The Day
-                    <!-- Bintang Kecil Kanan -->
-                    <svg class="title-star" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M12 2L14.5 9.5L22 12L14.5 14.5L12 22L9.5 14.5L2 12L9.5 9.5L12 2Z" stroke="var(--bg-utama)" stroke-width="2" fill="none" stroke-linejoin="round"/>
-                    </svg>
-                </div>
-                
-                <div class="hadits-sidebar-text" id="sidebar-hadits">Memuat Hadits...</div>
-            </div>
-            
-            <div id="page-indicator">Hal - / -</div>
+        <div class="title-wrapper">
+            <h1>Jadwal Kegiatan Pembelajaran</h1>
+            <div id="clock">Memuat Waktu...</div>
+            <div id="page-indicator">Halaman - dari -</div>
         </div>
     </div>
 
-    <!-- 3. RUNNING TEXT BAWAH -->
+    <!-- WADAH 1: TABEL JADWAL -->
+    <div class="table-container">
+        <table id="schedule-table">
+            <thead>
+                <tr>
+                    <th width="12%">SESI</th>
+                    <th width="22%">GURU</th>
+                    <th width="8%">RUANG</th>
+                    <th width="18%">MAPEL/KELAS</th>
+                    <th width="40%">NAMA SISWA</th>
+                </tr>
+            </thead>
+            <tbody id="table-body">
+                <tr>
+                    <td colspan="5" style="padding: 50px; font-style: italic; color: #64748b;">
+                        Menghubungkan ke Database Bintang Pelajar...
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- WADAH 2: INFO PENGUMUMAN & INFOGRAFIS/VIDEO -->
+    <div id="info-container">
+        <div class="info-title" id="info-header-title">📢 INFO & PENGUMUMAN TERBARU</div>
+        <div id="info-list" style="width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center;"></div>
+    </div>
+
+    <!-- RUNNING TEXT -->
     <div class="ticker-wrap">
         <div class="ticker-content">
-            INFO TV ✦ BINTANG PELAJAR: Prestasi Tinggi & Akhlak Terpuji! ✦ Dilengkapi pendampingan ibadah & akhlak Islami ✦ Tersedia pilihan eksklusif 1 kelas 5 siswa ✦ Mari raih cita-citamu bersama kami! ✦
+            ✦ BINTANG PELAJAR: Prestasi Tinggi & Akhlak Terpuji! ✦ Dilengkapi pendampingan ibadah & akhlak Islami ✦ Tersedia pilihan eksklusif 1 kelas 5 siswa (lingkungan belajar putra-putri terpisah) ✦ Program SMA/Alumni: Sukses SNBP, Tembus 10 PTN Favorit, PROSUS UI-ITB, hingga PROSUS Kedokteran! ✦ Program SMP: Jago Bidang Studi, Tembus MAN Unggulan & SMA Favorit ✦ Program SD: Persiapan TKA & Kelas Internasional (Cambridge) ✦ Mari raih cita-citamu bersama kami! ✦
         </div>
     </div>
 
-    <!-- =======================================================
-         LOGIKA MESIN ASLI (TIDAK ADA YANG DIUBAH KECUALI RENDER HTML) 
-         ======================================================= -->
+    <!-- LOGIKA JAVASCRIPT -->
     <script>
         var API_URL = "https://script.google.com/macros/s/AKfycbywopky_VUnmvfktok0xRaXDpQrzjuOMo7VjfAselVjzZI7G6FBwijJJh8G9LZWUCqqdw/exec"; 
         
@@ -364,21 +285,6 @@
         var prayerTimes = {};
         var prayerTimeout = null;
 
-        const kumpulanHadits = [
-            "\"Barangsiapa menempuh suatu jalan untuk menuntut ilmu, maka Allah akan mudahkan baginya jalan menuju surga.\" (HR. Muslim)",
-            "\"Amalan yang paling dicintai oleh Allah adalah sholat pada waktunya.\" (HR. Bukhari & Muslim)",
-            "\"Senyummu di hadapan saudaramu (sesama muslim) adalah bernilai sedekah bagimu.\" (HR. Tirmidzi)",
-            "\"Sebaik-baik manusia adalah yang paling bermanfaat bagi manusia lainnya.\" (HR. Ahmad)",
-            "\"Sesungguhnya Allah tidak melihat pada rupa dan hartamu, tetapi Allah melihat pada hati dan amalanmu.\" (HR. Muslim)"
-        ];
-
-        function pasangHadits() {
-            const now = new Date();
-            const dayOfYear = Math.floor((now - new Date(now.getFullYear(), 0, 0)) / (1000 * 60 * 60 * 24));
-            document.getElementById('sidebar-hadits').innerText = kumpulanHadits[dayOfYear % kumpulanHadits.length];
-        }
-        pasangHadits();
-
         function fetchPrayerTimes() {
             var xhr = new XMLHttpRequest();
             xhr.open("GET", "https://api.aladhan.com/v1/timingsByCity?city=Depok&country=Indonesia&method=20", true);
@@ -387,8 +293,11 @@
                     try {
                         var res = JSON.parse(xhr.responseText);
                         prayerTimes = {
-                            "Subuh": res.data.timings.Fajr, "Dzuhur": res.data.timings.Dhuhr,
-                            "Ashar": res.data.timings.Asr, "Maghrib": res.data.timings.Maghrib, "Isya": res.data.timings.Isha
+                            "Subuh": res.data.timings.Fajr,
+                            "Dzuhur": res.data.timings.Dhuhr,
+                            "Ashar": res.data.timings.Asr,
+                            "Maghrib": res.data.timings.Maghrib,
+                            "Isya": res.data.timings.Isha
                         };
                     } catch(e) {}
                 }
@@ -403,6 +312,7 @@
 
             if(prayerNameEl && overlayEl) {
                 prayerNameEl.innerText = sholatName.toUpperCase();
+                
                 if(prayerTimes && prayerTimes["Ashar"]) {
                     debugEl.innerText = "Jadwal API Kemenag Hari Ini | Dzuhur: " + prayerTimes["Dzuhur"] + " | Ashar: " + prayerTimes["Ashar"] + " | Maghrib: " + prayerTimes["Maghrib"];
                     debugEl.style.color = "#48d1cc"; 
@@ -410,6 +320,7 @@
                     debugEl.innerText = "⚠️ API Gagal Ditarik (Cek Koneksi Internet / Diblokir Jaringan)";
                     debugEl.style.color = "#ef4444"; 
                 }
+
                 overlayEl.style.display = 'flex';
             }
             
@@ -423,15 +334,23 @@
         function hidePrayerOverlay() {
             var overlayEl = document.getElementById('prayer-overlay');
             if(overlayEl) overlayEl.style.display = 'none';
+            
             var music = document.getElementById("bg-music");
-            if (music && music.paused) { var playPromise = music.play(); if(playPromise !== undefined) playPromise.catch(function(e){}); }
+            if (music && music.paused) {
+                var playPromise = music.play();
+                if(playPromise !== undefined) playPromise.catch(function(e){});
+            }
         }
 
         function playMusic() {
             var music = document.getElementById("bg-music");
             var overlayEl = document.getElementById('prayer-overlay');
             if (overlayEl && overlayEl.style.display === 'flex') return;
-            if (music && music.paused) { var playPromise = music.play(); if(playPromise !== undefined) playPromise.catch(function(e){}); }
+            
+            if (music && music.paused) {
+                var playPromise = music.play();
+                if(playPromise !== undefined) playPromise.catch(function(e){});
+            }
         }
 
         function fetchData() {
@@ -482,73 +401,90 @@
 
             var isModeChanged = (currentMode !== newMode);
             currentMode = newMode;
+            
             var tempPages = [];
 
             if (currentMode === "JADWAL") {
                 document.getElementById('info-container').style.display = 'none';
-                document.getElementById('tabel-wadah').style.display = 'flex';
+                document.querySelector('.table-container').style.display = 'flex';
                 
                 var tbody = document.getElementById('table-body');
-                var container = document.getElementById('tabel-wadah'); 
+                var container = document.querySelector('.table-container');
                 var table = document.getElementById('schedule-table');
                 
                 if (scheduleData.length === 0) {
                     tempPages.push([{ "empty": true }]);
                 } else {
                     var currentPageData = [];
-                    var safeMargin = 40; 
+                    var safeMargin = 25; // Margin batas aman agar tidak menyentuh running text
                     
+                    // Kosongkan tbody untuk mulai simulasi pengukuran
                     tbody.innerHTML = '';
                     
                     for (var i = 0; i < scheduleData.length; i++) {
                         var row = scheduleData[i];
                         currentPageData.push(row);
                         
+                        // Buat elemen tr virtual untuk mengukur tingginya
                         var tr = document.createElement('tr');
                         var namaSiswa = bersihkanNamaSiswa(row.siswa);
-                        
-                        var isKomik = (row.ruang && row.ruang.toLowerCase().includes("komik")) ? "komik" : "";
-                        var styleRuang = isKomik ? "style='background-color:#f97316; color:white;'" : "";
                         tr.innerHTML = 
-                            '<td style="text-align:center;"><span class="badge-sesi">' + (row.sesi || '-') + '</span></td>' +
-                            '<td style="text-align:center;"><span class="badge-ruang" ' + styleRuang + '>' + (row.ruang || '-') + '</span></td>' +
-                            '<td style="text-align:center;"><div class="guru-name">' + (row.guru || '-') + '</div><div class="badge-mapel">' + (row.mapel || '-') + '</div></td>' +
-                            '<td class="siswa-list" style="padding-left: 30px;">' + namaSiswa + '</td>';
+                            '<td class="col-sesi">' + (row.sesi || '-') + '</td>' +
+                            '<td class="col-guru">' + (row.guru || '-') + '</td>' +
+                            '<td>' + (row.ruang || '-') + '</td>' +
+                            '<td class="col-mapel">' + (row.mapel || '-') + '</td>' +
+                            '<td class="col-siswa">' + namaSiswa + '</td>';
                         
                         tbody.appendChild(tr);
                         
+                        // CEK DINAMIS: Jika tabel sudah kelebihan batas tinggi penampungnya
                         if (table.offsetHeight > (container.clientHeight - safeMargin)) {
+                            // Hapus elemen terakhir dari layar ukur
                             tbody.removeChild(tr);
+                            // Keluarkan data terakhir karena tidak muat
                             currentPageData.pop();
+                            
+                            // Simpan baris-baris yang muat sebagai 1 halaman penuh
                             if (currentPageData.length > 0) tempPages.push(currentPageData);
+                            
+                            // Mulai halaman baru dengan data yang tidak muat tadi
                             currentPageData = [row];
-                            tbody.innerHTML = ''; 
-                            tbody.appendChild(tr); 
+                            tbody.innerHTML = ''; // Bersihkan layar ukur
+                            tbody.appendChild(tr); // Masukkan lagi untuk diukur di halaman baru
                         }
                     }
+                    // Masukkan sisa data ke halaman terakhir
                     if (currentPageData.length > 0) tempPages.push(currentPageData);
+                    
+                    // Bersihkan kembali tbody, karena akan dirender ulang oleh fungsi renderPage()
                     tbody.innerHTML = '';
                 }
             } else {
-                document.getElementById('tabel-wadah').style.display = 'none';
+                document.querySelector('.table-container').style.display = 'none';
                 document.getElementById('info-container').style.display = 'flex';
-                for (var k = 0; k < infoData.length; k++) { tempPages.push([infoData[k]]); }
+                for (var k = 0; k < infoData.length; k++) {
+                    tempPages.push([infoData[k]]);
+                }
             }
             
             pages = tempPages;
 
+            // KUNCI ANTI-RESTART VIDEO
             if (isModeChanged) {
-                currentPageIndex = 0; renderPage(); startPagination();
+                currentPageIndex = 0;
+                renderPage();
+                startPagination();
             } else if (currentMode === "JADWAL") {
                 if (currentPageIndex >= pages.length) currentPageIndex = 0;
-                renderPage(); startPagination();
+                renderPage();
+                startPagination();
             }
         }
 
         function renderPage() {
             if (pages.length === 0) return;
             var indicator = document.getElementById('page-indicator');
-            if(indicator) indicator.innerText = 'Hal ' + (currentPageIndex + 1) + ' / ' + pages.length;
+            if(indicator) indicator.innerText = 'Halaman ' + (currentPageIndex + 1) + ' dari ' + pages.length;
 
             if (currentMode === "JADWAL") {
                 var tbody = document.getElementById('table-body');
@@ -557,21 +493,20 @@
                 var pageData = pages[currentPageIndex];
                 
                 if(pageData[0] && pageData[0].empty) {
-                     tbody.innerHTML = '<tr><td colspan="4" class="empty-state">Tidak ada jadwal pada sesi ini.</td></tr>';
-                     if(indicator) indicator.innerText = 'Hal 0 / 0';
+                     tbody.innerHTML = '<tr><td colspan="5" style="padding: 50px;">Tidak ada jadwal pada sesi ini.</td></tr>';
+                     if(indicator) indicator.innerText = 'Halaman 0 dari 0';
                      return;
                 }
 
                 pageData.forEach(function(row) {
                     var tr = document.createElement('tr');
                     var namaSiswa = bersihkanNamaSiswa(row.siswa);
-                    var isKomik = (row.ruang && row.ruang.toLowerCase().includes("komik")) ? "komik" : "";
-                    var styleRuang = isKomik ? "style='background-color:#f97316; color:white;'" : "";
                     tr.innerHTML = 
-                        '<td style="text-align:center;"><span class="badge-sesi">' + (row.sesi || '-') + '</span></td>' +
-                        '<td style="text-align:center;"><span class="badge-ruang" ' + styleRuang + '>' + (row.ruang || '-') + '</span></td>' +
-                        '<td style="text-align:center;"><div class="guru-name">' + (row.guru || '-') + '</div><div class="badge-mapel">' + (row.mapel || '-') + '</div></td>' +
-                        '<td class="siswa-list" style="padding-left: 30px;">' + namaSiswa + '</td>';
+                        '<td class="col-sesi">' + (row.sesi || '-') + '</td>' +
+                        '<td class="col-guru">' + (row.guru || '-') + '</td>' +
+                        '<td>' + (row.ruang || '-') + '</td>' +
+                        '<td class="col-mapel">' + (row.mapel || '-') + '</td>' +
+                        '<td class="col-siswa">' + namaSiswa + '</td>';
                     tbody.appendChild(tr);
                 });
             } else {
@@ -583,11 +518,16 @@
                 pageData.forEach(function(text) {
                     var div = document.createElement('div');
                     var textStr = String(text).trim();
-                    var isVideo = false; var mediaUrl = "";
+                    var isVideo = false;
+                    var mediaUrl = "";
 
+                    // DETEKSI APAKAH INI VIDEO ATAU FOTO
                     if (textStr.toUpperCase().indexOf('VIDEO:') === 0) {
-                        isVideo = true; mediaUrl = textStr.substring(6).trim(); 
-                    } else if (textStr.indexOf('http') === 0) { mediaUrl = textStr; }
+                        isVideo = true;
+                        mediaUrl = textStr.substring(6).trim(); 
+                    } else if (textStr.indexOf('http') === 0) {
+                        mediaUrl = textStr;
+                    }
 
                     if (mediaUrl !== "") {
                         document.getElementById('info-header-title').style.display = 'none'; 
@@ -597,7 +537,9 @@
                         if (isVideo) {
                             if (mediaUrl.includes("drive.google.com")) {
                                 var fileId = "";
-                                if (mediaUrl.includes("/file/d/")) { fileId = mediaUrl.split("/file/d/")[1].split("/")[0]; }
+                                if (mediaUrl.includes("/file/d/")) {
+                                    fileId = mediaUrl.split("/file/d/")[1].split("/")[0];
+                                }
                                 var iframeSrc = "https://drive.google.com/file/d/" + fileId + "/preview?autoplay=1&mute=1";
                                 div.innerHTML = '<iframe class="video-content" src="' + iframeSrc + '" allow="autoplay" style="width: 80%; height: 65vh; border: none; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.15);"></iframe>';
                             } else {
@@ -646,14 +588,16 @@
             var s = ("0" + now.getSeconds()).slice(-2);
 
             var clockEl = document.getElementById('clock');
-            // Penulisan waktu diubah menjadi sebaris sesuai screenshot baru
-            if(clockEl) clockEl.innerHTML = day + ', ' + date + ' ' + month + ' ' + year + '<br>' + h + ':' + m + ':' + s + ' WIB';
+            if(clockEl) clockEl.innerText = day + ', ' + date + ' ' + month + ' ' + year + ' | ' + h + ':' + m + ':' + s + ' WIB';
             
             if (s === "00") {
-                calculateDynamicPages(); 
+                calculateDynamicPages();
+                
                 var currentHM = h + ':' + m;
                 for (var sholat in prayerTimes) {
-                    if (prayerTimes[sholat] === currentHM) showPrayerOverlay(sholat);
+                    if (prayerTimes[sholat] === currentHM) {
+                        showPrayerOverlay(sholat);
+                    }
                 }
             }
         }

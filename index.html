@@ -12,8 +12,10 @@
             --bg-utama: #0a3d6b;     /* Biru Dongker */
             --kuning-bp: #ffd600;    /* Kuning Emas */
             --tosca-bp: #008b8b;     /* Hijau Tosca */
+            --tosca-gelap: #004d4d;  /* Hijau Tosca Gelap untuk Gradasi */
             --oranye-bp: #f97316;    /* Oranye Sesi */
             --merah-bp: #b91c1c;     /* Merah Jam */
+            --bintang: #f59e0b;      /* Oranye Gelap untuk Bintang */
             --putih: #ffffff;
         }
 
@@ -28,12 +30,14 @@
             overflow: hidden;
         }
 
-        /* --- 1. HEADER (KUNING & LOGO PUTIH) --- */
+        /* --- 1. HEADER (LENGKUNGAN KUNING & PUTIH) --- */
         .top-bar {
             display: flex;
-            height: 90px;
+            height: 100px;
             width: 100%;
+            background-color: var(--putih); /* Latar belakang putih sejajar sampai ujung */
             z-index: 10;
+            box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
         }
 
         .header-yellow {
@@ -42,31 +46,28 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 0 40px;
-            border-radius: 0 0 40px 0;
-            box-shadow: 5px 5px 15px rgba(0,0,0,0.2);
+            padding: 0 50px;
+            /* Efek lengkungan besar di kanan bawah menimpa warna putih */
+            border-radius: 0 0 60px 0; 
+            box-shadow: 8px 0px 15px rgba(0,0,0,0.15);
             z-index: 2;
         }
 
-        .header-title { font-size: 30px; font-weight: 900; color: #0f172a; letter-spacing: 0.5px; }
+        .header-title { font-size: 32px; font-weight: 900; color: var(--bg-utama); letter-spacing: 0.5px; }
         
-        .header-date-container { text-align: right; margin-right: 20px; }
-        #clock { font-size: 26px; font-weight: 900; color: var(--merah-bp); line-height: 1.2;}
+        .header-date-container { text-align: right; }
+        #clock { font-size: 28px; font-weight: 900; color: var(--merah-bp); line-height: 1.2;}
 
         .logo-box {
-            width: 320px;
-            background: white;
+            width: 250px;
             display: flex;
             justify-content: center;
             align-items: center;
-            border-radius: 0 0 0 40px;
             z-index: 1;
-            margin-left: -30px;
-            padding-left: 20px;
-            box-shadow: -5px 5px 15px rgba(0,0,0,0.1);
+            background-color: transparent; /* Menyatu dengan top-bar putih */
             cursor: pointer;
         }
-        .logo-box img { max-height: 70px; transition: transform 0.2s; }
+        .logo-box img { max-height: 75px; transition: transform 0.2s; }
         .logo-box img:active { transform: scale(0.95); }
 
         /* --- 2. MAIN LAYOUT (TABEL & SIDEBAR) --- */
@@ -77,7 +78,7 @@
             overflow: hidden;
         }
 
-        /* KIRI: WADAH TABEL (DIKUNCI TINGGINYA AGAR PENGUKUR DINAMIS JS BEKERJA) */
+        /* KIRI: WADAH TABEL */
         .left-content {
             flex: 1;
             padding: 25px 40px;
@@ -87,11 +88,21 @@
         }
 
         table { width: 100%; border-collapse: separate; border-spacing: 0 10px; }
+        
+        /* HEADER TABEL DENGAN EFEK TERPISAH */
         thead th {
             background-color: var(--tosca-bp);
-            color: white; padding: 15px; font-size: 20px; font-weight: 800;
-            text-transform: uppercase; border-radius: 8px; letter-spacing: 1px;
+            color: white; 
+            padding: 18px 15px; 
+            font-size: 20px; 
+            font-weight: 800;
+            text-transform: uppercase; 
+            letter-spacing: 1px;
+            /* Garis pemisah antar kolom menggunakan warna background utama */
+            border-right: 4px solid var(--bg-utama); 
         }
+        thead th:first-child { border-radius: 12px 0 0 12px; }
+        thead th:last-child { border-radius: 0 12px 12px 0; border-right: none; }
         
         tbody tr {
             background: #ffffff;
@@ -126,32 +137,75 @@
         .siswa-list { text-align: left !important; font-size: 18px; font-weight: 600; color: #334155; line-height: 1.5; }
         .empty-state { text-align: center; padding: 50px; font-size: 24px; font-weight: 700; color: white; background: transparent !important; box-shadow: none !important;}
 
-        /* --- KANAN: SIDEBAR TOSCA & HADITS --- */
+        /* --- KANAN: SIDEBAR GRADASI TOSCA & HADITS BINTANG --- */
         .right-sidebar {
-            width: 320px;
-            background-color: var(--tosca-bp);
+            width: 350px;
+            /* Efek Gradasi pada Sidebar Kanan */
+            background: linear-gradient(135deg, var(--tosca-bp) 0%, var(--tosca-gelap) 100%);
             border-radius: 40px 0 0 0;
-            margin-top: -25px;
-            padding: 50px 25px 20px 25px;
+            margin-top: -25px; /* Menarik sidebar agar sembunyi di bawah lengkungan header */
+            padding: 50px 30px 20px 30px;
             display: flex;
             flex-direction: column;
             align-items: center;
             z-index: 0;
-            box-shadow: -5px 0 15px rgba(0,0,0,0.2);
+            box-shadow: -5px 0 20px rgba(0,0,0,0.25);
+            position: relative;
         }
 
         .hadits-sidebar-box {
             background-color: var(--kuning-bp);
-            border-radius: 20px; padding: 25px 20px;
-            text-align: center; width: 100%;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            border-radius: 20px; 
+            padding: 30px 20px;
+            text-align: center; 
+            width: 100%;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            position: relative;
+            overflow: hidden; /* Penting: Untuk memotong bintang raksasa agar tidak keluar kotak */
         }
-        .hadits-sidebar-title { font-size: 20px; font-weight: 900; color: #0f172a; margin-bottom: 15px; }
-        .hadits-sidebar-text { font-size: 14px; font-weight: 600; color: #334155; font-style: italic; line-height: 1.6; }
+
+        /* Bintang Raksasa di Sudut Kanan Bawah */
+        .big-star-bg {
+            position: absolute;
+            bottom: -35px;
+            right: -30px;
+            width: 140px;
+            height: 140px;
+            opacity: 0.9;
+            transform: rotate(15deg);
+            z-index: 1;
+        }
+
+        .hadits-sidebar-title { 
+            font-size: 22px; 
+            font-weight: 900; 
+            color: var(--bg-utama); 
+            margin-bottom: 20px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+            gap: 8px;
+            position: relative;
+            z-index: 2; /* Agar teks berada di atas bintang raksasa */
+        }
+        
+        /* Ikon Bintang Kecil di Kanan Kiri Judul */
+        .title-star { width: 20px; height: 20px; }
+
+        .hadits-sidebar-text { 
+            font-size: 15px; 
+            font-weight: 700; 
+            color: #1e293b; 
+            font-style: italic; 
+            line-height: 1.6; 
+            position: relative;
+            z-index: 2; /* Agar teks berada di atas bintang raksasa */
+        }
 
         #page-indicator {
             margin-top: auto; color: white; font-weight: 700; font-size: 18px;
-            background: rgba(0,0,0,0.2); padding: 8px 20px; border-radius: 20px;
+            background: rgba(0,0,0,0.2); padding: 8px 25px; border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.1);
         }
 
         /* --- 3. WADAH INFO & VIDEO (JS ASLI) --- */
@@ -217,7 +271,7 @@
         <p class="close-hint">(Klik di mana saja pada layar untuk menutup pesan ini)</p>
     </div>
 
-    <!-- 1. HEADER & LOGO -->
+    <!-- 1. HEADER & LOGO (DENGAN LENGKUNGAN KUNING) -->
     <div class="top-bar">
         <div class="header-yellow">
             <div class="header-title">Bintang Pelajar Pesona Khayangan Depok</div>
@@ -256,10 +310,27 @@
             <div id="info-list" style="width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center;"></div>
         </div>
 
-        <!-- AREA KANAN: SIDEBAR TOSCA -->
+        <!-- AREA KANAN: SIDEBAR GRADASI TOSCA -->
         <div class="right-sidebar">
             <div class="hadits-sidebar-box">
-                <div class="hadits-sidebar-title">✨ Hadits of The Day ✨</div>
+                
+                <!-- Bintang Raksasa (Background Vector) -->
+                <svg class="big-star-bg" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" fill="var(--bintang)"/>
+                </svg>
+
+                <div class="hadits-sidebar-title">
+                    <!-- Bintang Kecil Kiri -->
+                    <svg class="title-star" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 2L14.5 9.5L22 12L14.5 14.5L12 22L9.5 14.5L2 12L9.5 9.5L12 2Z" stroke="var(--bg-utama)" stroke-width="2" fill="none" stroke-linejoin="round"/>
+                    </svg>
+                    Hadits of The Day
+                    <!-- Bintang Kecil Kanan -->
+                    <svg class="title-star" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 2L14.5 9.5L22 12L14.5 14.5L12 22L9.5 14.5L2 12L9.5 9.5L12 2Z" stroke="var(--bg-utama)" stroke-width="2" fill="none" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                
                 <div class="hadits-sidebar-text" id="sidebar-hadits">Memuat Hadits...</div>
             </div>
             
@@ -278,7 +349,6 @@
          LOGIKA MESIN ASLI (TIDAK ADA YANG DIUBAH KECUALI RENDER HTML) 
          ======================================================= -->
     <script>
-        // URL API ASLI MILIK ANDA
         var API_URL = "https://script.google.com/macros/s/AKfycbywopky_VUnmvfktok0xRaXDpQrzjuOMo7VjfAselVjzZI7G6FBwijJJh8G9LZWUCqqdw/exec"; 
         
         var ENABLE_INFO_SLIDE = false; 
@@ -294,7 +364,6 @@
         var prayerTimes = {};
         var prayerTimeout = null;
 
-        // KUMPULAN HADITS OTOMATIS
         const kumpulanHadits = [
             "\"Barangsiapa menempuh suatu jalan untuk menuntut ilmu, maka Allah akan mudahkan baginya jalan menuju surga.\" (HR. Muslim)",
             "\"Amalan yang paling dicintai oleh Allah adalah sholat pada waktunya.\" (HR. Bukhari & Muslim)",
@@ -420,7 +489,7 @@
                 document.getElementById('tabel-wadah').style.display = 'flex';
                 
                 var tbody = document.getElementById('table-body');
-                var container = document.getElementById('tabel-wadah'); // Mengukur berdasarkan kotak kiri
+                var container = document.getElementById('tabel-wadah'); 
                 var table = document.getElementById('schedule-table');
                 
                 if (scheduleData.length === 0) {
@@ -438,7 +507,6 @@
                         var tr = document.createElement('tr');
                         var namaSiswa = bersihkanNamaSiswa(row.siswa);
                         
-                        // DESAIN RENDER JS BARU (4 KOLOM CINERE)
                         var isKomik = (row.ruang && row.ruang.toLowerCase().includes("komik")) ? "komik" : "";
                         var styleRuang = isKomik ? "style='background-color:#f97316; color:white;'" : "";
                         tr.innerHTML = 
@@ -578,10 +646,11 @@
             var s = ("0" + now.getSeconds()).slice(-2);
 
             var clockEl = document.getElementById('clock');
+            // Penulisan waktu diubah menjadi sebaris sesuai screenshot baru
             if(clockEl) clockEl.innerHTML = day + ', ' + date + ' ' + month + ' ' + year + '<br>' + h + ':' + m + ':' + s + ' WIB';
             
             if (s === "00") {
-                calculateDynamicPages(); // Hitung ulang halaman tiap menit
+                calculateDynamicPages(); 
                 var currentHM = h + ':' + m;
                 for (var sholat in prayerTimes) {
                     if (prayerTimes[sholat] === currentHM) showPrayerOverlay(sholat);
@@ -589,7 +658,6 @@
             }
         }
 
-        // INIT JALANKAN SEMUA (ASLI)
         fetchPrayerTimes();
         setTimeout(playMusic, 2000);
         setInterval(updateClock, 1000); 

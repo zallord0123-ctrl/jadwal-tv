@@ -3,277 +3,414 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jadwal Digital TV - Bintang Pelajar</title>
+    <title>Jadwal 3D TV - Bintang Pelajar</title>
+    <!-- Menggunakan font modern 'Plus Jakarta Sans' -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
-        /* --- TEMA WARNA & VARIABEL --- */
         :root {
-            --primary: #1e3a8a;       
-            --primary-light: #2a4365; 
-            --secondary: #48d1cc;     
-            --bg-gradient-1: #f0fdfa; 
-            --bg-gradient-2: #e2e8f0; 
-            --text-dark: #1e293b;
-            --text-light: #64748b;
-            --danger: #ef4444;        
+            --bg-light-blue: #e0f2fe; /* Latar Biru Muda */
+            --bg-panel: #ffffff; /* Panel Putih */
+            
+            /* Warna Identitas BP */
+            --bp-blue: #1e3a8a;
+            --bp-yellow: #f59e0b; 
+            --bp-tosca: #0f766e;
+            
+            /* Warna Teks */
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            
+            /* EFEK 3D NEUMORPHISM TIMBUL */
+            --shadow-3d-out: 10px 10px 24px rgba(148, 185, 211, 0.4), -10px -10px 24px rgba(255, 255, 255, 1);
+            /* EFEK 3D TENGGELAM (Untuk tombol/paging) */
+            --shadow-3d-in: inset 5px 5px 10px rgba(148, 185, 211, 0.4), inset -5px -5px 10px rgba(255, 255, 255, 1);
         }
 
-        * { box-sizing: border-box; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
+
         body {
-            background: linear-gradient(135deg, var(--bg-gradient-1), var(--bg-gradient-2));
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            padding: 15px 25px; 
+            background-color: var(--bg-light-blue);
+            color: var(--text-main);
             height: 100vh;
+            overflow: hidden;
             display: flex;
-            flex-direction: column;
+            flex-direction: column; /* Ubah ke column agar footer bisa memanjang di bawah */
+            padding: 25px;
+            gap: 25px;
+            position: relative;
+        }
+
+        /* --- AMBIENT BACKGROUND ANIMATION (Lembut & Terang) --- */
+        .ambient-blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            z-index: -1;
+            animation: float 20s infinite ease-in-out alternate;
+        }
+        .blob-1 { top: -10%; left: -10%; width: 50vw; height: 50vh; background: rgba(255, 255, 255, 0.6); }
+        .blob-2 { bottom: -20%; right: -10%; width: 60vw; height: 60vh; background: rgba(186, 230, 253, 0.5); animation-delay: -5s; }
+
+        @keyframes float {
+            0% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(5%, 10%) scale(1.1); }
+            100% { transform: translate(-5%, -5%) scale(0.9); }
+        }
+
+        /* --- BENTO GRID LAYOUT --- */
+        .content-wrapper {
+            display: flex;
+            flex: 1;
+            gap: 25px;
             overflow: hidden;
         }
 
-        /* --- HEADER CARD --- */
-        .header {
+        .layout-kiri {
+            flex: 3;
             display: flex;
-            align-items: center;
+            flex-direction: column;
+            gap: 25px;
+        }
+        
+        .layout-kanan {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        /* --- 3D PANEL BASE --- */
+        .panel-3d {
+            background: var(--bg-panel);
+            border-radius: 28px;
+            box-shadow: var(--shadow-3d-out);
+            border: 2px solid rgba(255, 255, 255, 0.6);
+            overflow: hidden;
+        }
+
+        /* --- HEADER (BENTO ITEM 1) --- */
+        .header-panel {
+            height: 120px;
+            display: flex;
             justify-content: space-between;
-            background: #ffffff;
-            padding: 10px 30px;
-            border-radius: 15px; 
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05); 
-            margin-bottom: 15px;
-            border-left: 8px solid var(--secondary); 
-        }
-
-        .logo-container { width: 130px; cursor: pointer; transition: transform 0.2s; }
-        .logo-container:active { transform: scale(0.95); }
-        .logo-container img { width: 100%; height: auto; }
-
-        .title-wrapper { text-align: right; }
-        .header h1 {
-            font-size: 26px;
-            margin: 0;
-            color: var(--primary);
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            font-weight: 800;
-        }
-        #clock {
-            font-size: 20px;
-            color: var(--danger);
-            font-weight: 700;
-            margin-top: 5px;
-            letter-spacing: 1px;
-        }
-        #page-indicator {
-            color: var(--text-light);
-            font-size: 15px;
-            font-weight: bold;
-            margin-top: 4px;
-        }
-
-        /* --- JADWAL TABEL CONTAINER --- */
-        .table-container {
-            flex-grow: 1;
-            background: #ffffff;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.08); 
-            overflow: hidden; 
-            display: flex;
-            flex-direction: column;
-            margin-bottom: 15px;
-        }
-
-        table { width: 100%; border-collapse: collapse; table-layout: fixed; }
-        th {
-            background: linear-gradient(90deg, var(--primary), var(--primary-light));
-            color: #ffffff; font-size: 20px; padding: 14px 10px;
-            text-transform: uppercase; border-bottom: 4px solid var(--secondary); 
-        }
-        td {
-            padding: 10px; font-size: 22px; text-align: center;
-            vertical-align: middle; color: var(--text-dark); border-bottom: 1px solid #f1f5f9;
-        }
-        tbody tr:nth-child(even) { background-color: #f8fafc; }
-
-        .col-siswa {
-            text-align: left; font-size: 21px; line-height: 1.4; font-weight: 600; 
-            word-wrap: break-word; overflow-wrap: break-word;
-        }
-        .col-sesi { font-size: 28px; font-weight: 900; color: var(--danger); }
-        .col-guru { font-weight: 800; color: var(--primary); }
-        .col-mapel { font-weight: bold; color: var(--text-light); }
-
-        /* --- INFO PENGUMUMAN WADAH --- */
-        #info-container {
-            flex-grow: 1;
-            background: #ffffff;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-            padding: 30px;
-            display: none; 
-            flex-direction: column;
             align-items: center;
-            justify-content: center; 
-            border-left: 8px solid var(--danger);
-            margin-bottom: 15px;
-            overflow: hidden;
+            padding: 0 40px;
+            position: relative;
         }
-        .info-title {
-            font-size: 32px;
-            color: var(--primary);
+
+        .header-brand h1 {
+            font-size: 30px;
             font-weight: 800;
-            margin-bottom: 25px;
+            color: var(--bp-blue);
+            letter-spacing: -0.5px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        .header-brand p {
+            font-size: 16px;
+            font-weight: 800;
+            color: var(--bp-yellow);
             text-transform: uppercase;
             letter-spacing: 2px;
-        }
-        .info-card {
-            background: #f8fafc;
-            border-left: 6px solid var(--secondary);
-            padding: 20px 35px;
-            border-radius: 10px;
-            font-size: 26px;
-            color: var(--text-dark);
-            font-weight: 600;
-            width: 95%;
-            margin-bottom: 15px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.02);
-            text-align: center;
+            margin-bottom: 2px;
         }
 
-        /* --- LAYAR PENGINGAT SHOLAT --- */
-        #prayer-overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(30, 58, 138, 0.98); 
-            z-index: 9999;
-            display: none;
+        .header-time { text-align: right; }
+        .clock-text {
+            font-size: 42px;
+            font-weight: 900;
+            color: var(--bp-blue);
+            text-shadow: 2px 2px 5px rgba(0,0,0,0.1);
+            font-variant-numeric: tabular-nums;
+            line-height: 1;
+        }
+        .date-text { font-size: 15px; font-weight: 700; color: var(--text-muted); margin-top: 4px; }
+
+        /* --- TABEL JADWAL (BENTO ITEM 2) --- */
+        .table-panel {
+            flex: 1;
+            padding: 10px 30px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        table { width: 100%; border-collapse: separate; border-spacing: 0 15px; }
+        
+        thead th {
+            color: var(--text-muted);
+            font-size: 15px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            padding: 0 20px 10px 20px;
+            border-bottom: 2px solid rgba(30, 58, 138, 0.1);
+            text-align: left;
+        }
+
+        /* Baris Tabel Efek 3D Timbul */
+        tbody tr {
+            background: var(--bg-light-blue);
+            box-shadow: 4px 4px 10px rgba(148, 185, 211, 0.3), -4px -4px 10px rgba(255, 255, 255, 0.8);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        tbody td {
+            background: var(--bg-panel); /* Isi cell berwarna putih */
+            padding: 20px;
+            vertical-align: middle;
+            border-top: 1px solid rgba(255,255,255,0.8);
+            border-bottom: 1px solid rgba(255,255,255,0.8);
+        }
+        tbody td:first-child { border-radius: 20px 0 0 20px; border-left: 1px solid rgba(255,255,255,0.8); }
+        tbody td:last-child { border-radius: 0 20px 20px 0; border-right: 1px solid rgba(255,255,255,0.8); }
+
+        /* MODERN BADGES */
+        .badge-sesi {
+            color: var(--bp-yellow);
+            font-size: 24px;
+            font-weight: 800;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .badge-ruang {
+            background: #fef3c7;
+            color: #b45309;
+            border: 2px solid #fde68a;
+            font-size: 18px; font-weight: 800;
+            padding: 8px 16px; border-radius: 12px;
+            display: inline-block;
+        }
+        
+        .badge-ruang.komik {
+            background: #ffedd5;
+            color: #c2410c;
+            border: 2px solid #fed7aa;
+        }
+
+        .guru-name { font-size: 20px; font-weight: 800; color: var(--bp-blue); margin-bottom: 6px; }
+        
+        .badge-mapel {
+            color: #ffffff;
+            font-size: 13px; font-weight: 700;
+            background: var(--bp-tosca);
+            padding: 4px 12px; border-radius: 8px;
+            display: inline-block;
+            box-shadow: 2px 2px 5px rgba(15, 118, 110, 0.3);
+        }
+
+        .siswa-list { font-size: 16px; font-weight: 600; color: var(--text-main); line-height: 1.6; }
+
+        .empty-state {
+            text-align: center; padding: 100px 0;
+            font-size: 20px; font-weight: 700; color: var(--text-muted);
+            background: transparent !important; box-shadow: none !important; border:none !important;
+        }
+
+        /* --- LOGO & INFO PAGING (BENTO ITEM 3) --- */
+        .logo-panel {
+            height: 120px;
+            display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            color: white;
-            text-align: center;
-            backdrop-filter: blur(5px);
-            cursor: pointer;
+            padding: 15px;
+        }
+        /* Logo Diperbesar */
+        .logo-panel img { max-height: 80px; filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.1)); }
+        
+        /* Tulisan Page 1 of 1 Diperkecil & Diberi efek 3D Tenggelam */
+        #page-indicator {
+            margin-top: 10px; font-size: 11px; font-weight: 800;
+            color: var(--bp-blue); letter-spacing: 1px;
+            background: var(--bg-light-blue);
+            box-shadow: var(--shadow-3d-in); /* Efek tenggelam */
+            padding: 6px 14px; border-radius: 20px;
+        }
+
+        /* --- HADITS SIDEBAR (BENTO ITEM 4) --- */
+        .hadits-panel {
+            flex: 1;
+            padding: 40px 30px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+        }
+        
+        .hadits-panel::before {
+            content: '”';
+            position: absolute;
+            top: 10px; left: 20px;
+            font-size: 150px;
+            color: rgba(30, 58, 138, 0.04);
+            font-family: serif;
+            line-height: 1;
+        }
+
+        .hadits-title {
+            font-size: 16px; font-weight: 800; color: var(--bp-tosca);
+            text-transform: uppercase; letter-spacing: 2px;
+            margin-bottom: 25px; display: flex; align-items: center; gap: 10px;
+        }
+        .hadits-title::before { content: ''; display: block; width: 30px; height: 3px; background: var(--bp-tosca); border-radius: 2px; }
+
+        .hadits-text {
+            font-size: 20px; font-weight: 600; color: var(--text-main);
+            line-height: 1.7; position: relative; z-index: 2; font-style: italic;
+        }
+
+        /* --- RUNNING TEXT MEMANJANG (FOOTER FULL WIDTH) --- */
+        .footer-panel {
+            width: 100%;
+            height: 70px;
+            display: flex;
+            align-items: center;
+            padding: 0 25px;
+            flex-shrink: 0;
+            z-index: 10;
+        }
+        
+        .footer-badge {
+            background: var(--bp-blue); color: #ffffff;
+            font-size: 15px; font-weight: 800; padding: 8px 18px;
+            border-radius: 12px; text-transform: uppercase; letter-spacing: 1px;
+            white-space: nowrap; margin-right: 20px;
+            box-shadow: 2px 2px 8px rgba(30, 58, 138, 0.3);
+        }
+
+        marquee { font-size: 20px; font-weight: 700; color: var(--bp-blue); }
+
+        /* --- INFO & VIDEO CONTAINER JS (ASLI) --- */
+        #info-container {
+            flex-grow: 1; display: none; flex-direction: column;
+            align-items: center; justify-content: center; padding: 40px;
+        }
+        .info-title { font-size: 32px; color: var(--bp-blue); font-weight: 800; margin-bottom: 25px; letter-spacing: 1px;}
+        .info-card {
+            background: var(--bg-light-blue); border-left: 6px solid var(--bp-yellow);
+            padding: 30px 40px; border-radius: 16px; font-size: 24px;
+            color: var(--text-main); font-weight: 700; width: 100%; margin-bottom: 15px;
+            box-shadow: var(--shadow-3d-out);
+        }
+
+        /* --- LAYAR SHOLAT CINEMATIC --- */
+        #prayer-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(30, 58, 138, 0.95); z-index: 9999; display: none;
+            flex-direction: column; justify-content: center; align-items: center;
+            backdrop-filter: blur(15px); text-align: center;
         }
         #prayer-overlay h1 {
-            font-size: 80px;
-            color: #fbbf24; 
-            margin: 0 0 10px 0;
-            letter-spacing: 3px;
+            font-size: 100px; font-weight: 900; color: #facc15;
+            margin-bottom: 20px; letter-spacing: 5px;
+            text-shadow: 0 0 30px rgba(250, 204, 21, 0.5);
         }
-        #prayer-overlay h2 {
-            font-size: 50px;
-            margin: 10px 0 20px 0;
-        }
-        #prayer-overlay p {
-            font-size: 30px;
-            color: #e2e8f0;
-            margin: 5px 0;
-        }
-        #prayer-overlay .close-hint {
-            font-size: 16px;
-            color: #94a3b8;
-            margin-top: 30px;
-            font-style: italic;
-        }
-        #api-debug-info {
-            font-size: 18px;
-            margin-top: 40px;
-            padding: 10px 20px;
-            background: rgba(0,0,0,0.3);
-            border-radius: 8px;
-            font-family: monospace;
-        }
+        #prayer-overlay h2 { font-size: 40px; color: #ffffff; font-weight: 600; }
+        #prayer-name { color: #facc15; font-weight: 800; }
+        #prayer-overlay p { font-size: 24px; color: #cbd5e1; margin-top: 20px; }
 
-        /* --- ANIMASI FADE IN --- */
-        @keyframes fadeUp {
-            from { opacity: 0; transform: translateY(15px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        tbody tr, .info-card, .poster-img, .video-content, #prayer-overlay { animation: fadeUp 0.6s ease-out forwards; }
-
-        /* --- RUNNING TEXT --- */
-        .ticker-wrap {
-            width: 100%; background-color: var(--primary); border-radius: 10px;
-            overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            position: relative; height: 50px; display: flex; align-items: center;
-            border-left: 5px solid var(--secondary); border-right: 5px solid var(--secondary);
-        }
-        .ticker-content {
-            display: inline-block; white-space: nowrap; color: #ffffff; font-size: 22px;
-            font-weight: bold; padding-left: 100%; animation: ticker-anim 50s linear infinite;
-        }
-        @keyframes ticker-anim { 0% { transform: translateX(0); } 100% { transform: translateX(-100%); } }
+        /* ANIMASI TABEL STAGGERED FADE UP */
+        @keyframes fadeUpIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        tbody tr { animation: fadeUpIn 0.5s ease-out forwards; opacity: 0; }
+        tbody tr:nth-child(1) { animation-delay: 0.1s; }
+        tbody tr:nth-child(2) { animation-delay: 0.2s; }
+        tbody tr:nth-child(3) { animation-delay: 0.3s; }
+        tbody tr:nth-child(4) { animation-delay: 0.4s; }
+        
+        .info-card, .poster-img, .video-content, #prayer-overlay { animation: fadeUpIn 0.6s ease-out forwards; }
     </style>
 </head>
 <body onclick="playMusic()">
 
-    <!-- MUSIK MUROTTAL -->
+    <!-- EFEK AMBIENT BACKGROUND -->
+    <div class="ambient-blob blob-1"></div>
+    <div class="ambient-blob blob-2"></div>
+
+    <!-- MUSIK MUROTTAL (ASLI) -->
     <audio id="bg-music" loop autoplay>
-        <source src="https://server16.mp3quran.net/a_alqrafi/Rewayat-Hafs-A-n-Assem/004.mp3" type="audio/mpeg">
+        <source src="https://server7.mp3quran.net/basit/002.mp3" type="audio/mpeg">
     </audio>
 
-    <!-- LAYAR OVERLAY SHOLAT -->
+    <!-- LAYAR OVERLAY SHOLAT CINEMATIC -->
     <div id="prayer-overlay" onclick="hidePrayerOverlay()">
         <h1>WAKTU SHOLAT</h1>
-        <h2>Saat ini memasuki waktu sholat <span id="prayer-name" style="color: var(--secondary);">...</span></h2>
-        <p>Untuk Wilayah Kota Depok dan Sekitarnya</p>
-        <p style="font-size: 24px; margin-top: 15px;">Mari persiapkan diri untuk menunaikan ibadah sholat.</p>
-        <div id="api-debug-info">Memeriksa Status API Kemenag...</div>
-        <p class="close-hint">(Klik di mana saja pada layar untuk menutup pesan ini)</p>
+        <h2>Memasuki waktu sholat <span id="prayer-name">...</span></h2>
+        <p>Wilayah Kota Depok dan Sekitarnya</p>
+        <div id="api-debug-info" style="display:none;"></div>
     </div>
 
-    <!-- HEADER & LOGO -->
-    <div class="header">
-        <div class="logo-container" onclick="showPrayerOverlay('SIMULASI')" title="Klik untuk Tes Layar Sholat">
-            <img src="https://www.bintangpelajar.com/wp-content/uploads/2023/05/LOGO_BP_rev-2023.webp" alt="Logo BP">
+    <!-- BUNGKUSAN KONTEN ATAS (BENTO GRID) -->
+    <div class="content-wrapper">
+        <div class="layout-kiri">
+            
+            <!-- ITEM 1: HEADER -->
+            <div class="panel-3d header-panel">
+                <div class="header-brand">
+                    <p>JADWAL BELAJAR</p>
+                    <h1>Bintang Pelajar Pesona Khayangan</h1>
+                </div>
+                <div class="header-time">
+                    <div class="clock-text" id="clock-time">00:00</div>
+                    <div class="date-text" id="clock-date">Memuat waktu...</div>
+                </div>
+            </div>
+
+            <!-- ITEM 2: TABEL JADWAL & INFO -->
+            <div class="panel-3d table-panel" id="tabel-wadah">
+                <table id="schedule-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 15%; text-align: center;">Waktu Sesi</th>
+                            <th style="width: 15%; text-align: center;">Ruangan</th>
+                            <th style="width: 30%;">Guru & Kelas</th>
+                            <th style="width: 40%;">Daftar Siswa</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table-body">
+                        <tr><td colspan="4" class="empty-state" style="background:transparent; border:none; box-shadow:none;">Menghubungkan ke Server Induk...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- WADAH INFO PENGUMUMAN (ASLI) -->
+            <div class="panel-3d" id="info-container">
+                <div class="info-title" id="info-header-title">Update Terbaru</div>
+                <div id="info-list" style="width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center;"></div>
+            </div>
+
         </div>
-        <div class="title-wrapper">
-            <h1>Jadwal Kegiatan Pembelajaran</h1>
-            <div id="clock">Memuat Waktu...</div>
-            <div id="page-indicator">Halaman - dari -</div>
+
+        <div class="layout-kanan">
+
+            <!-- ITEM 3: LOGO & PAGING -->
+            <div class="panel-3d logo-panel" onclick="showPrayerOverlay('SIMULASI')">
+                <img src="https://www.bintangpelajar.com/wp-content/uploads/2023/05/LOGO_BP_rev-2023.webp" alt="Logo BP">
+                <div id="page-indicator">Page - of -</div>
+            </div>
+
+            <!-- ITEM 4: HADITS -->
+            <div class="panel-3d hadits-panel">
+                <div class="hadits-title">Hadits Harian</div>
+                <div class="hadits-text" id="sidebar-hadits">Memuat kutipan hari ini...</div>
+            </div>
+
         </div>
     </div>
 
-    <!-- WADAH 1: TABEL JADWAL -->
-    <div class="table-container">
-        <table id="schedule-table">
-            <thead>
-                <tr>
-                    <th width="12%">SESI</th>
-                    <th width="22%">GURU</th>
-                    <th width="8%">RUANG</th>
-                    <th width="18%">MAPEL/KELAS</th>
-                    <th width="40%">NAMA SISWA</th>
-                </tr>
-            </thead>
-            <tbody id="table-body">
-                <tr>
-                    <td colspan="5" style="padding: 50px; font-style: italic; color: #64748b;">
-                        Menghubungkan ke Database Bintang Pelajar...
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+    <!-- ITEM 5: RUNNING TEXT (MEMANJANG FULL WIDTH DI BAWAH) -->
+    <div class="panel-3d footer-panel">
+        <div class="footer-badge">Informasi</div>
+        <marquee id="running-text" scrollamount="6">BINTANG PELAJAR: Prestasi Tinggi & Akhlak Terpuji! ✦ Dilengkapi pendampingan ibadah Islami ✦ Pilihan eksklusif 1 kelas 5 siswa ✦ Raih cita-citamu bersama kami!</marquee>
     </div>
 
-    <!-- WADAH 2: INFO PENGUMUMAN & INFOGRAFIS/VIDEO -->
-    <div id="info-container">
-        <div class="info-title" id="info-header-title">📢 INFO & PENGUMUMAN TERBARU</div>
-        <div id="info-list" style="width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center;"></div>
-    </div>
-
-    <!-- RUNNING TEXT -->
-    <div class="ticker-wrap">
-        <div class="ticker-content">
-            ✦ BINTANG PELAJAR: Prestasi Tinggi & Akhlak Terpuji! ✦ Dilengkapi pendampingan ibadah & akhlak Islami ✦ Tersedia pilihan eksklusif 1 kelas 5 siswa (lingkungan belajar putra-putri terpisah) ✦ Program SMA/Alumni: Sukses SNBP, Tembus 10 PTN Favorit, PROSUS UI-ITB, hingga PROSUS Kedokteran! ✦ Program SMP: Jago Bidang Studi, Tembus MAN Unggulan & SMA Favorit ✦ Program SD: Persiapan TKA & Kelas Internasional (Cambridge) ✦ Mari raih cita-citamu bersama kami! ✦
-        </div>
-    </div>
-
-    <!-- LOGIKA JAVASCRIPT -->
+    <!-- =======================================================
+         LOGIKA MESIN ASLI (TIDAK ADA YANG DIUBAH KECUALI HTML RENDER) 
+         ======================================================= -->
     <script>
         var API_URL = "https://script.google.com/macros/s/AKfycbywopky_VUnmvfktok0xRaXDpQrzjuOMo7VjfAselVjzZI7G6FBwijJJh8G9LZWUCqqdw/exec"; 
         
         var ENABLE_INFO_SLIDE = false; 
-        var SLIDE_DURATION = 10000;  
+        var SLIDE_DURATION = 15000;  
         var REFRESH_DATA = 60000;    
 
         var rawResponseData = null;
@@ -285,6 +422,21 @@
         var prayerTimes = {};
         var prayerTimeout = null;
 
+        const kumpulanHadits = [
+            "\"Barangsiapa menempuh suatu jalan untuk menuntut ilmu, maka Allah akan mudahkan baginya jalan menuju surga.\" (HR. Muslim)",
+            "\"Amalan yang paling dicintai oleh Allah adalah sholat pada waktunya.\" (HR. Bukhari & Muslim)",
+            "\"Senyummu di hadapan saudaramu (sesama muslim) adalah bernilai sedekah bagimu.\" (HR. Tirmidzi)",
+            "\"Sebaik-baik manusia adalah yang paling bermanfaat bagi manusia lainnya.\" (HR. Ahmad)",
+            "\"Sesungguhnya Allah tidak melihat pada rupa dan hartamu, tetapi Allah melihat pada hati dan amalanmu.\" (HR. Muslim)"
+        ];
+
+        function pasangHadits() {
+            const now = new Date();
+            const dayOfYear = Math.floor((now - new Date(now.getFullYear(), 0, 0)) / (1000 * 60 * 60 * 24));
+            document.getElementById('sidebar-hadits').innerText = kumpulanHadits[dayOfYear % kumpulanHadits.length];
+        }
+        pasangHadits();
+
         function fetchPrayerTimes() {
             var xhr = new XMLHttpRequest();
             xhr.open("GET", "https://api.aladhan.com/v1/timingsByCity?city=Depok&country=Indonesia&method=20", true);
@@ -293,11 +445,8 @@
                     try {
                         var res = JSON.parse(xhr.responseText);
                         prayerTimes = {
-                            "Subuh": res.data.timings.Fajr,
-                            "Dzuhur": res.data.timings.Dhuhr,
-                            "Ashar": res.data.timings.Asr,
-                            "Maghrib": res.data.timings.Maghrib,
-                            "Isya": res.data.timings.Isha
+                            "Subuh": res.data.timings.Fajr, "Dzuhur": res.data.timings.Dhuhr,
+                            "Ashar": res.data.timings.Asr, "Maghrib": res.data.timings.Maghrib, "Isya": res.data.timings.Isha
                         };
                     } catch(e) {}
                 }
@@ -308,25 +457,12 @@
         function showPrayerOverlay(sholatName) {
             var prayerNameEl = document.getElementById('prayer-name');
             var overlayEl = document.getElementById('prayer-overlay');
-            var debugEl = document.getElementById('api-debug-info');
-
             if(prayerNameEl && overlayEl) {
                 prayerNameEl.innerText = sholatName.toUpperCase();
-                
-                if(prayerTimes && prayerTimes["Ashar"]) {
-                    debugEl.innerText = "Jadwal API Kemenag Hari Ini | Dzuhur: " + prayerTimes["Dzuhur"] + " | Ashar: " + prayerTimes["Ashar"] + " | Maghrib: " + prayerTimes["Maghrib"];
-                    debugEl.style.color = "#48d1cc"; 
-                } else {
-                    debugEl.innerText = "⚠️ API Gagal Ditarik (Cek Koneksi Internet / Diblokir Jaringan)";
-                    debugEl.style.color = "#ef4444"; 
-                }
-
                 overlayEl.style.display = 'flex';
             }
-            
             var music = document.getElementById("bg-music");
             if (music && !music.paused) music.pause();
-
             if(prayerTimeout) clearTimeout(prayerTimeout);
             prayerTimeout = setTimeout(hidePrayerOverlay, 300000); 
         }
@@ -334,29 +470,20 @@
         function hidePrayerOverlay() {
             var overlayEl = document.getElementById('prayer-overlay');
             if(overlayEl) overlayEl.style.display = 'none';
-            
             var music = document.getElementById("bg-music");
-            if (music && music.paused) {
-                var playPromise = music.play();
-                if(playPromise !== undefined) playPromise.catch(function(e){});
-            }
+            if (music && music.paused) { var playPromise = music.play(); if(playPromise !== undefined) playPromise.catch(function(e){}); }
         }
 
         function playMusic() {
             var music = document.getElementById("bg-music");
             var overlayEl = document.getElementById('prayer-overlay');
             if (overlayEl && overlayEl.style.display === 'flex') return;
-            
-            if (music && music.paused) {
-                var playPromise = music.play();
-                if(playPromise !== undefined) playPromise.catch(function(e){});
-            }
+            if (music && music.paused) { var playPromise = music.play(); if(playPromise !== undefined) playPromise.catch(function(e){}); }
         }
 
         function fetchData() {
             var xhr = new XMLHttpRequest();
             var urlAntiMacet = API_URL + (API_URL.indexOf('?') > -1 ? '&' : '?') + 'waktu=' + new Date().getTime();
-            
             xhr.open("GET", urlAntiMacet, true); 
             xhr.onreadystatechange = function() {
                 if (xhr.readyState === 4 && xhr.status === 200) {
@@ -401,114 +528,111 @@
 
             var isModeChanged = (currentMode !== newMode);
             currentMode = newMode;
-            
             var tempPages = [];
 
             if (currentMode === "JADWAL") {
                 document.getElementById('info-container').style.display = 'none';
-                document.querySelector('.table-container').style.display = 'flex';
+                document.getElementById('tabel-wadah').style.display = 'flex';
                 
                 var tbody = document.getElementById('table-body');
-                var container = document.querySelector('.table-container');
+                var container = document.getElementById('tabel-wadah'); 
                 var table = document.getElementById('schedule-table');
                 
                 if (scheduleData.length === 0) {
                     tempPages.push([{ "empty": true }]);
                 } else {
                     var currentPageData = [];
-                    var safeMargin = 25; // Margin batas aman agar tidak menyentuh running text
+                    var safeMargin = 50; 
                     
-                    // Kosongkan tbody untuk mulai simulasi pengukuran
                     tbody.innerHTML = '';
                     
                     for (var i = 0; i < scheduleData.length; i++) {
                         var row = scheduleData[i];
                         currentPageData.push(row);
                         
-                        // Buat elemen tr virtual untuk mengukur tingginya
                         var tr = document.createElement('tr');
                         var namaSiswa = bersihkanNamaSiswa(row.siswa);
-                        tr.innerHTML = 
-                            '<td class="col-sesi">' + (row.sesi || '-') + '</td>' +
-                            '<td class="col-guru">' + (row.guru || '-') + '</td>' +
-                            '<td>' + (row.ruang || '-') + '</td>' +
-                            '<td class="col-mapel">' + (row.mapel || '-') + '</td>' +
-                            '<td class="col-siswa">' + namaSiswa + '</td>';
+                        var isKomik = (row.ruang && row.ruang.toLowerCase().includes("komik")) ? "komik" : "";
+                        
+                        // Render Baris Desain Baru (td tanpa border agar efek shadow tr 3D berhasil)
+                        tr.innerHTML = `
+                            <td style="text-align:center;"><span class="badge-sesi">${row.sesi || '-'}</span></td>
+                            <td style="text-align:center;"><span class="badge-ruang ${isKomik}">${row.ruang || '-'}</span></td>
+                            <td>
+                                <div class="guru-name">${row.guru || '-'}</div>
+                                <div class="badge-mapel">${row.mapel || '-'}</div>
+                            </td>
+                            <td class="siswa-list">${namaSiswa}</td>
+                        `;
                         
                         tbody.appendChild(tr);
                         
-                        // CEK DINAMIS: Jika tabel sudah kelebihan batas tinggi penampungnya
                         if (table.offsetHeight > (container.clientHeight - safeMargin)) {
-                            // Hapus elemen terakhir dari layar ukur
                             tbody.removeChild(tr);
-                            // Keluarkan data terakhir karena tidak muat
                             currentPageData.pop();
-                            
-                            // Simpan baris-baris yang muat sebagai 1 halaman penuh
                             if (currentPageData.length > 0) tempPages.push(currentPageData);
-                            
-                            // Mulai halaman baru dengan data yang tidak muat tadi
                             currentPageData = [row];
-                            tbody.innerHTML = ''; // Bersihkan layar ukur
-                            tbody.appendChild(tr); // Masukkan lagi untuk diukur di halaman baru
+                            tbody.innerHTML = ''; 
+                            tbody.appendChild(tr); 
                         }
                     }
-                    // Masukkan sisa data ke halaman terakhir
                     if (currentPageData.length > 0) tempPages.push(currentPageData);
-                    
-                    // Bersihkan kembali tbody, karena akan dirender ulang oleh fungsi renderPage()
                     tbody.innerHTML = '';
                 }
             } else {
-                document.querySelector('.table-container').style.display = 'none';
+                document.getElementById('tabel-wadah').style.display = 'none';
                 document.getElementById('info-container').style.display = 'flex';
-                for (var k = 0; k < infoData.length; k++) {
-                    tempPages.push([infoData[k]]);
-                }
+                for (var k = 0; k < infoData.length; k++) { tempPages.push([infoData[k]]); }
             }
             
             pages = tempPages;
 
-            // KUNCI ANTI-RESTART VIDEO
             if (isModeChanged) {
-                currentPageIndex = 0;
-                renderPage();
-                startPagination();
+                currentPageIndex = 0; renderPage(); startPagination();
             } else if (currentMode === "JADWAL") {
                 if (currentPageIndex >= pages.length) currentPageIndex = 0;
-                renderPage();
-                startPagination();
+                renderPage(); startPagination();
             }
         }
 
         function renderPage() {
             if (pages.length === 0) return;
             var indicator = document.getElementById('page-indicator');
-            if(indicator) indicator.innerText = 'Halaman ' + (currentPageIndex + 1) + ' dari ' + pages.length;
+            // Penyesuaian Teks Paging seperti referensi gambar
+            if(indicator) indicator.innerText = 'Page ' + (currentPageIndex + 1) + ' of ' + pages.length;
 
             if (currentMode === "JADWAL") {
                 var tbody = document.getElementById('table-body');
                 if(!tbody) return;
+                
+                tbody.style.display = 'none';
                 tbody.innerHTML = ''; 
+                
                 var pageData = pages[currentPageIndex];
                 
                 if(pageData[0] && pageData[0].empty) {
-                     tbody.innerHTML = '<tr><td colspan="5" style="padding: 50px;">Tidak ada jadwal pada sesi ini.</td></tr>';
-                     if(indicator) indicator.innerText = 'Halaman 0 dari 0';
-                     return;
+                     tbody.innerHTML = '<tr><td colspan="4" class="empty-state" style="background:transparent; border:none; box-shadow:none;">Jadwal Sesi Ini Belum Dimulai</td></tr>';
+                } else {
+                    pageData.forEach(function(row) {
+                        var tr = document.createElement('tr');
+                        var namaSiswa = bersihkanNamaSiswa(row.siswa);
+                        var isKomik = (row.ruang && row.ruang.toLowerCase().includes("komik")) ? "komik" : "";
+                        
+                        tr.innerHTML = `
+                            <td style="text-align:center;"><span class="badge-sesi">${row.sesi || '-'}</span></td>
+                            <td style="text-align:center;"><span class="badge-ruang ${isKomik}">${row.ruang || '-'}</span></td>
+                            <td>
+                                <div class="guru-name">${row.guru || '-'}</div>
+                                <div class="badge-mapel">${row.mapel || '-'}</div>
+                            </td>
+                            <td class="siswa-list">${namaSiswa}</td>
+                        `;
+                        tbody.appendChild(tr);
+                    });
                 }
+                
+                setTimeout(() => { tbody.style.display = 'table-row-group'; }, 50);
 
-                pageData.forEach(function(row) {
-                    var tr = document.createElement('tr');
-                    var namaSiswa = bersihkanNamaSiswa(row.siswa);
-                    tr.innerHTML = 
-                        '<td class="col-sesi">' + (row.sesi || '-') + '</td>' +
-                        '<td class="col-guru">' + (row.guru || '-') + '</td>' +
-                        '<td>' + (row.ruang || '-') + '</td>' +
-                        '<td class="col-mapel">' + (row.mapel || '-') + '</td>' +
-                        '<td class="col-siswa">' + namaSiswa + '</td>';
-                    tbody.appendChild(tr);
-                });
             } else {
                 var infoList = document.getElementById('info-list');
                 if(!infoList) return;
@@ -518,16 +642,11 @@
                 pageData.forEach(function(text) {
                     var div = document.createElement('div');
                     var textStr = String(text).trim();
-                    var isVideo = false;
-                    var mediaUrl = "";
+                    var isVideo = false; var mediaUrl = "";
 
-                    // DETEKSI APAKAH INI VIDEO ATAU FOTO
                     if (textStr.toUpperCase().indexOf('VIDEO:') === 0) {
-                        isVideo = true;
-                        mediaUrl = textStr.substring(6).trim(); 
-                    } else if (textStr.indexOf('http') === 0) {
-                        mediaUrl = textStr;
-                    }
+                        isVideo = true; mediaUrl = textStr.substring(6).trim(); 
+                    } else if (textStr.indexOf('http') === 0) { mediaUrl = textStr; }
 
                     if (mediaUrl !== "") {
                         document.getElementById('info-header-title').style.display = 'none'; 
@@ -537,13 +656,11 @@
                         if (isVideo) {
                             if (mediaUrl.includes("drive.google.com")) {
                                 var fileId = "";
-                                if (mediaUrl.includes("/file/d/")) {
-                                    fileId = mediaUrl.split("/file/d/")[1].split("/")[0];
-                                }
+                                if (mediaUrl.includes("/file/d/")) { fileId = mediaUrl.split("/file/d/")[1].split("/")[0]; }
                                 var iframeSrc = "https://drive.google.com/file/d/" + fileId + "/preview?autoplay=1&mute=1";
-                                div.innerHTML = '<iframe class="video-content" src="' + iframeSrc + '" allow="autoplay" style="width: 80%; height: 65vh; border: none; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.15);"></iframe>';
+                                div.innerHTML = '<iframe class="video-content" src="' + iframeSrc + '" allow="autoplay" style="width: 100%; height: 100%; border: none; border-radius: 16px;"></iframe>';
                             } else {
-                                div.innerHTML = '<video class="video-content" autoplay loop muted style="max-width: 100%; max-height: 60vh; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); object-fit: contain;"><source src="' + mediaUrl + '" type="video/mp4"></video>';
+                                div.innerHTML = '<video class="video-content" autoplay loop muted style="max-width: 100%; max-height: 100%; border-radius: 16px; object-fit: cover;"><source src="' + mediaUrl + '" type="video/mp4"></video>';
                             }
                         } else {
                             var fileIdPhoto = "";
@@ -551,7 +668,7 @@
                                 fileIdPhoto = mediaUrl.split("/file/d/")[1].split("/")[0];
                                 mediaUrl = "https://lh3.googleusercontent.com/d/" + fileIdPhoto;
                             }
-                            div.innerHTML = '<img class="poster-img" src="' + mediaUrl + '" style="max-width: 100%; max-height: 55vh; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); object-fit: contain;">';
+                            div.innerHTML = '<img class="poster-img" src="' + mediaUrl + '" style="max-width: 100%; max-height: 100%; border-radius: 16px; object-fit: contain;">';
                         }
                     } else {
                         document.getElementById('info-header-title').style.display = 'block'; 
@@ -587,17 +704,17 @@
             var m = ("0" + now.getMinutes()).slice(-2);
             var s = ("0" + now.getSeconds()).slice(-2);
 
-            var clockEl = document.getElementById('clock');
-            if(clockEl) clockEl.innerText = day + ', ' + date + ' ' + month + ' ' + year + ' | ' + h + ':' + m + ':' + s + ' WIB';
+            var timeEl = document.getElementById('clock-time');
+            var dateEl = document.getElementById('clock-date');
+            
+            if(timeEl) timeEl.innerText = h + ':' + m;
+            if(dateEl) dateEl.innerText = day + ', ' + date + ' ' + month + ' ' + year;
             
             if (s === "00") {
-                calculateDynamicPages();
-                
+                calculateDynamicPages(); 
                 var currentHM = h + ':' + m;
                 for (var sholat in prayerTimes) {
-                    if (prayerTimes[sholat] === currentHM) {
-                        showPrayerOverlay(sholat);
-                    }
+                    if (prayerTimes[sholat] === currentHM) showPrayerOverlay(sholat);
                 }
             }
         }

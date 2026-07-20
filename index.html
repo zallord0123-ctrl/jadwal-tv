@@ -34,7 +34,7 @@
             height: 100vh;
             overflow: hidden;
             display: flex;
-            flex-direction: column; /* Ubah ke column agar footer bisa memanjang di bawah */
+            flex-direction: column;
             padding: 25px;
             gap: 25px;
             position: relative;
@@ -58,265 +58,85 @@
         }
 
         /* --- BENTO GRID LAYOUT --- */
-        .content-wrapper {
-            display: flex;
-            flex: 1;
-            gap: 25px;
-            overflow: hidden;
-        }
-
-        .layout-kiri {
-            flex: 3;
-            display: flex;
-            flex-direction: column;
-            gap: 25px;
-        }
-        
-        .layout-kanan {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 25px;
-        }
+        .content-wrapper { display: flex; flex: 1; gap: 25px; overflow: hidden; }
+        .layout-kiri { flex: 3; display: flex; flex-direction: column; gap: 25px; }
+        .layout-kanan { flex: 1; display: flex; flex-direction: column; gap: 25px; }
 
         /* --- 3D PANEL BASE --- */
         .panel-3d {
-            background: var(--bg-panel);
-            border-radius: 28px;
-            box-shadow: var(--shadow-3d-out);
-            border: 2px solid rgba(255, 255, 255, 0.6);
+            background: var(--bg-panel); border-radius: 28px;
+            box-shadow: var(--shadow-3d-out); border: 2px solid rgba(255, 255, 255, 0.6);
             overflow: hidden;
         }
 
         /* --- HEADER (BENTO ITEM 1) --- */
-        .header-panel {
-            height: 120px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 40px;
-            position: relative;
-        }
-
-        .header-brand h1 {
-            font-size: 30px;
-            font-weight: 800;
-            color: var(--bp-blue);
-            letter-spacing: -0.5px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.05);
-        }
-        
-        .header-brand p {
-            font-size: 16px;
-            font-weight: 800;
-            color: var(--bp-yellow);
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-bottom: 2px;
-        }
-
+        .header-panel { height: 120px; display: flex; justify-content: space-between; align-items: center; padding: 0 40px; position: relative; }
+        .header-brand h1 { font-size: 30px; font-weight: 800; color: var(--bp-blue); letter-spacing: -0.5px; text-shadow: 2px 2px 4px rgba(0,0,0,0.05); }
+        .header-brand p { font-size: 16px; font-weight: 800; color: var(--bp-yellow); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 2px; }
         .header-time { text-align: right; }
-        .clock-text {
-            font-size: 42px;
-            font-weight: 900;
-            color: var(--bp-blue);
-            text-shadow: 2px 2px 5px rgba(0,0,0,0.1);
-            font-variant-numeric: tabular-nums;
-            line-height: 1;
-        }
+        .clock-text { font-size: 42px; font-weight: 900; color: var(--bp-blue); text-shadow: 2px 2px 5px rgba(0,0,0,0.1); font-variant-numeric: tabular-nums; line-height: 1; }
         .date-text { font-size: 15px; font-weight: 700; color: var(--text-muted); margin-top: 4px; }
 
         /* --- TABEL JADWAL (BENTO ITEM 2) --- */
-        .table-panel {
-            flex: 1;
-            padding: 10px 30px;
-            display: flex;
-            flex-direction: column;
-        }
-
+        .table-panel { flex: 1; padding: 10px 30px; display: flex; flex-direction: column; }
         table { width: 100%; border-collapse: separate; border-spacing: 0 15px; }
-        
-        thead th {
-            color: var(--text-muted);
-            font-size: 15px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            padding: 0 20px 10px 20px;
-            border-bottom: 2px solid rgba(30, 58, 138, 0.1);
-            text-align: left;
-        }
-
-        /* Baris Tabel Efek 3D Timbul */
-        tbody tr {
-            background: var(--bg-light-blue);
-            box-shadow: 4px 4px 10px rgba(148, 185, 211, 0.3), -4px -4px 10px rgba(255, 255, 255, 0.8);
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        tbody td {
-            background: var(--bg-panel); /* Isi cell berwarna putih */
-            padding: 20px;
-            vertical-align: middle;
-            border-top: 1px solid rgba(255,255,255,0.8);
-            border-bottom: 1px solid rgba(255,255,255,0.8);
-        }
+        thead th { color: var(--text-muted); font-size: 15px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; padding: 0 20px 10px 20px; border-bottom: 2px solid rgba(30, 58, 138, 0.1); text-align: left; }
+        tbody tr { background: var(--bg-light-blue); box-shadow: 4px 4px 10px rgba(148, 185, 211, 0.3), -4px -4px 10px rgba(255, 255, 255, 0.8); transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+        tbody td { background: var(--bg-panel); padding: 20px; vertical-align: middle; border-top: 1px solid rgba(255,255,255,0.8); border-bottom: 1px solid rgba(255,255,255,0.8); }
         tbody td:first-child { border-radius: 20px 0 0 20px; border-left: 1px solid rgba(255,255,255,0.8); }
         tbody td:last-child { border-radius: 0 20px 20px 0; border-right: 1px solid rgba(255,255,255,0.8); }
 
         /* MODERN BADGES */
-        .badge-sesi {
-            color: var(--bp-yellow);
-            font-size: 24px;
-            font-weight: 800;
-            font-variant-numeric: tabular-nums;
-        }
-
-        .badge-ruang {
-            background: #fef3c7;
-            color: #b45309;
-            border: 2px solid #fde68a;
-            font-size: 18px; font-weight: 800;
-            padding: 8px 16px; border-radius: 12px;
-            display: inline-block;
-        }
-        
-        .badge-ruang.komik {
-            background: #ffedd5;
-            color: #c2410c;
-            border: 2px solid #fed7aa;
-        }
-
+        .badge-sesi { color: var(--bp-yellow); font-size: 24px; font-weight: 800; font-variant-numeric: tabular-nums; }
+        .badge-ruang { background: #fef3c7; color: #b45309; border: 2px solid #fde68a; font-size: 18px; font-weight: 800; padding: 8px 16px; border-radius: 12px; display: inline-block; }
+        .badge-ruang.komik { background: #ffedd5; color: #c2410c; border: 2px solid #fed7aa; }
         .guru-name { font-size: 20px; font-weight: 800; color: var(--bp-blue); margin-bottom: 6px; }
-        
-        .badge-mapel {
-            color: #ffffff;
-            font-size: 13px; font-weight: 700;
-            background: var(--bp-tosca);
-            padding: 4px 12px; border-radius: 8px;
-            display: inline-block;
-            box-shadow: 2px 2px 5px rgba(15, 118, 110, 0.3);
-        }
-
+        .badge-mapel { color: #ffffff; font-size: 13px; font-weight: 700; background: var(--bp-tosca); padding: 4px 12px; border-radius: 8px; display: inline-block; box-shadow: 2px 2px 5px rgba(15, 118, 110, 0.3); }
         .siswa-list { font-size: 16px; font-weight: 600; color: var(--text-main); line-height: 1.6; }
-
-        .empty-state {
-            text-align: center; padding: 100px 0;
-            font-size: 20px; font-weight: 700; color: var(--text-muted);
-            background: transparent !important; box-shadow: none !important; border:none !important;
-        }
+        .empty-state { text-align: center; padding: 100px 0; font-size: 20px; font-weight: 700; color: var(--text-muted); background: transparent !important; box-shadow: none !important; border:none !important; }
 
         /* --- LOGO & INFO PAGING (BENTO ITEM 3) --- */
-        .logo-panel {
-            height: 120px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 15px;
-        }
-        /* Logo Diperbesar */
+        .logo-panel { height: 120px; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 15px; }
         .logo-panel img { max-height: 80px; filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.1)); }
-        
-        /* Tulisan Page 1 of 1 Diperkecil & Diberi efek 3D Tenggelam */
-        #page-indicator {
-            margin-top: 10px; font-size: 11px; font-weight: 800;
-            color: var(--bp-blue); letter-spacing: 1px;
-            background: var(--bg-light-blue);
-            box-shadow: var(--shadow-3d-in); /* Efek tenggelam */
-            padding: 6px 14px; border-radius: 20px;
-        }
+        #page-indicator { margin-top: 10px; font-size: 11px; font-weight: 800; color: var(--bp-blue); letter-spacing: 1px; background: var(--bg-light-blue); box-shadow: var(--shadow-3d-in); padding: 6px 14px; border-radius: 20px; }
 
         /* --- HADITS SIDEBAR (BENTO ITEM 4) --- */
-        .hadits-panel {
-            flex: 1;
-            padding: 40px 30px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            position: relative;
-        }
-        
-        .hadits-panel::before {
-            content: '”';
-            position: absolute;
-            top: 10px; left: 20px;
-            font-size: 150px;
-            color: rgba(30, 58, 138, 0.04);
-            font-family: serif;
-            line-height: 1;
-        }
-
-        .hadits-title {
-            font-size: 16px; font-weight: 800; color: var(--bp-tosca);
-            text-transform: uppercase; letter-spacing: 2px;
-            margin-bottom: 25px; display: flex; align-items: center; gap: 10px;
-        }
+        .hadits-panel { flex: 1; padding: 30px; display: flex; flex-direction: column; position: relative; }
+        .hadits-panel::before { content: '”'; position: absolute; top: 10px; left: 20px; font-size: 150px; color: rgba(30, 58, 138, 0.04); font-family: serif; line-height: 1; }
+        .hadits-title { font-size: 16px; font-weight: 800; color: var(--bp-tosca); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; flex-shrink: 0;}
         .hadits-title::before { content: ''; display: block; width: 30px; height: 3px; background: var(--bp-tosca); border-radius: 2px; }
-
-        .hadits-text {
-            font-size: 20px; font-weight: 600; color: var(--text-main);
-            line-height: 1.7; position: relative; z-index: 2; font-style: italic;
+        
+        /* WADAH BARU UNTUK FITUR AUTO-SHRINK HADITS */
+        #hadits-wrapper {
+            flex: 1; min-height: 0; width: 100%;
+            display: flex; align-items: center; justify-content: center;
+            overflow: hidden; /* Mengunci agar teks yang bocor tidak merusak tabel */
         }
+        .hadits-text { font-weight: 600; color: var(--text-main); line-height: 1.7; position: relative; z-index: 2; font-style: italic; text-align: center;}
 
         /* --- RUNNING TEXT MEMANJANG (FOOTER FULL WIDTH) --- */
-        .footer-panel {
-            width: 100%;
-            height: 70px;
-            display: flex;
-            align-items: center;
-            padding: 0 25px;
-            flex-shrink: 0;
-            z-index: 10;
-        }
-        
-        .footer-badge {
-            background: var(--bp-blue); color: #ffffff;
-            font-size: 15px; font-weight: 800; padding: 8px 18px;
-            border-radius: 12px; text-transform: uppercase; letter-spacing: 1px;
-            white-space: nowrap; margin-right: 20px;
-            box-shadow: 2px 2px 8px rgba(30, 58, 138, 0.3);
-        }
-
+        .footer-panel { width: 100%; height: 70px; display: flex; align-items: center; padding: 0 25px; flex-shrink: 0; z-index: 10; }
+        .footer-badge { background: var(--bp-blue); color: #ffffff; font-size: 15px; font-weight: 800; padding: 8px 18px; border-radius: 12px; text-transform: uppercase; letter-spacing: 1px; white-space: nowrap; margin-right: 20px; box-shadow: 2px 2px 8px rgba(30, 58, 138, 0.3); }
         marquee { font-size: 20px; font-weight: 700; color: var(--bp-blue); }
 
         /* --- INFO & VIDEO CONTAINER JS (ASLI) --- */
-        #info-container {
-            flex-grow: 1; display: none; flex-direction: column;
-            align-items: center; justify-content: center; padding: 40px;
-        }
+        #info-container { flex-grow: 1; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 40px; }
         .info-title { font-size: 32px; color: var(--bp-blue); font-weight: 800; margin-bottom: 25px; letter-spacing: 1px;}
-        .info-card {
-            background: var(--bg-light-blue); border-left: 6px solid var(--bp-yellow);
-            padding: 30px 40px; border-radius: 16px; font-size: 24px;
-            color: var(--text-main); font-weight: 700; width: 100%; margin-bottom: 15px;
-            box-shadow: var(--shadow-3d-out);
-        }
+        .info-card { background: var(--bg-light-blue); border-left: 6px solid var(--bp-yellow); padding: 30px 40px; border-radius: 16px; font-size: 24px; color: var(--text-main); font-weight: 700; width: 100%; margin-bottom: 15px; box-shadow: var(--shadow-3d-out); }
 
         /* --- LAYAR SHOLAT CINEMATIC --- */
-        #prayer-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(30, 58, 138, 0.95); z-index: 9999; display: none;
-            flex-direction: column; justify-content: center; align-items: center;
-            backdrop-filter: blur(15px); text-align: center;
-        }
-        #prayer-overlay h1 {
-            font-size: 100px; font-weight: 900; color: #facc15;
-            margin-bottom: 20px; letter-spacing: 5px;
-            text-shadow: 0 0 30px rgba(250, 204, 21, 0.5);
-        }
+        #prayer-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(30, 58, 138, 0.95); z-index: 9999; display: none; flex-direction: column; justify-content: center; align-items: center; backdrop-filter: blur(15px); text-align: center; }
+        #prayer-overlay h1 { font-size: 100px; font-weight: 900; color: #facc15; margin-bottom: 20px; letter-spacing: 5px; text-shadow: 0 0 30px rgba(250, 204, 21, 0.5); }
         #prayer-overlay h2 { font-size: 40px; color: #ffffff; font-weight: 600; }
         #prayer-name { color: #facc15; font-weight: 800; }
         #prayer-overlay p { font-size: 24px; color: #cbd5e1; margin-top: 20px; }
 
-        /* ANIMASI TABEL STAGGERED FADE UP */
         @keyframes fadeUpIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         tbody tr { animation: fadeUpIn 0.5s ease-out forwards; opacity: 0; }
         tbody tr:nth-child(1) { animation-delay: 0.1s; }
         tbody tr:nth-child(2) { animation-delay: 0.2s; }
         tbody tr:nth-child(3) { animation-delay: 0.3s; }
         tbody tr:nth-child(4) { animation-delay: 0.4s; }
-        
         .info-card, .poster-img, .video-content, #prayer-overlay { animation: fadeUpIn 0.6s ease-out forwards; }
     </style>
 </head>
@@ -326,24 +146,23 @@
     <div class="ambient-blob blob-1"></div>
     <div class="ambient-blob blob-2"></div>
 
-    <!-- MUSIK MUROTTAL (ASLI) -->
+    <!-- MUSIK MUROTTAL -->
     <audio id="bg-music" loop autoplay>
         <source src="https://server7.mp3quran.net/basit/002.mp3" type="audio/mpeg">
     </audio>
 
-    <!-- LAYAR OVERLAY SHOLAT CINEMATIC -->
+    <!-- LAYAR OVERLAY SHOLAT -->
     <div id="prayer-overlay" onclick="hidePrayerOverlay()">
         <h1>WAKTU SHOLAT</h1>
         <h2>Memasuki waktu sholat <span id="prayer-name">...</span></h2>
         <p>Wilayah Kota Depok dan Sekitarnya</p>
-        <div id="api-debug-info" style="display:none;"></div>
     </div>
 
     <!-- BUNGKUSAN KONTEN ATAS (BENTO GRID) -->
     <div class="content-wrapper">
         <div class="layout-kiri">
             
-            <!-- ITEM 1: HEADER -->
+            <!-- HEADER -->
             <div class="panel-3d header-panel">
                 <div class="header-brand">
                     <p>JADWAL BELAJAR</p>
@@ -355,7 +174,7 @@
                 </div>
             </div>
 
-            <!-- ITEM 2: TABEL JADWAL & INFO -->
+            <!-- TABEL JADWAL -->
             <div class="panel-3d table-panel" id="tabel-wadah">
                 <table id="schedule-table">
                     <thead>
@@ -372,7 +191,7 @@
                 </table>
             </div>
 
-            <!-- WADAH INFO PENGUMUMAN (ASLI) -->
+            <!-- WADAH INFO/VIDEO -->
             <div class="panel-3d" id="info-container">
                 <div class="info-title" id="info-header-title">Update Terbaru</div>
                 <div id="info-list" style="width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center;"></div>
@@ -381,31 +200,28 @@
         </div>
 
         <div class="layout-kanan">
-
-            <!-- ITEM 3: LOGO & PAGING -->
+            <!-- LOGO & PAGING -->
             <div class="panel-3d logo-panel" onclick="showPrayerOverlay('SIMULASI')">
                 <img src="https://www.bintangpelajar.com/wp-content/uploads/2023/05/LOGO_BP_rev-2023.webp" alt="Logo BP">
                 <div id="page-indicator">Page - of -</div>
             </div>
 
-            <!-- ITEM 4: HADITS -->
+            <!-- HADITS DENGAN AUTO-SHRINK -->
             <div class="panel-3d hadits-panel">
                 <div class="hadits-title">Hadits Harian</div>
-                <div class="hadits-text" id="sidebar-hadits">Memuat kutipan hari ini...</div>
+                <div id="hadits-wrapper">
+                    <div class="hadits-text" id="sidebar-hadits">Menarik hadits dari server...</div>
+                </div>
             </div>
-
         </div>
     </div>
 
-    <!-- ITEM 5: RUNNING TEXT (MEMANJANG FULL WIDTH DI BAWAH) -->
+    <!-- RUNNING TEXT (MEMANJANG FULL WIDTH DI BAWAH) -->
     <div class="panel-3d footer-panel">
         <div class="footer-badge">Informasi</div>
         <marquee id="running-text" scrollamount="6">BINTANG PELAJAR: Prestasi Tinggi & Akhlak Terpuji! ✦ Dilengkapi pendampingan ibadah Islami ✦ Pilihan eksklusif 1 kelas 5 siswa ✦ Raih cita-citamu bersama kami!</marquee>
     </div>
 
-    <!-- =======================================================
-         LOGIKA MESIN ASLI (TIDAK ADA YANG DIUBAH KECUALI HTML RENDER) 
-         ======================================================= -->
     <script>
         var API_URL = "https://script.google.com/macros/s/AKfycbywopky_VUnmvfktok0xRaXDpQrzjuOMo7VjfAselVjzZI7G6FBwijJJh8G9LZWUCqqdw/exec"; 
         
@@ -418,21 +234,76 @@
         var currentPageIndex = 0;
         var slideInterval = null;
         var currentMode = "JADWAL";
-        
         var prayerTimes = {};
         var prayerTimeout = null;
 
-        const kumpulanHadits = [
-            "\"Hendaklah kalian selalu berlaku jujur, karena kejujuran membawa kepada kebaikan, dan kebaikan mengantarkan seseorang ke Surga. Dan apabila seorang selalu berlaku jujur dan tetap memilih jujur, maka akan dicatat di sisi Allâh sebagai orang yang jujur. Dan jauhilah oleh kalian berbuat dusta, karena dusta membawa seseorang kepada kejahatan, dan kejahatan mengantarkan seseorang ke Neraka. Dan jika seseorang senantiasa berdusta dan memilih kedustaan maka akan dicatat di sisi Allâh sebagai pendusta (pembohong).\" (HR. Muslim)"
-        ];
-
-        function pasangHadits() {
-            const now = new Date();
-            const dayOfYear = Math.floor((now - new Date(now.getFullYear(), 0, 0)) / (1000 * 60 * 60 * 24));
-            document.getElementById('sidebar-hadits').innerText = kumpulanHadits[dayOfYear % kumpulanHadits.length];
+        // =======================================================
+        // FITUR BARU: AUTO-FIT TEXT + API HADITS
+        // =======================================================
+        
+        // 1. Fungsi untuk mengecilkan huruf otomatis jika melebihi batas kotak
+        function sesuaikanUkuranTeks() {
+            let wrapper = document.getElementById('hadits-wrapper');
+            let textEl = document.getElementById('sidebar-hadits');
+            
+            // Atur ukuran dasar yang besar dulu
+            let maxSize = 24; 
+            let minSize = 12; // Batas toleransi terkecil agar tetap terbaca
+            let currentSize = maxSize;
+            
+            textEl.style.fontSize = currentSize + 'px';
+            
+            // Selama tinggi teks lebih besar dari wadahnya, kecilkan ukurannya 1px!
+            while (textEl.scrollHeight > wrapper.clientHeight && currentSize > minSize) {
+                currentSize--;
+                textEl.style.fontSize = currentSize + 'px';
+            }
         }
-        pasangHadits();
 
+        // 2. Fungsi menarik data API Hadits (Arba'in)
+        async function pasangHaditsAPI() {
+            // Hadits cadangan jika internet/API mati (Anti-Blank System)
+            const fallbackHadits = [
+                "\"Barangsiapa menempuh suatu jalan untuk menuntut ilmu, maka Allah akan mudahkan baginya jalan menuju surga.\" (HR. Muslim)",
+                "\"Amalan yang paling dicintai oleh Allah adalah sholat pada waktunya.\" (HR. Bukhari & Muslim)",
+                "\"Senyummu di hadapan saudaramu (sesama muslim) adalah bernilai sedekah bagimu.\" (HR. Tirmidzi)",
+                "\"Sebaik-baik manusia adalah yang paling bermanfaat bagi manusia lainnya.\" (HR. Ahmad)"
+            ];
+
+            try {
+                // Menarik hadits acak (1 s.d 42) dari kitab Arbain Nawawi melalui API Gading.dev
+                let randomNum = Math.floor(Math.random() * 42) + 1;
+                let response = await fetch(`https://api.hadith.gading.dev/books/arbain/${randomNum}`);
+                let data = await response.json();
+                
+                if (data && data.data && data.data.contents) {
+                    let hadithTeks = data.data.contents.id;
+                    // Menampilkan hasil dari API
+                    document.getElementById('sidebar-hadits').innerText = `"${hadithTeks}"`;
+                } else {
+                    throw new Error("Gagal load API");
+                }
+            } catch (error) {
+                // Jika error/tidak ada internet, gunakan hadits cadangan
+                const now = new Date();
+                const dayOfYear = Math.floor((now - new Date(now.getFullYear(), 0, 0)) / (1000 * 60 * 60 * 24));
+                document.getElementById('sidebar-hadits').innerText = fallbackHadits[dayOfYear % fallbackHadits.length];
+            }
+
+            // Setelah teks masuk ke HTML, jalankan sihir Auto-Size!
+            setTimeout(sesuaikanUkuranTeks, 100); 
+        }
+
+        // Jalankan API saat TV pertama kali menyala
+        pasangHaditsAPI(); 
+
+        // Update Hadits baru tiap 12 jam otomatis agar bervariasi tanpa perlu refresh TV
+        setInterval(pasangHaditsAPI, 43200000); 
+
+
+        // =======================================================
+        // LOGIKA SISTEM UTAMA (TIDAK DIUBAH)
+        // =======================================================
         function fetchPrayerTimes() {
             var xhr = new XMLHttpRequest();
             xhr.open("GET", "https://api.aladhan.com/v1/timingsByCity?city=Depok&country=Indonesia&method=20", true);
@@ -453,222 +324,134 @@
         function showPrayerOverlay(sholatName) {
             var prayerNameEl = document.getElementById('prayer-name');
             var overlayEl = document.getElementById('prayer-overlay');
-            if(prayerNameEl && overlayEl) {
-                prayerNameEl.innerText = sholatName.toUpperCase();
-                overlayEl.style.display = 'flex';
-            }
-            var music = document.getElementById("bg-music");
-            if (music && !music.paused) music.pause();
-            if(prayerTimeout) clearTimeout(prayerTimeout);
-            prayerTimeout = setTimeout(hidePrayerOverlay, 300000); 
+            if(prayerNameEl && overlayEl) { prayerNameEl.innerText = sholatName.toUpperCase(); overlayEl.style.display = 'flex'; }
+            var music = document.getElementById("bg-music"); if (music && !music.paused) music.pause();
+            if(prayerTimeout) clearTimeout(prayerTimeout); prayerTimeout = setTimeout(hidePrayerOverlay, 300000); 
         }
 
         function hidePrayerOverlay() {
-            var overlayEl = document.getElementById('prayer-overlay');
-            if(overlayEl) overlayEl.style.display = 'none';
-            var music = document.getElementById("bg-music");
-            if (music && music.paused) { var playPromise = music.play(); if(playPromise !== undefined) playPromise.catch(function(e){}); }
+            var overlayEl = document.getElementById('prayer-overlay'); if(overlayEl) overlayEl.style.display = 'none';
+            var music = document.getElementById("bg-music"); if (music && music.paused) { var playPromise = music.play(); if(playPromise !== undefined) playPromise.catch(function(e){}); }
         }
 
         function playMusic() {
-            var music = document.getElementById("bg-music");
-            var overlayEl = document.getElementById('prayer-overlay');
+            var music = document.getElementById("bg-music"); var overlayEl = document.getElementById('prayer-overlay');
             if (overlayEl && overlayEl.style.display === 'flex') return;
             if (music && music.paused) { var playPromise = music.play(); if(playPromise !== undefined) playPromise.catch(function(e){}); }
         }
 
         function fetchData() {
-            var xhr = new XMLHttpRequest();
-            var urlAntiMacet = API_URL + (API_URL.indexOf('?') > -1 ? '&' : '?') + 'waktu=' + new Date().getTime();
+            var xhr = new XMLHttpRequest(); var urlAntiMacet = API_URL + (API_URL.indexOf('?') > -1 ? '&' : '?') + 'waktu=' + new Date().getTime();
             xhr.open("GET", urlAntiMacet, true); 
             xhr.onreadystatechange = function() {
-                if (xhr.readyState === 4 && xhr.status === 200) {
-                    try {
-                        rawResponseData = JSON.parse(xhr.responseText);
-                        calculateDynamicPages();
-                    } catch(e) {}
-                }
-            };
-            xhr.send();
+                if (xhr.readyState === 4 && xhr.status === 200) { try { rawResponseData = JSON.parse(xhr.responseText); calculateDynamicPages(); } catch(e) {} }
+            }; xhr.send();
         }
 
         function bersihkanNamaSiswa(teksMentah) {
-            if (!teksMentah) return "-";
-            var teksBersih = String(teksMentah);
+            if (!teksMentah) return "-"; var teksBersih = String(teksMentah);
             teksBersih = teksBersih.replace(/\s*\([^)]*\)/g, '').replace(/\n/g, '<br>');
             return teksBersih.trim() === "" ? "-" : teksBersih;
         }
 
         function calculateDynamicPages() {
             if (!rawResponseData) return;
-
-            var scheduleData = rawResponseData.jadwal || [];
-            var infoData = rawResponseData.info || [];
+            var scheduleData = rawResponseData.jadwal || []; var infoData = rawResponseData.info || [];
             var activeSesiMinutes = rawResponseData.activeSesiMinutes || 0;
-
-            var now = new Date();
-            var utc = now.getTime() + (now.getTimezoneOffset() * 60000);
-            var wib = new Date(utc + (3600000 * 7));
-            var currentMinutes = wib.getHours() * 60 + wib.getMinutes();
-
-            var diff = currentMinutes - activeSesiMinutes;
+            var now = new Date(); var utc = now.getTime() + (now.getTimezoneOffset() * 60000); var wib = new Date(utc + (3600000 * 7));
+            var currentMinutes = wib.getHours() * 60 + wib.getMinutes(); var diff = currentMinutes - activeSesiMinutes;
             
             var newMode = "JADWAL"; 
             if (ENABLE_INFO_SLIDE === true) {
-                if (diff >= 30 && diff < 40) newMode = "INFO";
-                else if (diff >= 50 && diff < 70) newMode = "INFO";
-
+                if (diff >= 30 && diff < 40) newMode = "INFO"; else if (diff >= 50 && diff < 70) newMode = "INFO";
                 if (newMode === "JADWAL" && scheduleData.length === 0 && infoData.length > 0) newMode = "INFO";
                 if (newMode === "INFO" && infoData.length === 0) newMode = "JADWAL";
             }
 
-            var isModeChanged = (currentMode !== newMode);
-            currentMode = newMode;
-            var tempPages = [];
+            var isModeChanged = (currentMode !== newMode); currentMode = newMode; var tempPages = [];
 
             if (currentMode === "JADWAL") {
-                document.getElementById('info-container').style.display = 'none';
-                document.getElementById('tabel-wadah').style.display = 'flex';
-                
-                var tbody = document.getElementById('table-body');
-                var container = document.getElementById('tabel-wadah'); 
-                var table = document.getElementById('schedule-table');
+                document.getElementById('info-container').style.display = 'none'; document.getElementById('tabel-wadah').style.display = 'flex';
+                var tbody = document.getElementById('table-body'); var container = document.getElementById('tabel-wadah'); var table = document.getElementById('schedule-table');
                 
                 if (scheduleData.length === 0) {
                     tempPages.push([{ "empty": true }]);
                 } else {
-                    var currentPageData = [];
-                    var safeMargin = 50; 
-                    
+                    var currentPageData = []; var safeMargin = 50; 
                     tbody.innerHTML = '';
-                    
                     for (var i = 0; i < scheduleData.length; i++) {
-                        var row = scheduleData[i];
-                        currentPageData.push(row);
-                        
-                        var tr = document.createElement('tr');
-                        var namaSiswa = bersihkanNamaSiswa(row.siswa);
+                        var row = scheduleData[i]; currentPageData.push(row);
+                        var tr = document.createElement('tr'); var namaSiswa = bersihkanNamaSiswa(row.siswa);
                         var isKomik = (row.ruang && row.ruang.toLowerCase().includes("komik")) ? "komik" : "";
-                        
-                        // Render Baris Desain Baru (td tanpa border agar efek shadow tr 3D berhasil)
                         tr.innerHTML = `
                             <td style="text-align:center;"><span class="badge-sesi">${row.sesi || '-'}</span></td>
                             <td style="text-align:center;"><span class="badge-ruang ${isKomik}">${row.ruang || '-'}</span></td>
-                            <td>
-                                <div class="guru-name">${row.guru || '-'}</div>
-                                <div class="badge-mapel">${row.mapel || '-'}</div>
-                            </td>
+                            <td><div class="guru-name">${row.guru || '-'}</div><div class="badge-mapel">${row.mapel || '-'}</div></td>
                             <td class="siswa-list">${namaSiswa}</td>
                         `;
-                        
                         tbody.appendChild(tr);
-                        
                         if (table.offsetHeight > (container.clientHeight - safeMargin)) {
-                            tbody.removeChild(tr);
-                            currentPageData.pop();
+                            tbody.removeChild(tr); currentPageData.pop();
                             if (currentPageData.length > 0) tempPages.push(currentPageData);
-                            currentPageData = [row];
-                            tbody.innerHTML = ''; 
-                            tbody.appendChild(tr); 
+                            currentPageData = [row]; tbody.innerHTML = ''; tbody.appendChild(tr); 
                         }
                     }
                     if (currentPageData.length > 0) tempPages.push(currentPageData);
                     tbody.innerHTML = '';
                 }
             } else {
-                document.getElementById('tabel-wadah').style.display = 'none';
-                document.getElementById('info-container').style.display = 'flex';
+                document.getElementById('tabel-wadah').style.display = 'none'; document.getElementById('info-container').style.display = 'flex';
                 for (var k = 0; k < infoData.length; k++) { tempPages.push([infoData[k]]); }
             }
-            
             pages = tempPages;
-
-            if (isModeChanged) {
-                currentPageIndex = 0; renderPage(); startPagination();
-            } else if (currentMode === "JADWAL") {
-                if (currentPageIndex >= pages.length) currentPageIndex = 0;
-                renderPage(); startPagination();
-            }
+            if (isModeChanged) { currentPageIndex = 0; renderPage(); startPagination(); } else if (currentMode === "JADWAL") { if (currentPageIndex >= pages.length) currentPageIndex = 0; renderPage(); startPagination(); }
         }
 
         function renderPage() {
             if (pages.length === 0) return;
             var indicator = document.getElementById('page-indicator');
-            // Penyesuaian Teks Paging seperti referensi gambar
             if(indicator) indicator.innerText = 'Page ' + (currentPageIndex + 1) + ' of ' + pages.length;
 
             if (currentMode === "JADWAL") {
-                var tbody = document.getElementById('table-body');
-                if(!tbody) return;
-                
-                tbody.style.display = 'none';
-                tbody.innerHTML = ''; 
-                
+                var tbody = document.getElementById('table-body'); if(!tbody) return;
+                tbody.style.display = 'none'; tbody.innerHTML = ''; 
                 var pageData = pages[currentPageIndex];
-                
                 if(pageData[0] && pageData[0].empty) {
                      tbody.innerHTML = '<tr><td colspan="4" class="empty-state" style="background:transparent; border:none; box-shadow:none;">Jadwal Sesi Ini Belum Dimulai</td></tr>';
                 } else {
                     pageData.forEach(function(row) {
-                        var tr = document.createElement('tr');
-                        var namaSiswa = bersihkanNamaSiswa(row.siswa);
-                        var isKomik = (row.ruang && row.ruang.toLowerCase().includes("komik")) ? "komik" : "";
-                        
+                        var tr = document.createElement('tr'); var namaSiswa = bersihkanNamaSiswa(row.siswa); var isKomik = (row.ruang && row.ruang.toLowerCase().includes("komik")) ? "komik" : "";
                         tr.innerHTML = `
                             <td style="text-align:center;"><span class="badge-sesi">${row.sesi || '-'}</span></td>
                             <td style="text-align:center;"><span class="badge-ruang ${isKomik}">${row.ruang || '-'}</span></td>
-                            <td>
-                                <div class="guru-name">${row.guru || '-'}</div>
-                                <div class="badge-mapel">${row.mapel || '-'}</div>
-                            </td>
+                            <td><div class="guru-name">${row.guru || '-'}</div><div class="badge-mapel">${row.mapel || '-'}</div></td>
                             <td class="siswa-list">${namaSiswa}</td>
-                        `;
-                        tbody.appendChild(tr);
+                        `; tbody.appendChild(tr);
                     });
                 }
-                
                 setTimeout(() => { tbody.style.display = 'table-row-group'; }, 50);
-
             } else {
-                var infoList = document.getElementById('info-list');
-                if(!infoList) return;
-                infoList.innerHTML = '';
-                var pageData = pages[currentPageIndex];
-                
+                var infoList = document.getElementById('info-list'); if(!infoList) return;
+                infoList.innerHTML = ''; var pageData = pages[currentPageIndex];
                 pageData.forEach(function(text) {
-                    var div = document.createElement('div');
-                    var textStr = String(text).trim();
-                    var isVideo = false; var mediaUrl = "";
-
-                    if (textStr.toUpperCase().indexOf('VIDEO:') === 0) {
-                        isVideo = true; mediaUrl = textStr.substring(6).trim(); 
-                    } else if (textStr.indexOf('http') === 0) { mediaUrl = textStr; }
-
+                    var div = document.createElement('div'); var textStr = String(text).trim(); var isVideo = false; var mediaUrl = "";
+                    if (textStr.toUpperCase().indexOf('VIDEO:') === 0) { isVideo = true; mediaUrl = textStr.substring(6).trim(); } else if (textStr.indexOf('http') === 0) { mediaUrl = textStr; }
                     if (mediaUrl !== "") {
                         document.getElementById('info-header-title').style.display = 'none'; 
-                        div.style.width = '100%'; div.style.height = '100%';
-                        div.style.display = 'flex'; div.style.justifyContent = 'center'; div.style.alignItems = 'center';
-                        
+                        div.style.width = '100%'; div.style.height = '100%'; div.style.display = 'flex'; div.style.justifyContent = 'center'; div.style.alignItems = 'center';
                         if (isVideo) {
                             if (mediaUrl.includes("drive.google.com")) {
-                                var fileId = "";
-                                if (mediaUrl.includes("/file/d/")) { fileId = mediaUrl.split("/file/d/")[1].split("/")[0]; }
-                                var iframeSrc = "https://drive.google.com/file/d/" + fileId + "/preview?autoplay=1&mute=1";
-                                div.innerHTML = '<iframe class="video-content" src="' + iframeSrc + '" allow="autoplay" style="width: 100%; height: 100%; border: none; border-radius: 16px;"></iframe>';
+                                var fileId = ""; if (mediaUrl.includes("/file/d/")) { fileId = mediaUrl.split("/file/d/")[1].split("/")[0]; }
+                                div.innerHTML = '<iframe class="video-content" src="https://drive.google.com/file/d/' + fileId + '/preview?autoplay=1&mute=1" allow="autoplay" style="width: 100%; height: 100%; border: none; border-radius: 16px;"></iframe>';
                             } else {
                                 div.innerHTML = '<video class="video-content" autoplay loop muted style="max-width: 100%; max-height: 100%; border-radius: 16px; object-fit: cover;"><source src="' + mediaUrl + '" type="video/mp4"></video>';
                             }
                         } else {
-                            var fileIdPhoto = "";
-                            if (mediaUrl.includes("drive.google.com/file/d/")) {
-                                fileIdPhoto = mediaUrl.split("/file/d/")[1].split("/")[0];
-                                mediaUrl = "https://lh3.googleusercontent.com/d/" + fileIdPhoto;
-                            }
+                            var fileIdPhoto = ""; if (mediaUrl.includes("drive.google.com/file/d/")) { fileIdPhoto = mediaUrl.split("/file/d/")[1].split("/")[0]; mediaUrl = "https://lh3.googleusercontent.com/d/" + fileIdPhoto; }
                             div.innerHTML = '<img class="poster-img" src="' + mediaUrl + '" style="max-width: 100%; max-height: 100%; border-radius: 16px; object-fit: contain;">';
                         }
                     } else {
-                        document.getElementById('info-header-title').style.display = 'block'; 
-                        div.className = 'info-card'; div.innerText = textStr;
+                        document.getElementById('info-header-title').style.display = 'block'; div.className = 'info-card'; div.innerText = textStr;
                     }
                     infoList.appendChild(div);
                 });
@@ -678,11 +461,7 @@
         function startPagination() {
             if(slideInterval !== null) clearInterval(slideInterval);
             if (pages.length > 1) {
-                slideInterval = setInterval(function() {
-                    currentPageIndex++;
-                    if (currentPageIndex >= pages.length) currentPageIndex = 0;
-                    renderPage();
-                }, SLIDE_DURATION);
+                slideInterval = setInterval(function() { currentPageIndex++; if (currentPageIndex >= pages.length) currentPageIndex = 0; renderPage(); }, SLIDE_DURATION);
             }
         }
 
@@ -690,38 +469,20 @@
             var now = new Date();
             var days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
             var months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Ags', 'Sep', 'Okt', 'Nov', 'Des'];
-            
-            var day = days[now.getDay()];
-            var date = now.getDate();
-            var month = months[now.getMonth()];
-            var year = now.getFullYear();
-
-            var h = ("0" + now.getHours()).slice(-2);
-            var m = ("0" + now.getMinutes()).slice(-2);
-            var s = ("0" + now.getSeconds()).slice(-2);
-
-            var timeEl = document.getElementById('clock-time');
-            var dateEl = document.getElementById('clock-date');
+            var h = ("0" + now.getHours()).slice(-2); var m = ("0" + now.getMinutes()).slice(-2); var s = ("0" + now.getSeconds()).slice(-2);
+            var timeEl = document.getElementById('clock-time'); var dateEl = document.getElementById('clock-date');
             
             if(timeEl) timeEl.innerText = h + ':' + m;
-            if(dateEl) dateEl.innerText = day + ', ' + date + ' ' + month + ' ' + year;
+            if(dateEl) dateEl.innerText = days[now.getDay()] + ', ' + now.getDate() + ' ' + months[now.getMonth()] + ' ' + now.getFullYear();
             
             if (s === "00") {
-                calculateDynamicPages(); 
-                var currentHM = h + ':' + m;
-                for (var sholat in prayerTimes) {
-                    if (prayerTimes[sholat] === currentHM) showPrayerOverlay(sholat);
-                }
+                calculateDynamicPages(); var currentHM = h + ':' + m;
+                for (var sholat in prayerTimes) { if (prayerTimes[sholat] === currentHM) showPrayerOverlay(sholat); }
             }
         }
 
-        fetchPrayerTimes();
-        setTimeout(playMusic, 2000);
-        setInterval(updateClock, 1000); 
-        updateClock();
-        fetchData(); 
-        setInterval(fetchData, REFRESH_DATA); 
-        setTimeout(function() { location.reload(); }, 10800000);
+        fetchPrayerTimes(); setTimeout(playMusic, 2000); setInterval(updateClock, 1000); updateClock();
+        fetchData(); setInterval(fetchData, REFRESH_DATA); setTimeout(function() { location.reload(); }, 10800000);
     </script>
 </body>
 </html>

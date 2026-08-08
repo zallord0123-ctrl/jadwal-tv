@@ -25,10 +25,10 @@
             background-color: var(--bg-light-blue); 
             color: var(--text-main); 
             height: 100vh; 
-            overflow: hidden; /* Mencegah munculnya scrollbar di TV */
+            overflow: hidden; 
             display: flex; 
             flex-direction: column; 
-            padding: 15px; /* Padding layar diperkecil */
+            padding: 15px; 
             gap: 15px; 
             position: relative; 
         }
@@ -47,11 +47,9 @@
             border: 2px solid rgba(255, 255, 255, 0.6); 
         }
 
-        /* ======================================= */
-        /* HEADER - DIPERKECIL */
-        /* ======================================= */
+        /* HEADER */
         .header-panel { 
-            height: 80px; /* Jauh lebih kecil dari sebelumnya */
+            height: 80px; 
             display: flex; 
             justify-content: space-between; 
             align-items: center; 
@@ -68,21 +66,23 @@
         .date-text { font-size: 12px; font-weight: 700; color: var(--text-muted); margin-top: 2px; }
         #now-playing { color: var(--bp-tosca); background: rgba(15, 118, 110, 0.1); padding: 3px 10px; border-radius: 12px; display: inline-block; font-size: 10px; font-weight: 800; margin-top: 4px; box-shadow: var(--shadow-3d-in); }
 
-        /* ======================================= */
-        /* MAIN CONTENT (ATURAN FLEKSIBEL GRID 18 RUANGAN) */
-        /* ======================================= */
+        /* MAIN CONTENT (WADAH SCROLL) */
         .main-content { 
             flex: 1; 
             padding: 0 10px; 
-            height: 100%; /* Memaksa kotak mematuhi sisa ruang tinggi layar */
+            overflow-y: auto; 
+            scroll-behavior: smooth; /* Efek transisi scroll yang mulus */
         }
+        
+        /* Sembunyikan scrollbar agar TV terlihat rapi */
+        .main-content::-webkit-scrollbar { display: none; }
+        .main-content { -ms-overflow-style: none; scrollbar-width: none; }
 
         .grid-container {
             display: grid;
-            grid-template-columns: repeat(6, 1fr); /* Pasti 6 kolom ke samping */
-            grid-template-rows: repeat(3, minmax(0, 1fr)); /* ATURAN FLEKSIBEL: Pasti 3 baris membagi layar sempurna, ANTI TERPOTONG */
+            grid-template-columns: repeat(6, 1fr); 
             gap: 12px;
-            height: 100%; 
+            padding-bottom: 25px; /* Memberikan ruang napas di bagian paling bawah */
         }
 
         /* KARTU RUANGAN 3D */
@@ -94,7 +94,6 @@
             border: 2px solid rgba(255, 255, 255, 0.8); 
             display: flex;
             flex-direction: column;
-            overflow: hidden; /* Sembunyikan isi jika terlalu berlebih */
         }
         .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
         .badge-ruang { background: #fef3c7; color: #b45309; border: 1px solid #fde68a; font-size: 12px; font-weight: 800; padding: 3px 10px; border-radius: 6px; }
@@ -120,7 +119,7 @@
             display: grid; 
             grid-template-columns: 1fr 1fr; 
             gap: 3px 8px; 
-            font-size: 13px; /* Lebih besar dari awal, tapi tetap aman untuk ukuran card */
+            font-size: 13px;
             font-weight: 700; 
             color: var(--text-main); 
             line-height: 1.2; 
@@ -128,9 +127,7 @@
 
         .empty-state { grid-column: span 6; text-align: center; padding: 100px 0; font-size: 20px; font-weight: 800; color: var(--text-muted); }
 
-        /* ======================================= */
-        /* FOOTER - DIPERKECIL */
-        /* ======================================= */
+        /* FOOTER */
         .footer-panel { 
             height: 50px; 
             display: flex; 
@@ -167,7 +164,6 @@
     <!-- HEADER 3D -->
     <div class="panel-3d header-panel">
         <div class="header-brand">
-            <!-- LOGO DIPERKECIL -->
             <img src="https://www.bintangpelajar.com/wp-content/uploads/2023/05/LOGO_BP_rev-2023.webp" alt="Logo BP">
             <div class="header-brand-text">
                 <p>JADWAL BELAJAR</p>
@@ -175,15 +171,14 @@
             </div>
         </div>
         <div class="header-time">
-            <!-- JAM DIPERKECIL -->
             <div class="clock-text" id="clock-time">00:00</div>
             <div class="date-text" id="clock-date">Memuat waktu...</div>
             <div id="now-playing">🔊 Memuat Murottal...</div>
         </div>
     </div>
 
-    <!-- KONTEN UTAMA (GRID 18 RUANGAN YANG DIPAKSA PAS DI LAYAR) -->
-    <div class="main-content">
+    <!-- KONTEN UTAMA (WADAH SCROLL) -->
+    <div class="main-content" id="scroll-wadah">
         <div class="grid-container" id="ruangan-container">
             <div class="empty-state">⏳ Sedang menarik jadwal hari ini...</div>
         </div>
@@ -196,7 +191,7 @@
     </div>
 
     <script>
-        // ⚠️ API URL ASLI MILIK BAPAK/IBU (JANGAN LUPA DIPASTIKAN BENAR)
+        // ⚠️ API URL ASLI MILIK BAPAK/IBU
         var API_URL = "https://script.google.com/macros/s/AKfycbywopky_VUnmvfktok0xRaXDpQrzjuOMo7VjfAselVjzZI7G6FBwijJJh8G9LZWUCqqdw/exec"; 
         var prayerTimes = {};
         var prayerTimeout = null;
@@ -272,7 +267,48 @@
         putarMurottalAPI();
 
         // =======================================================
-        // TARIK & TAMPILKAN JADWAL (18 RUANGAN DALAM 1 LAYAR)
+        // MESIN AUTO-SCROLL (TEKS BERJALAN OTOMATIS)
+        // =======================================================
+        var scrollContainer = null;
+        var isScrolling = true;
+        var currentScrollY = 0;
+
+        function initAutoScroll() {
+            scrollContainer = document.getElementById('scroll-wadah');
+            setInterval(jalankanScroll, 20); // Dijalankan 50x per detik agar mulus
+        }
+
+        function jalankanScroll() {
+            if (!scrollContainer || !isScrolling) return;
+            
+            // maxScroll adalah selisih antara tinggi total isi dikurangi tinggi layar TV yang terlihat
+            var maxScroll = scrollContainer.scrollHeight - scrollContainer.clientHeight;
+            
+            if (maxScroll <= 5) return; // Jika datanya sedikit dan tidak terpotong, diamkan saja
+
+            if (currentScrollY < maxScroll) {
+                // Kecepatan Scroll (Makin kecil angkanya, makin pelan)
+                currentScrollY += 0.3; 
+                scrollContainer.scrollTop = currentScrollY;
+            } else {
+                // Jika layar sudah menabrak bagian paling bawah
+                isScrolling = false; // Pause sebentar
+                
+                setTimeout(function() {
+                    // Muluskan kembali layar ke atas
+                    scrollContainer.scrollTo({ top: 0, behavior: 'smooth' });
+                    currentScrollY = 0;
+                    
+                    // Berhenti di atas selama 4 detik, baru scroll lagi ke bawah
+                    setTimeout(function() {
+                        isScrolling = true;
+                    }, 4000); 
+                }, 3000); // Berhenti di bawah selama 3 detik untuk baca ruangan terakhir
+            }
+        }
+
+        // =======================================================
+        // TARIK & TAMPILKAN JADWAL
         // =======================================================
         function bersihkanNamaSiswa(teksMentah) {
             if (!teksMentah) return "-"; 
@@ -330,9 +366,16 @@
                 `;
             });
             container.innerHTML = html;
+
+            // Reset Scroll setiap data diperbarui agar mulai dari atas
+            if (scrollContainer) {
+                scrollContainer.scrollTo({ top: 0, behavior: 'instant' });
+                currentScrollY = 0;
+            }
         }
 
-        // Panggil penarik data pertama kali & refresh tiap 1 menit
+        // Jalankan Script Utama
+        initAutoScroll();
         fetchData(); 
         setInterval(fetchData, 60000); 
 

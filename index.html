@@ -3,399 +3,314 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jadwal 3D TV - Bintang Pelajar (Grid Version)</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <title>Jadwal TV - Bintang Pelajar</title>
+    <!-- Font Montserrat (Bawaan Bintang Pelajar) -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --bg-light-blue: #e0f2fe; 
-            --bg-panel: #ffffff; 
-            --bp-blue: #1e3a8a;
-            --bp-yellow: #f59e0b; 
-            --bp-tosca: #0f766e;
-            --text-main: #0f172a;
-            --text-muted: #64748b;
-            --shadow-3d-out: 8px 8px 16px rgba(148, 185, 211, 0.4), -8px -8px 16px rgba(255, 255, 255, 1);
-            --shadow-3d-in: inset 5px 5px 10px rgba(148, 185, 211, 0.4), inset -5px -5px 10px rgba(255, 255, 255, 1);
-        }
-
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
-
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Montserrat', sans-serif; }
         body { 
-            background-color: var(--bg-light-blue); 
-            color: var(--text-main); 
-            height: 100vh; width: 100vw;
-            overflow: hidden; 
+            background-color: #e0f2fe; /* Warna latar biru muda soft */
+            color: #1e293b; 
+            height: 100vh; 
             display: flex; 
             flex-direction: column; 
-            padding: 15px; 
+            overflow: hidden; /* Menghilangkan scrollbar di TV */
+        }
+        
+        /* ========================================= */
+        /* HEADER (KOP ATAS) */
+        /* ========================================= */
+        .header { 
+            background: white; 
+            padding: 15px 30px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05); 
+            border-radius: 0 0 25px 25px; 
+            margin: 0 15px 15px 15px; 
+        }
+        .header-left h3 { color: #f59e0b; font-size: 13px; font-weight: 800; letter-spacing: 1px; margin-bottom: 3px; text-transform: uppercase;}
+        .header-left h1 { color: #1e3a8a; font-size: 26px; font-weight: 900; }
+        
+        /* Pastikan Link Logo Asli Bintang Pelajar */
+        .header-center img { height: 50px; }
+        
+        .header-right { text-align: right; }
+        .time { font-size: 38px; font-weight: 900; color: #1e3a8a; line-height: 1; letter-spacing: -1px;}
+        .date { font-size: 13px; color: #64748b; font-weight: 700; margin-top: 5px; }
+        .quran { font-size: 11px; color: #059669; font-weight: 800; background: #d1fae5; padding: 4px 10px; border-radius: 12px; display: inline-block; margin-top: 6px; }
+
+        /* ========================================= */
+        /* MAIN CONTENT (GRID KOTAK-KOTAK RUANGAN) */
+        /* ========================================= */
+        .main-content { 
+            flex: 1; 
+            padding: 0 15px; 
+            overflow: hidden; 
+        }
+        .grid-container { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); 
             gap: 15px; 
-            position: relative; 
+            height: 100%;
+            align-content: start;
         }
-
-        /* AMBIENT BACKGROUND */
-        .ambient-blob { position: absolute; border-radius: 50%; filter: blur(80px); z-index: -1; animation: float 20s infinite ease-in-out alternate; }
-        .blob-1 { top: -10%; left: -10%; width: 50vw; height: 50vh; background: rgba(255, 255, 255, 0.6); }
-        .blob-2 { bottom: -20%; right: -10%; width: 60vw; height: 60vh; background: rgba(186, 230, 253, 0.5); animation-delay: -5s; }
-
-        @keyframes float { 0% { transform: translate(0, 0) scale(1); } 50% { transform: translate(5%, 10%) scale(1.1); } 100% { transform: translate(-5%, -5%) scale(0.9); } }
-
-        /* HEADER */
-        .header-panel { 
-            background: var(--bg-panel); border-radius: 20px; 
-            box-shadow: var(--shadow-3d-out); border: 2px solid rgba(255, 255, 255, 0.6);
-            height: 80px; display: flex; justify-content: space-between; align-items: center; padding: 0 30px; flex-shrink: 0;
-        }
-        .header-left { flex: 1; }
-        .header-left h1 { font-size: 20px; font-weight: 800; color: var(--bp-blue); letter-spacing: -0.5px; }
-        .header-left p { font-size: 11px; font-weight: 800; color: var(--bp-yellow); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 2px; }
         
-        .header-center { flex: 1; display: flex; justify-content: center; align-items: center; }
-        .header-center img { max-height: 50px; filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.1)); }
-
-        .header-right { flex: 1; text-align: right; }
-        .clock-text { font-size: 28px; font-weight: 900; color: var(--bp-blue); line-height: 1; font-variant-numeric: tabular-nums; }
-        .date-text { font-size: 12px; font-weight: 700; color: var(--text-muted); margin-top: 4px; }
+        /* ========================================= */
+        /* DESAIN KARTU RUANGAN */
+        /* ========================================= */
+        .card { 
+            background: white; 
+            border-radius: 16px; 
+            padding: 18px; 
+            box-shadow: 0 6px 15px rgba(0,0,0,0.04); 
+            display: flex; 
+            flex-direction: column; 
+            border-top: 5px solid #1e3a8a; 
+            border-left: 1px solid #f1f5f9;
+            border-right: 1px solid #f1f5f9;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        .card-header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            margin-bottom: 12px; 
+        }
+        .room-badge { 
+            background: #fef3c7; 
+            color: #d97706; 
+            font-size: 13px; 
+            font-weight: 800; 
+            padding: 5px 12px; 
+            border-radius: 8px; 
+        }
+        .time-badge { 
+            font-size: 15px; 
+            font-weight: 900; 
+            color: #d97706; 
+        }
         
-        /* NOW PLAYING AUDIO */
-        #now-playing { 
-            color: var(--bp-tosca); background: rgba(15, 118, 110, 0.1); 
-            padding: 2px 10px; border-radius: 8px; display: inline-block; 
-            font-size: 10px; font-weight: 800; margin-top: 6px; box-shadow: var(--shadow-3d-in); 
+        /* 💡 REVISI 1: GURU DAN MAPEL SEJAJAR KANAN KIRI */
+        .guru-mapel-container { 
+            display: flex; 
+            align-items: center; 
+            justify-content: flex-start;
+            gap: 10px; 
+            margin-bottom: 12px; 
+            flex-wrap: wrap; 
+            border-bottom: 1px solid #f1f5f9;
+            padding-bottom: 10px;
         }
-
-        /* MAIN CONTENT - GRID 6x3 DINAMIS */
-        .schedule-container {
-            flex-grow: 1; display: grid;
-            grid-template-columns: repeat(6, 1fr); 
-            grid-auto-rows: min-content; 
-            align-items: start; 
-            gap: 12px; 
-            overflow: hidden;
+        .guru-name { 
+            font-size: 16px; 
+            font-weight: 800; 
+            color: #1e3a8a; 
         }
-
-        /* CARD RUANGAN */
-        .card {
-            background: var(--bg-panel); 
-            border-radius: 14px; padding: 10px 12px; 
-            box-shadow: var(--shadow-3d-out); 
-            border: 1px solid rgba(255, 255, 255, 0.6);
-            display: flex; flex-direction: column;
-            border-left: 5px solid var(--bp-blue);
-            animation: fadeUpIn 0.5s ease-out forwards;
+        .mapel-badge { 
+            background: #0d9488; 
+            color: white; 
+            padding: 4px 10px; 
+            border-radius: 6px; 
+            font-size: 12px; 
+            font-weight: 800; 
         }
-
-        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; border-bottom: 1px solid rgba(30, 58, 138, 0.1); padding-bottom: 6px; }
-        .room-badge { background: #fef3c7; color: #b45309; border: 1px solid #fde68a; font-size: 11px; font-weight: 800; padding: 2px 8px; border-radius: 6px; }
-        .room-badge.komik { background: #ffedd5; color: #c2410c; border-color: #fed7aa; }
-        .time-badge { color: var(--bp-yellow); font-weight: 800; font-size: 12px; font-variant-numeric: tabular-nums; }
-
-        .card-body { margin-bottom: 6px; }
-        .teacher-name { font-size: 14px; font-weight: 800; color: var(--bp-blue); margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .badge-mapel { color: #ffffff; font-size: 10px; font-weight: 700; background: var(--bp-tosca); padding: 2px 8px; border-radius: 6px; display: inline-block; box-shadow: 2px 2px 5px rgba(15, 118, 110, 0.2); }
-
-        .card-footer { display: flex; flex-direction: column; }
-        .student-list-title { font-size: 9px; color: var(--text-muted); margin-bottom: 4px; font-weight: 700; letter-spacing: 0.5px; }
-        .student-list {
-            font-size: 10px; font-weight: 600; line-height: 1.4; color: var(--text-main);
-            white-space: pre-line; column-count: 2; column-gap: 10px;
+        
+        /* 💡 REVISI 2: UKURAN FONT SISWA DIPERBESAR */
+        .student-title { 
+            font-size: 11px; 
+            color: #94a3b8; 
+            font-weight: 800; 
+            margin-bottom: 8px; 
+            letter-spacing: 0.5px;
         }
-
-        /* INFO SLIDE (MENGGANTIKAN GRID JIKA DIPERLUKAN) */
-        #info-container { 
-            flex-grow: 1; display: none; flex-direction: column; align-items: center; justify-content: center; 
-            background: var(--bg-panel); border-radius: 20px; box-shadow: var(--shadow-3d-out); border: 2px solid rgba(255, 255, 255, 0.6); padding: 30px;
+        .student-grid { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr; /* Membagi siswa ke 2 Kolom */
+            gap: 6px 12px; 
+            font-size: 14px; /* <--- UKURAN FONT SUDAH DIPERBESAR */
+            font-weight: 700; 
+            color: #334155; 
+            line-height: 1.4; /* Jarak antar baris diperlebar sedikit agar nyaman dibaca */
         }
-        .info-title { font-size: 28px; color: var(--bp-blue); font-weight: 800; margin-bottom: 20px; letter-spacing: 1px;}
-        .info-card { background: var(--bg-light-blue); border-left: 6px solid var(--bp-yellow); padding: 20px 30px; border-radius: 16px; font-size: 20px; color: var(--text-main); font-weight: 700; width: 100%; box-shadow: var(--shadow-3d-out); text-align: center;}
-
-        /* FOOTER RUNNING TEXT */
-        .footer-panel { 
-            background: var(--bg-panel); border-radius: 16px; box-shadow: var(--shadow-3d-out); border: 2px solid rgba(255, 255, 255, 0.6);
-            height: 50px; display: flex; align-items: center; padding: 0 20px; flex-shrink: 0; z-index: 10; 
+        
+        /* ========================================= */
+        /* FOOTER (TEKS BERJALAN) */
+        /* ========================================= */
+        .footer { 
+            background: white; 
+            margin: 15px; 
+            border-radius: 20px; 
+            display: flex; 
+            align-items: center; 
+            padding: 12px 25px; 
+            box-shadow: 0 -4px 15px rgba(0,0,0,0.05); 
         }
-        .footer-badge { background: var(--bp-blue); color: #ffffff; font-size: 13px; font-weight: 800; padding: 6px 14px; border-radius: 10px; text-transform: uppercase; letter-spacing: 1px; white-space: nowrap; margin-right: 15px; box-shadow: 2px 2px 8px rgba(30, 58, 138, 0.3); }
-        marquee { font-size: 16px; font-weight: 700; color: var(--bp-blue); }
-
-        /* PRAYER OVERLAY */
-        #prayer-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(30, 58, 138, 0.95); z-index: 9999; display: none; flex-direction: column; justify-content: center; align-items: center; backdrop-filter: blur(15px); text-align: center; }
-        #prayer-overlay h1 { font-size: 80px; font-weight: 900; color: #facc15; margin-bottom: 20px; letter-spacing: 5px; text-shadow: 0 0 30px rgba(250, 204, 21, 0.5); }
-        #prayer-overlay h2 { font-size: 32px; color: #ffffff; font-weight: 600; }
-        #prayer-name { color: #facc15; font-weight: 800; }
-        #prayer-overlay p { font-size: 20px; color: #cbd5e1; margin-top: 20px; }
-
-        @keyframes fadeUpIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        .info-btn { 
+            background: #1e3a8a; 
+            color: white; 
+            padding: 10px 25px; 
+            border-radius: 12px; 
+            font-weight: 900; 
+            font-size: 15px; 
+            white-space: nowrap; 
+            margin-right: 20px; 
+            letter-spacing: 1px;
+        }
+        .marquee-container { 
+            flex: 1; 
+            overflow: hidden; 
+            white-space: nowrap; 
+        }
+        .marquee-text { 
+            display: inline-block; 
+            font-weight: 800; 
+            color: #1e3a8a; 
+            font-size: 16px; 
+            animation: marquee 25s linear infinite; 
+        }
+        @keyframes marquee { 
+            0% { transform: translateX(100%); } 
+            100% { transform: translateX(-100%); } 
+        }
     </style>
 </head>
-<body onclick="playMusic()">
+<body>
 
-    <div class="ambient-blob blob-1"></div>
-    <div class="ambient-blob blob-2"></div>
-
-    <audio id="bg-music" autoplay onended="putarMurottalAPI()">
-        <source src="" type="audio/mpeg">
-    </audio>
-
-    <div id="prayer-overlay" onclick="hidePrayerOverlay()">
-        <h1>WAKTU SHOLAT</h1>
-        <h2>Memasuki waktu sholat <span id="prayer-name">...</span></h2>
-        <p>Wilayah Kota Depok dan Sekitarnya</p>
-    </div>
-
-    <!-- HEADER -->
-    <header class="header-panel">
+    <!-- KOP HEADER -->
+    <header class="header">
         <div class="header-left">
-            <p>Jadwal Belajar</p>
+            <h3>Jadwal Belajar</h3>
             <h1>Bintang Pelajar Pesona Khayangan Depok</h1>
         </div>
-        <div class="header-center" onclick="showPrayerOverlay('SIMULASI')">
-            <img src="https://www.bintangpelajar.com/wp-content/uploads/2023/05/LOGO_BP_rev-2023.webp" alt="Logo BP">
+        <div class="header-center">
+            <!-- Bisa diganti dengan URL Logo BP milik Bapak/Ibu -->
+            <img src="https://www.bintangpelajar.com/wp-content/uploads/2020/12/logo-Bintang-Pelajar.png" alt="Logo BP">
         </div>
         <div class="header-right">
-            <div class="clock-text" id="clock-time">00:00</div>
-            <div class="date-text" id="clock-date">Memuat waktu...</div>
-            <div id="now-playing">🔊 Memuat Murottal...</div>
+            <div class="time" id="clock">00:00</div>
+            <div class="date" id="date">Memuat Tanggal...</div>
+            <div class="quran">🌿 Q.S. An-Naba'</div>
         </div>
     </header>
 
-    <!-- MAIN CONTENT - GRID -->
-    <div class="schedule-container" id="schedule-grid">
-        <!-- Kartu ruangan akan dirender di sini via JavaScript -->
-        <div style="grid-column: 1 / -1; text-align: center; font-weight: 800; color: var(--text-muted); font-size: 20px; padding-top: 100px;">
-            Menghubungkan ke Server Induk...
+    <!-- AREA KARTU JADWAL -->
+    <main class="main-content">
+        <div class="grid-container" id="ruangan-container">
+            <!-- Data Jadwal Akan Terisi Disini Oleh Javascript -->
         </div>
-    </div>
+    </main>
 
-    <!-- INFO SLIDE CONTAINER -->
-    <div id="info-container">
-        <div class="info-title" id="info-header-title">Update Terbaru</div>
-        <div id="info-list" style="width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center;"></div>
-    </div>
+    <!-- TEKS BERJALAN BAWAH -->
+    <footer class="footer">
+        <div class="info-btn">INFORMASI</div>
+        <div class="marquee-container">
+            <div class="marquee-text">
+                ⭐ BINTANG PELAJAR: Prestasi Tinggi & Akhlak Terpuji! ✦ Dilengkapi pendampingan ibadah Islami ✦ Pilihan eksklusif 1 kelas 5 siswa ✦ Selamat belajar! ⭐
+            </div>
+        </div>
+    </footer>
 
-    <!-- FOOTER -->
-    <div class="footer-panel">
-        <div class="footer-badge">Informasi</div>
-        <marquee id="running-text" scrollamount="6">
-            BINTANG PELAJAR: Prestasi Tinggi & Akhlak Terpuji! ✦ Dilengkapi pendampingan ibadah Islami ✦ Pilihan eksklusif 1 kelas 5 siswa ✦ Raih cita-citamu bersama kami!
-        </marquee>
-    </div>
 
+    <!-- SCRIPT (JAM OTOMATIS & PENGAMBIL DATA) -->
     <script>
-        var API_URL = "https://script.google.com/macros/s/AKfycbywopky_VUnmvfktok0xRaXDpQrzjuOMo7VjfAselVjzZI7G6FBwijJJh8G9LZWUCqqdw/exec"; 
-        var ENABLE_INFO_SLIDE = true; // Set false jika tidak ingin info slide menutupi jadwal
-        var SLIDE_DURATION = 15000;  
-        var REFRESH_DATA = 60000;    
+        // 1. PENGATUR JAM DIGITAL
+        function updateClock() {
+            const now = new Date();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            document.getElementById('clock').innerText = `${hours}:${minutes}`;
 
-        var rawResponseData = null;
-        var infoPages = []; 
-        var currentInfoIndex = 0;
-        var slideInterval = null;
-        var currentMode = "JADWAL"; // JADWAL | INFO
-        var prayerTimes = {};
-        var prayerTimeout = null;
-
-        // --- 1. API AL-QUR'AN OTOMATIS (EQURAN.ID) ---
-        async function putarMurottalAPI() {
-            try {
-                let randomSurah = Math.floor(Math.random() * 114) + 1;
-                let response = await fetch(`https://equran.id/api/v2/surat/${randomSurah}`);
-                let json = await response.json();
-
-                if (json && json.code === 200) {
-                    let namaSurat = json.data.namaLatin; 
-                    let linkAudio = json.data.audioFull["05"]; 
-                    let audioEl = document.getElementById("bg-music");
-                    audioEl.src = linkAudio;
-                    document.getElementById("now-playing").innerHTML = `🔊 Q.S. ${namaSurat}`;
-                    let playPromise = audioEl.play();
-                    if (playPromise !== undefined) playPromise.catch(e => console.log("Menunggu klik user (autoplay browser)"));
-                }
-            } catch (error) {
-                document.getElementById("bg-music").src = "https://server7.mp3quran.net/basit/001.mp3";
-                document.getElementById("now-playing").innerHTML = `🔊 Q.S. Al-Fatihah`;
-            }
+            const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+            const months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+            document.getElementById('date').innerText = `${days[now.getDay()]}, ${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
         }
-        putarMurottalAPI();
+        setInterval(updateClock, 1000);
+        updateClock();
 
-        // --- 2. JADWAL SHOLAT API ---
-        function fetchPrayerTimes() {
-            var xhr = new XMLHttpRequest();
-            xhr.open("GET", "https://api.aladhan.com/v1/timingsByCity?city=Depok&country=Indonesia&method=20", true);
-            xhr.onreadystatechange = function() {
-                if (xhr.readyState === 4 && xhr.status === 200) {
-                    try {
-                        var res = JSON.parse(xhr.responseText);
-                        prayerTimes = {
-                            "Subuh": res.data.timings.Fajr, "Dzuhur": res.data.timings.Dhuhr,
-                            "Ashar": res.data.timings.Asr, "Maghrib": res.data.timings.Maghrib, "Isya": res.data.timings.Isha
-                        };
-                    } catch(e) {}
-                }
-            }; xhr.send();
-        }
+        // 2. FUNGSI MERENDER HTML KE LAYAR TV
+        function renderJadwal(dataHarian) {
+            const container = document.getElementById('ruangan-container');
+            container.innerHTML = '';
 
-        function showPrayerOverlay(sholatName) {
-            var prayerNameEl = document.getElementById('prayer-name');
-            var overlayEl = document.getElementById('prayer-overlay');
-            if(prayerNameEl && overlayEl) { prayerNameEl.innerText = sholatName.toUpperCase(); overlayEl.style.display = 'flex'; }
-            var music = document.getElementById("bg-music"); if (music && !music.paused) music.pause();
-            if(prayerTimeout) clearTimeout(prayerTimeout); prayerTimeout = setTimeout(hidePrayerOverlay, 300000); 
-        }
+            dataHarian.forEach(item => {
+                // Memecah list siswa (asumsi data siswa dipisah menggunakan <br> dari Apps Script)
+                let arraySiswa = item.siswa.split('<br>');
+                let siswaHtml = arraySiswa.map(nama => {
+                    if(nama.trim() !== "" && nama.trim() !== "-") {
+                        return `<div>${nama.trim()}</div>`;
+                    }
+                    return '';
+                }).join('');
 
-        function hidePrayerOverlay() {
-            var overlayEl = document.getElementById('prayer-overlay'); if(overlayEl) overlayEl.style.display = 'none';
-            var music = document.getElementById("bg-music"); if (music && music.paused) { var playPromise = music.play(); if(playPromise !== undefined) playPromise.catch(function(e){}); }
-        }
+                const cardHtml = `
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="room-badge">${item.ruang}</div>
+                            <div class="time-badge">${item.sesi}</div>
+                        </div>
+                        
+                        <!-- Wujud Baru: Guru dan Mapel bersebelahan -->
+                        <div class="guru-mapel-container">
+                            <div class="guru-name">${item.guru}</div>
+                            <div class="mapel-badge">${item.mapel}</div>
+                        </div>
 
-        function playMusic() {
-            var music = document.getElementById("bg-music"); var overlayEl = document.getElementById('prayer-overlay');
-            if (overlayEl && overlayEl.style.display === 'flex') return;
-            if (music && music.paused) { var playPromise = music.play(); if(playPromise !== undefined) playPromise.catch(function(e){}); }
-        }
-
-        // --- 3. GOOGLE APPS SCRIPT FETCH ---
-        function fetchData() {
-            var xhr = new XMLHttpRequest(); var urlAntiMacet = API_URL + (API_URL.indexOf('?') > -1 ? '&' : '?') + 'waktu=' + new Date().getTime();
-            xhr.open("GET", urlAntiMacet, true); 
-            xhr.onreadystatechange = function() {
-                if (xhr.readyState === 4 && xhr.status === 200) { 
-                    try { rawResponseData = JSON.parse(xhr.responseText); processDisplayLogic(); } catch(e) {} 
-                }
-            }; xhr.send();
-        }
-
-        function bersihkanNamaSiswa(teksMentah) {
-            if (!teksMentah) return "-"; var teksBersih = String(teksMentah);
-            teksBersih = teksBersih.replace(/\s*\([^)]*\)/g, '').replace(/\n/g, '\n');
-            return teksBersih.trim() === "" ? "-" : teksBersih;
-        }
-
-        // --- 4. LOGIKA MODE JADWAL / INFO ---
-        function processDisplayLogic() {
-            if (!rawResponseData) return;
-            var scheduleData = rawResponseData.jadwal || []; 
-            var infoData = rawResponseData.info || [];
-            var activeSesiMinutes = rawResponseData.activeSesiMinutes || 0;
-            
-            var now = new Date(); var utc = now.getTime() + (now.getTimezoneOffset() * 60000); var wib = new Date(utc + (3600000 * 7));
-            var currentMinutes = wib.getHours() * 60 + wib.getMinutes(); var diff = currentMinutes - activeSesiMinutes;
-            
-            var newMode = "JADWAL"; 
-            if (ENABLE_INFO_SLIDE === true) {
-                if (diff >= 30 && diff < 40) newMode = "INFO"; else if (diff >= 50 && diff < 70) newMode = "INFO";
-                if (newMode === "JADWAL" && scheduleData.length === 0 && infoData.length > 0) newMode = "INFO";
-                if (newMode === "INFO" && infoData.length === 0) newMode = "JADWAL";
-            }
-
-            var isModeChanged = (currentMode !== newMode); currentMode = newMode;
-            
-            if (currentMode === "JADWAL") {
-                document.getElementById('info-container').style.display = 'none';
-                document.getElementById('schedule-grid').style.display = 'grid';
-                if(slideInterval !== null) clearInterval(slideInterval);
-                renderScheduleGrid(scheduleData);
-            } else {
-                document.getElementById('schedule-grid').style.display = 'none'; 
-                document.getElementById('info-container').style.display = 'flex';
-                infoPages = infoData;
-                if (isModeChanged || currentInfoIndex >= infoPages.length) { currentInfoIndex = 0; }
-                renderInfoSlide();
-                startInfoPagination();
-            }
-        }
-
-        function renderScheduleGrid(jadwalData) {
-            const container = document.getElementById('schedule-grid');
-            container.innerHTML = ''; 
-
-            if (!jadwalData || jadwalData.length === 0) {
-                container.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; font-weight: 800; color: var(--text-muted); font-size: 20px; padding-top: 100px;">Jadwal Sesi Ini Belum Dimulai</div>';
-                return;
-            }
-
-            jadwalData.forEach((row, index) => {
-                var isKomik = (row.ruang && row.ruang.toLowerCase().includes("komik")) ? "komik" : "";
-                var card = document.createElement('div');
-                card.className = 'card';
-                card.style.animationDelay = (index * 0.05) + 's'; // Efek muncul bergantian
-                
-                card.innerHTML = `
-                    <div class="card-header">
-                        <span class="room-badge ${isKomik}">Ruang ${row.ruang || '-'}</span>
-                        <span class="time-badge">${row.sesi || '-'}</span>
-                    </div>
-                    <div class="card-body">
-                        <div class="teacher-name" title="${row.guru}">${row.guru || '-'}</div>
-                        <div class="badge-mapel">${row.mapel || '-'}</div>
-                    </div>
-                    <div class="card-footer">
-                        <div class="student-list-title">DAFTAR SISWA:</div>
-                        <div class="student-list">${bersihkanNamaSiswa(row.siswa)}</div>
+                        <div class="student-title">DAFTAR SISWA:</div>
+                        
+                        <!-- Wujud Baru: Font Siswa Lebih Besar -->
+                        <div class="student-grid">
+                            ${siswaHtml}
+                        </div>
                     </div>
                 `;
-                container.appendChild(card);
+                container.innerHTML += cardHtml;
             });
         }
 
-        function renderInfoSlide() {
-            var infoList = document.getElementById('info-list'); if(!infoList || infoPages.length === 0) return;
-            infoList.innerHTML = ''; 
-            var textStr = String(infoPages[currentInfoIndex]).trim(); 
-            var isVideo = false; var mediaUrl = "";
-            
-            if (textStr.toUpperCase().indexOf('VIDEO:') === 0) { isVideo = true; mediaUrl = textStr.substring(6).trim(); } else if (textStr.indexOf('http') === 0) { mediaUrl = textStr; }
-            
-            var div = document.createElement('div');
-            if (mediaUrl !== "") {
-                document.getElementById('info-header-title').style.display = 'none'; 
-                div.style.width = '100%'; div.style.height = '100%'; div.style.display = 'flex'; div.style.justifyContent = 'center'; div.style.alignItems = 'center';
-                if (isVideo) {
-                    if (mediaUrl.includes("drive.google.com")) {
-                        var fileId = ""; if (mediaUrl.includes("/file/d/")) { fileId = mediaUrl.split("/file/d/")[1].split("/")[0]; }
-                        div.innerHTML = '<iframe class="video-content" src="https://drive.google.com/file/d/' + fileId + '/preview?autoplay=1&mute=1" allow="autoplay" style="width: 100%; height: 100%; border: none; border-radius: 16px;"></iframe>';
-                    } else {
-                        div.innerHTML = '<video class="video-content" autoplay loop muted style="max-width: 100%; max-height: 100%; border-radius: 16px; object-fit: cover;"><source src="' + mediaUrl + '" type="video/mp4"></video>';
-                    }
-                } else {
-                    var fileIdPhoto = ""; if (mediaUrl.includes("drive.google.com/file/d/")) { fileIdPhoto = mediaUrl.split("/file/d/")[1].split("/")[0]; mediaUrl = "https://lh3.googleusercontent.com/d/" + fileIdPhoto; }
-                    div.innerHTML = '<img class="poster-img" src="' + mediaUrl + '" style="max-width: 100%; max-height: 100%; border-radius: 16px; object-fit: contain;">';
+        // 3. FUNGSI MENGAMBIL DATA DARI GOOGLE APPS SCRIPT
+        // ⚠️ PENTING: Ganti URL di bawah ini dengan URL Web App Apps Script Bapak/Ibu!
+        // URL tersebut biasanya berakhiran /exec (tanpa ?v=publik)
+        const URL_APPS_SCRIPT = "ISI_DENGAN_URL_APPS_SCRIPT_BAPAK_IBU_DISINI";
+
+        async function tarikDataDariGoogle() {
+            try {
+                // Jika ingin menggunakan fetch langsung dari link Web App Bapak/Ibu:
+                /*
+                const response = await fetch(URL_APPS_SCRIPT);
+                const json = await response.json();
+                if (json.status === 'success') {
+                    renderJadwal(json.data);
                 }
-            } else {
-                document.getElementById('info-header-title').style.display = 'block'; div.className = 'info-card'; div.innerText = textStr;
-            }
-            infoList.appendChild(div);
-        }
+                */
 
-        function startInfoPagination() {
-            if(slideInterval !== null) clearInterval(slideInterval);
-            if (infoPages.length > 1) {
-                slideInterval = setInterval(function() { 
-                    currentInfoIndex++; 
-                    if (currentInfoIndex >= infoPages.length) currentInfoIndex = 0; 
-                    renderInfoSlide(); 
-                }, SLIDE_DURATION);
-            }
-        }
+                // ========================================================
+                // SEBAGAI CONTOH SEMENTARA SAYA BERIKAN DATA DUMMY
+                // Hapus data dummy ini dan aktifkan fungsi fetch di atas
+                // jika Bapak/Ibu sudah menyambungkannya dengan Apps Script
+                // ========================================================
+                const dummyData = [
+                    { ruang: "Ruang 1", sesi: "09.00", guru: "Nur Nilam Sari", mapel: "SCI/7P", siswa: "Shaqila Kanaya<br>Ramanda" },
+                    { ruang: "Ruang 2", sesi: "09.00", guru: "Rosmalida Widianti", mapel: "MTK/6D", siswa: "Aminah Cendekia<br>Sholihah<br>Narendra Praditya<br>Wardhana" },
+                    { ruang: "Ruang 3", sesi: "09.00", guru: "Widya Sari", mapel: "IPA/9P", siswa: "Humaira Amalya<br>Nurfayza<br>Alegra Milane<br>Lengkong<br>Chifazta Shaumi" },
+                    { ruang: "Ruang 4", sesi: "09.00", guru: "Faradila Zuchrina", mapel: "IND/9P", siswa: "Rafli Arrasy Achmad<br>Mikhail Aliyan Rasyif<br>Muhammad Rafa<br>Khairy" },
+                    { ruang: "Ruang 6", sesi: "09.00", guru: "Eka Anjarwati", mapel: "MTK/10A", siswa: "Fahmi Arsyad Majid<br>Azzam Pradipta<br>Dewanto<br>Muhammad Irsyad<br>Zidane" },
+                    { ruang: "Ruang 7", sesi: "09.00", guru: "Rahayu Anggraeni P", mapel: "MTK/8P", siswa: "Faliha Alma Rubina<br>Alika Faeezah<br>Alisha Qonita<br>Alesha Hasna Ratifa" }
+                ];
+                renderJadwal(dummyData);
 
-        // --- 5. CLOCK UPDATER ---
-        function updateClock() {
-            var now = new Date();
-            var days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
-            var months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Ags', 'Sep', 'Okt', 'Nov', 'Des'];
-            var h = ("0" + now.getHours()).slice(-2); var m = ("0" + now.getMinutes()).slice(-2); var s = ("0" + now.getSeconds()).slice(-2);
-            var timeEl = document.getElementById('clock-time'); var dateEl = document.getElementById('clock-date');
-            
-            if(timeEl) timeEl.innerText = h + ':' + m;
-            if(dateEl) dateEl.innerText = days[now.getDay()] + ', ' + now.getDate() + ' ' + months[now.getMonth()] + ' ' + now.getFullYear();
-            
-            if (s === "00") {
-                processDisplayLogic(); 
-                var currentHM = h + ':' + m;
-                for (var sholat in prayerTimes) { if (prayerTimes[sholat] === currentHM) showPrayerOverlay(sholat); }
+            } catch (error) {
+                console.error("Gagal menarik data ruangan:", error);
             }
         }
 
-        fetchPrayerTimes(); setTimeout(playMusic, 2000); setInterval(updateClock, 1000); updateClock();
-        fetchData(); setInterval(fetchData, REFRESH_DATA); setTimeout(function() { location.reload(); }, 10800000);
+        // Panggil penarik data pertama kali
+        tarikDataDariGoogle();
+        
+        // Auto-refresh data setiap 1 Menit (60.000 ms)
+        setInterval(tarikDataDariGoogle, 60000);
+
     </script>
 </body>
 </html>

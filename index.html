@@ -9,12 +9,12 @@
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Montserrat', sans-serif; }
         body { 
-            background-color: #e0f2fe; /* Warna latar biru muda soft */
+            background-color: #e0f2fe; 
             color: #1e293b; 
             height: 100vh; 
             display: flex; 
             flex-direction: column; 
-            overflow: hidden; /* Menghilangkan scrollbar di TV */
+            overflow: hidden; 
         }
         
         /* ========================================= */
@@ -29,13 +29,11 @@
             box-shadow: 0 4px 15px rgba(0,0,0,0.05); 
             border-radius: 0 0 25px 25px; 
             margin: 0 15px 15px 15px; 
+            flex-shrink: 0;
         }
         .header-left h3 { color: #f59e0b; font-size: 13px; font-weight: 800; letter-spacing: 1px; margin-bottom: 3px; text-transform: uppercase;}
         .header-left h1 { color: #1e3a8a; font-size: 26px; font-weight: 900; }
-        
-        /* Pastikan Link Logo Asli Bintang Pelajar */
         .header-center img { height: 50px; }
-        
         .header-right { text-align: right; }
         .time { font-size: 38px; font-weight: 900; color: #1e3a8a; line-height: 1; letter-spacing: -1px;}
         .date { font-size: 13px; color: #64748b; font-weight: 700; margin-top: 5px; }
@@ -47,14 +45,17 @@
         .main-content { 
             flex: 1; 
             padding: 0 15px; 
-            overflow: hidden; 
+            overflow-y: auto; /* Bisa scroll jika ruangan sangat banyak */
         }
+        /* Sembunyikan visual scrollbar agar tampilan TV tetap bersih */
+        .main-content::-webkit-scrollbar { width: 0px; background: transparent; }
+
         .grid-container { 
             display: grid; 
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); 
             gap: 15px; 
-            height: 100%;
             align-content: start;
+            padding-bottom: 15px;
         }
         
         /* ========================================= */
@@ -92,7 +93,7 @@
             color: #d97706; 
         }
         
-        /* 💡 REVISI 1: GURU DAN MAPEL SEJAJAR KANAN KIRI */
+        /* GURU DAN MAPEL SEJAJAR KANAN KIRI */
         .guru-mapel-container { 
             display: flex; 
             align-items: center; 
@@ -117,7 +118,7 @@
             font-weight: 800; 
         }
         
-        /* 💡 REVISI 2: UKURAN FONT SISWA DIPERBESAR */
+        /* FONT SISWA DIPERBESAR */
         .student-title { 
             font-size: 11px; 
             color: #94a3b8; 
@@ -129,10 +130,10 @@
             display: grid; 
             grid-template-columns: 1fr 1fr; /* Membagi siswa ke 2 Kolom */
             gap: 6px 12px; 
-            font-size: 14px; /* <--- UKURAN FONT SUDAH DIPERBESAR */
+            font-size: 14px; /* <--- FONT LEBIH BESAR */
             font-weight: 700; 
             color: #334155; 
-            line-height: 1.4; /* Jarak antar baris diperlebar sedikit agar nyaman dibaca */
+            line-height: 1.4; 
         }
         
         /* ========================================= */
@@ -146,6 +147,7 @@
             align-items: center; 
             padding: 12px 25px; 
             box-shadow: 0 -4px 15px rgba(0,0,0,0.05); 
+            flex-shrink: 0;
         }
         .info-btn { 
             background: #1e3a8a; 
@@ -185,7 +187,6 @@
             <h1>Bintang Pelajar Pesona Khayangan Depok</h1>
         </div>
         <div class="header-center">
-            <!-- Bisa diganti dengan URL Logo BP milik Bapak/Ibu -->
             <img src="https://www.bintangpelajar.com/wp-content/uploads/2020/12/logo-Bintang-Pelajar.png" alt="Logo BP">
         </div>
         <div class="header-right">
@@ -199,6 +200,7 @@
     <main class="main-content">
         <div class="grid-container" id="ruangan-container">
             <!-- Data Jadwal Akan Terisi Disini Oleh Javascript -->
+            <div style="padding: 20px; font-weight: bold; color: #1e3a8a;">⏳ Sedang menarik jadwal hari ini...</div>
         </div>
     </main>
 
@@ -233,9 +235,13 @@
         function renderJadwal(dataHarian) {
             const container = document.getElementById('ruangan-container');
             container.innerHTML = '';
+            
+            if (!dataHarian || dataHarian.length === 0) {
+                container.innerHTML = '<div style="padding: 20px; font-weight: bold; color: #dc2626;">Belum ada jadwal ruangan hari ini.</div>';
+                return;
+            }
 
             dataHarian.forEach(item => {
-                // Memecah list siswa (asumsi data siswa dipisah menggunakan <br> dari Apps Script)
                 let arraySiswa = item.siswa.split('<br>');
                 let siswaHtml = arraySiswa.map(nama => {
                     if(nama.trim() !== "" && nama.trim() !== "-") {
@@ -251,7 +257,6 @@
                             <div class="time-badge">${item.sesi}</div>
                         </div>
                         
-                        <!-- Wujud Baru: Guru dan Mapel bersebelahan -->
                         <div class="guru-mapel-container">
                             <div class="guru-name">${item.guru}</div>
                             <div class="mapel-badge">${item.mapel}</div>
@@ -259,7 +264,6 @@
 
                         <div class="student-title">DAFTAR SISWA:</div>
                         
-                        <!-- Wujud Baru: Font Siswa Lebih Besar -->
                         <div class="student-grid">
                             ${siswaHtml}
                         </div>
@@ -270,13 +274,14 @@
         }
 
         // 3. FUNGSI MENGAMBIL DATA DARI GOOGLE APPS SCRIPT
-        // ⚠️ PENTING: Ganti URL di bawah ini dengan URL Web App Apps Script Bapak/Ibu!
-        // URL tersebut biasanya berakhiran /exec (tanpa ?v=publik)
+        // ⚠️ JANGAN LUPA GANTI URL INI DENGAN LINK APPS SCRIPT BAPAK/IBU SENDIRI
         const URL_APPS_SCRIPT = "ISI_DENGAN_URL_APPS_SCRIPT_BAPAK_IBU_DISINI";
 
         async function tarikDataDariGoogle() {
             try {
-                // Jika ingin menggunakan fetch langsung dari link Web App Bapak/Ibu:
+                // Silakan Hapus tanda komentar (/* ... */) pada blok fetch di bawah ini 
+                // jika Bapak/Ibu sudah memasukkan Link Apps Script yang benar di atas.
+                
                 /*
                 const response = await fetch(URL_APPS_SCRIPT);
                 const json = await response.json();
@@ -285,11 +290,7 @@
                 }
                 */
 
-                // ========================================================
-                // SEBAGAI CONTOH SEMENTARA SAYA BERIKAN DATA DUMMY
-                // Hapus data dummy ini dan aktifkan fungsi fetch di atas
-                // jika Bapak/Ibu sudah menyambungkannya dengan Apps Script
-                // ========================================================
+                // ======== DATA DUMMY SEMENTARA (HAPUS JIKA SUDAH PAKAI FETCH) ========
                 const dummyData = [
                     { ruang: "Ruang 1", sesi: "09.00", guru: "Nur Nilam Sari", mapel: "SCI/7P", siswa: "Shaqila Kanaya<br>Ramanda" },
                     { ruang: "Ruang 2", sesi: "09.00", guru: "Rosmalida Widianti", mapel: "MTK/6D", siswa: "Aminah Cendekia<br>Sholihah<br>Narendra Praditya<br>Wardhana" },
@@ -299,18 +300,15 @@
                     { ruang: "Ruang 7", sesi: "09.00", guru: "Rahayu Anggraeni P", mapel: "MTK/8P", siswa: "Faliha Alma Rubina<br>Alika Faeezah<br>Alisha Qonita<br>Alesha Hasna Ratifa" }
                 ];
                 renderJadwal(dummyData);
+                // =====================================================================
 
             } catch (error) {
                 console.error("Gagal menarik data ruangan:", error);
             }
         }
 
-        // Panggil penarik data pertama kali
         tarikDataDariGoogle();
-        
-        // Auto-refresh data setiap 1 Menit (60.000 ms)
-        setInterval(tarikDataDariGoogle, 60000);
-
+        setInterval(tarikDataDariGoogle, 60000); // Update otomatis tiap 1 menit
     </script>
 </body>
 </html>

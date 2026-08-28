@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Jadwal 3D TV - Bintang Pelajar</title>
-    <!-- Font modern 'Plus Jakarta Sans' -->
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -26,7 +25,6 @@
             display: flex; flex-direction: column; position: relative; 
         }
 
-        /* TOMBOL RAHASIA GANTI TAMPILAN */
         .switch-btn { 
             position: fixed; bottom: 20px; right: 20px; z-index: 10000; 
             background: rgba(30, 58, 138, 0.5); color: white; border: none; 
@@ -35,20 +33,17 @@
         }
         .switch-btn:hover { opacity: 1; background: var(--bp-blue); box-shadow: var(--shadow-3d-out); }
 
-        /* LATAR BELAKANG 3D BLOBS */
         .ambient-blob { position: absolute; border-radius: 50%; filter: blur(80px); z-index: -1; animation: float 20s infinite ease-in-out alternate; }
         .blob-1 { top: -10%; left: -10%; width: 50vw; height: 50vh; background: rgba(255, 255, 255, 0.6); }
         .blob-2 { bottom: -20%; right: -10%; width: 60vw; height: 60vh; background: rgba(186, 230, 253, 0.5); animation-delay: -5s; }
         @keyframes float { 0% { transform: translate(0, 0) scale(1); } 50% { transform: translate(5%, 10%) scale(1.1); } 100% { transform: translate(-5%, -5%) scale(0.9); } }
 
-        /* WAKTU SHOLAT OVERLAY */
         #prayer-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(30, 58, 138, 0.95); z-index: 9999; display: none; flex-direction: column; justify-content: center; align-items: center; backdrop-filter: blur(15px); text-align: center; }
         #prayer-overlay h1 { font-size: 100px; font-weight: 900; color: #facc15; margin-bottom: 20px; letter-spacing: 5px; text-shadow: 0 0 30px rgba(250, 204, 21, 0.5); }
         #prayer-overlay h2 { font-size: 40px; color: #ffffff; font-weight: 600; }
         #prayer-name { color: #facc15; font-weight: 800; }
         #prayer-overlay p { font-size: 24px; color: #cbd5e1; margin-top: 20px; }
 
-        /* COMMON COMPONENT CSS */
         .panel-3d { background: var(--bg-panel); border-radius: 20px; box-shadow: var(--shadow-3d-out); border: 2px solid rgba(255, 255, 255, 0.6); overflow: hidden;}
         .header-time { text-align: right; }
         .now-playing { color: var(--bp-tosca); background: rgba(15, 118, 110, 0.1); padding: 4px 12px; border-radius: 12px; display: inline-block; font-size: 12px; font-weight: 800; margin-top: 8px; box-shadow: var(--shadow-3d-in); }
@@ -56,7 +51,7 @@
         .badge-mapel { color: #ffffff; font-weight: 700; background: var(--bp-tosca); border-radius: 8px; display: inline-block; box-shadow: 2px 2px 5px rgba(15, 118, 110, 0.3); }
 
         /* ========================================= */
-        /* CSS LAYOUT 1 (GRID PAGINATION) */
+        /* CSS LAYOUT 1 (GRID + AUTO SCROLL) */
         /* ========================================= */
         #layout-1 { display: flex; flex-direction: column; height: 100%; width: 100%; gap: 15px; padding: 15px;}
         #layout-1 .header-panel { height: 80px; display: flex; justify-content: space-between; align-items: center; padding: 0 30px; flex-shrink: 0; }
@@ -68,10 +63,12 @@
         #layout-1 .date-text { font-size: 12px; font-weight: 700; color: var(--text-muted); margin-top: 2px; }
         #layout-1 .now-playing { font-size: 10px; padding: 3px 10px; margin-top: 4px; }
         
-        #layout-1 .main-content { flex: 1; padding: 0 10px; display: flex; flex-direction: column; }
+        #layout-1 .main-content { flex: 1; padding: 0 10px; display: flex; flex-direction: column; overflow:hidden;}
         #layout-1 .session-title { font-size: 24px; font-weight: 900; color: var(--bp-blue); margin-bottom: 15px; border-left: 6px solid var(--bp-yellow); padding-left: 15px; background: rgba(255, 255, 255, 0.5); border-radius: 0 10px 10px 0; display: inline-block; padding-right: 20px;}
         
-        #layout-1 .grid-container { display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; padding-bottom: 25px; align-content: start; flex:1;}
+        #layout-1 .scroll-wadah { flex: 1; overflow-y: auto; scroll-behavior: smooth; -ms-overflow-style: none; scrollbar-width: none; }
+        #layout-1 .scroll-wadah::-webkit-scrollbar { display: none; }
+        #layout-1 .grid-container { display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; padding-bottom: 25px; align-content: start;}
         #layout-1 .card-room { background: var(--bg-panel); border-radius: 16px; padding: 12px; box-shadow: var(--shadow-3d-out); border: 2px solid rgba(255, 255, 255, 0.8); display: flex; flex-direction: column; animation: fadeUpIn 0.5s ease-out forwards; opacity: 0;}
         #layout-1 .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
         #layout-1 .badge-ruang { background: #fef3c7; color: #b45309; border: 1px solid #fde68a; font-size: 12px; font-weight: 800; padding: 3px 10px; border-radius: 6px; }
@@ -164,7 +161,7 @@
     <button class="switch-btn" onclick="toggleLayout()">🔄 Ganti Tampilan</button>
 
     <!-- ========================================================= -->
-    <!-- TAMPILAN 1: GRID PAGINATION (DIPISAH PER SESI) -->
+    <!-- TAMPILAN 1: GRID PAGINATION (DIPISAH PER SESI) DENGAN AUTO SCROLL -->
     <!-- ========================================================= -->
     <div id="layout-1" style="display:none;">
         <div class="panel-3d header-panel">
@@ -184,8 +181,10 @@
 
         <div class="main-content">
             <div id="session-title-l1" class="session-title">Sesi: --:--</div>
-            <div class="grid-container" id="ruangan-container-l1">
-                <div class="empty-state">⏳ Sedang menarik jadwal hari ini...</div>
+            <div class="scroll-wadah" id="scroll-wadah-l1">
+                <div class="grid-container" id="ruangan-container-l1">
+                    <div class="empty-state">⏳ Sedang menarik jadwal hari ini...</div>
+                </div>
             </div>
         </div>
 
@@ -272,17 +271,19 @@
         var rawResponseData = null;
         var globalAbsenSync = {};
         
-        // Variables for Pagination
-        var pagesL1 = []; 
         var pagesL2 = [];
-        var currentPageIndex = 0;
-        var slideInterval = null;
+        var currentPageIndexL2 = 0;
+        var slideIntervalL2 = null;
         
-        var currentMode = "JADWAL";
+        var currentSesiBerlangsung = ""; // Sesi yang sedang aktif saat ini
+        var isModeChanged = false;
+        
         var prayerTimes = {};
         var prayerTimeout = null;
-        
         var currentLayout = localStorage.getItem('tv_layout') || '1';
+
+        // AutoScroll Layout 1
+        var scrollContainerL1 = null, isScrollingL1 = true, currentScrollYL1 = 0;
 
         function toggleLayout() {
             currentLayout = (currentLayout === '1') ? '2' : '1';
@@ -293,6 +294,7 @@
         document.addEventListener("DOMContentLoaded", function() {
             if (currentLayout === '1') {
                 document.getElementById('layout-1').style.display = 'flex';
+                initAutoScrollL1(); 
             } else {
                 document.getElementById('layout-2').style.display = 'flex';
                 pasangHaditsAPI(); 
@@ -319,7 +321,14 @@
         }
         putarMurottalAPI();
 
-        // 2. JAM & SHOLAT
+        // 2. JAM & SHOLAT & PENENTU SESI
+        function parseJamKeMenit(jamStr) {
+            if(!jamStr) return 0;
+            var p = jamStr.split(/[:.]/);
+            if(p.length < 2) return 0;
+            return parseInt(p[0]) * 60 + parseInt(p[1]);
+        }
+
         function updateClock() {
             var now = new Date();
             var days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
@@ -363,7 +372,25 @@
             if (music && music.paused) { var playPromise = music.play(); if(playPromise !== undefined) playPromise.catch(function(e){}); }
         }
 
-        // 3. PENARIK DATA UTAMA (+ ABSENSI REALTIME)
+        // 3. API HADITS (Khusus Tampilan 2)
+        function sesuaikanUkuranTeks() {
+            let wrapper = document.getElementById('hadits-wrapper'), textEl = document.getElementById('sidebar-hadits');
+            if (!wrapper || !textEl) return;
+            let maxSize = 24, minSize = 12, currentSize = maxSize;
+            textEl.style.fontSize = currentSize + 'px';
+            while (textEl.scrollHeight > wrapper.clientHeight && currentSize > minSize) { currentSize--; textEl.style.fontSize = currentSize + 'px'; }
+        }
+        async function pasangHaditsAPI() {
+            const fallbackHadits = [ "\"Barangsiapa menempuh suatu jalan untuk menuntut ilmu, maka Allah akan mudahkan baginya jalan menuju surga.\" (HR. Muslim)", "\"Amalan yang paling dicintai oleh Allah adalah sholat pada waktunya.\" (HR. Bukhari & Muslim)"];
+            try {
+                let response = await fetch(`https://api.hadith.gading.dev/books/arbain/${Math.floor(Math.random() * 42) + 1}`);
+                let data = await response.json();
+                if (data && data.data && data.data.contents) { document.getElementById('sidebar-hadits').innerText = `"${data.data.contents.id}"`; } else { throw new Error(); }
+            } catch (error) { document.getElementById('sidebar-hadits').innerText = fallbackHadits[Math.floor(Math.random() * 2)]; }
+            setTimeout(sesuaikanUkuranTeks, 100); 
+        }
+
+        // 4. PENARIK DATA UTAMA (+ ABSENSI REALTIME)
         function fetchData() {
             var urlData = API_URL + (API_URL.indexOf('?') > -1 ? '&' : '?') + 'v=tv_api&_t=' + new Date().getTime();
             var xhr = new XMLHttpRequest(); 
@@ -419,13 +446,44 @@
         }
 
         // =======================================================
-        // MESIN CALCULATOR & RENDERER (DUAL LAYOUT PAGINATION)
+        // MESIN LAYOUT 1: AUTO SCROLL (PENGATURAN)
+        // =======================================================
+        function initAutoScrollL1() { 
+            scrollContainerL1 = document.getElementById('scroll-wadah-l1'); 
+            setInterval(jalankanScrollL1, 20); 
+        }
+        function jalankanScrollL1() {
+            if (!scrollContainerL1 || !isScrollingL1) return;
+            var maxScroll = scrollContainerL1.scrollHeight - scrollContainerL1.clientHeight;
+            if (maxScroll <= 5) return; 
+
+            if (currentScrollYL1 < maxScroll) {
+                currentScrollYL1 += 0.3; scrollContainerL1.scrollTop = currentScrollYL1;
+            } else {
+                isScrollingL1 = false; 
+                setTimeout(function() {
+                    scrollContainerL1.scrollTo({ top: 0, behavior: 'smooth' }); currentScrollYL1 = 0;
+                    setTimeout(function() { isScrollingL1 = true; }, 4000); 
+                }, 3000); 
+            }
+        }
+
+        // =======================================================
+        // CALCULATOR & RENDERER SESI SAAT INI
         // =======================================================
         function calculateDynamicPages() {
             if (!rawResponseData) return;
-            var scheduleData = rawResponseData.jadwal || [], infoData = rawResponseData.info || [];
+            var scheduleData = rawResponseData.jadwal || [];
+
+            // 1. Dapatkan Jam Saat Ini dalam Menit
+            var now = new Date(); var utc = now.getTime() + (now.getTimezoneOffset() * 60000); var wib = new Date(utc + (3600000 * 7));
+            var currentMinutes = wib.getHours() * 60 + wib.getMinutes();
             
-            // Pengelompokan Data per Sesi (Untuk Layout 1)
+            // 2. Tentukan Sesi Berlangsung (Aktif jika Jam Sekarang >= Sesi - 30 Menit)
+            var targetSesi = "";
+            var jadwalAktif = [];
+            
+            // Kelompokkan dulu per sesi
             var groupedBySesi = {};
             scheduleData.forEach(row => {
                 if(!groupedBySesi[row.sesi]) groupedBySesi[row.sesi] = [];
@@ -433,112 +491,40 @@
             });
             var sesiKeys = Object.keys(groupedBySesi).sort();
 
-            var activeSesiMinutes = rawResponseData.activeSesiMinutes || 0;
-            var now = new Date(); var utc = now.getTime() + (now.getTimezoneOffset() * 60000); var wib = new Date(utc + (3600000 * 7));
-            var currentMinutes = wib.getHours() * 60 + wib.getMinutes(); var diff = currentMinutes - activeSesiMinutes;
-            
-            var newMode = "JADWAL"; 
-            if (ENABLE_INFO_SLIDE === true) {
-                if (diff >= 30 && diff < 40) newMode = "INFO"; else if (diff >= 50 && diff < 70) newMode = "INFO";
-                if (newMode === "JADWAL" && scheduleData.length === 0 && infoData.length > 0) newMode = "INFO";
-                if (newMode === "INFO" && infoData.length === 0) newMode = "JADWAL";
-            }
-
-            var isModeChanged = (currentMode !== newMode); currentMode = newMode; 
-            
-            var tempPagesL1 = [];
-            var tempPagesL2 = [];
-
-            if (currentMode === "JADWAL") {
-                if (scheduleData.length === 0) {
-                    tempPagesL1.push({ empty: true });
-                    tempPagesL2.push([{ empty: true }]);
-                } else {
-                    // SETUP LAYOUT 1 (Dipisah per Sesi, Maks 18 Kartu per halaman)
-                    sesiKeys.forEach(sesi => {
-                        var cards = groupedBySesi[sesi];
-                        var chunks = [];
-                        for (let i = 0; i < cards.length; i += 18) {
-                            chunks.push(cards.slice(i, i + 18));
-                        }
-                        chunks.forEach(chunk => {
-                            tempPagesL1.push({ sesi: sesi, data: chunk });
-                        });
-                    });
-
-                    // SETUP LAYOUT 2 (Murni per baris agar muat di layar)
-                    var containerL2 = document.getElementById('tabel-wadah-l2'); 
-                    var tableL2 = document.getElementById('schedule-table-l2');
-                    var tbodyL2 = document.getElementById('table-body-l2');
-                    
-                    if(containerL2 && tableL2 && tbodyL2) {
-                        var currentPageData = []; var safeMargin = 50; 
-                        tbodyL2.innerHTML = '';
-                        for (var i = 0; i < scheduleData.length; i++) {
-                            var row = scheduleData[i]; currentPageData.push(row);
-                            var tr = document.createElement('tr'); 
-                            var namaSiswaHtml = renderSiswaDenganAbsen(row.siswa, row.sesi, false);
-                            var isKomik = (row.ruang && row.ruang.toLowerCase().includes("komik")) ? "komik" : "";
-                            tr.innerHTML = `<td style="text-align:center;"><span class="badge-sesi">${row.sesi || '-'}</span></td><td style="text-align:center;"><span class="badge-ruang ${isKomik}">${row.ruang || '-'}</span></td><td><div class="guru-mapel-wrapper"><div class="guru-name">${row.guru || '-'}</div><div class="badge-mapel">${row.mapel || '-'}</div></div></td><td class="siswa-list">${namaSiswaHtml}</td>`;
-                            tbodyL2.appendChild(tr);
-                            
-                            if (tableL2.offsetHeight > (containerL2.clientHeight - safeMargin)) {
-                                tbodyL2.removeChild(tr); currentPageData.pop();
-                                if (currentPageData.length > 0) tempPagesL2.push(currentPageData);
-                                currentPageData = [row]; tbodyL2.innerHTML = ''; tbodyL2.appendChild(tr); 
-                            }
-                        }
-                        if (currentPageData.length > 0) tempPagesL2.push(currentPageData);
-                        tbodyL2.innerHTML = '';
+            // Cari Sesi yang Aktif
+            if (sesiKeys.length > 0) {
+                for (var i = 0; i < sesiKeys.length; i++) {
+                    var sesiMenit = parseJamKeMenit(sesiKeys[i]);
+                    // Tampilkan sesi jika sekarang adalah 30 menit sebelum sesi dimulai
+                    if (currentMinutes >= (sesiMenit - 30)) {
+                        targetSesi = sesiKeys[i];
                     }
                 }
-            } else {
-                for (var k = 0; k < infoData.length; k++) { 
-                    tempPagesL1.push({ info: infoData[k] });
-                    tempPagesL2.push([infoData[k]]); 
+                // Jika masih terlalu pagi (belum H-30mnt dari sesi pertama), tampilkan sesi pertama saja
+                if (targetSesi === "") {
+                    targetSesi = sesiKeys[0];
                 }
             }
+
+            jadwalAktif = groupedBySesi[targetSesi] || [];
             
-            pagesL1 = tempPagesL1;
-            pagesL2 = tempPagesL2;
-
-            if (isModeChanged) { 
-                currentPageIndex = 0; 
-                renderPage(); 
-                startPagination(); 
-            } else if (currentMode === "JADWAL") { 
-                let maxPages = currentLayout === '1' ? pagesL1.length : pagesL2.length;
-                if (currentPageIndex >= maxPages) currentPageIndex = 0; 
-                renderPage(); 
-                startPagination(); 
-            }
-        }
-
-        function renderPage() {
+            // RENDER KE LAYOUT 1
             if (currentLayout === '1') {
-                if (pagesL1.length === 0) return;
-                var pageData = pagesL1[currentPageIndex];
-                var container = document.getElementById('ruangan-container-l1');
-                var titleEl = document.getElementById('session-title-l1');
+                var containerL1 = document.getElementById('ruangan-container-l1');
+                var titleElL1 = document.getElementById('session-title-l1');
                 
-                container.innerHTML = '';
-                
-                if (pageData.empty) {
-                    titleEl.style.display = 'none';
-                    container.innerHTML = '<div class="empty-state">Belum ada jadwal hari ini.</div>';
-                } else if (pageData.info) {
-                    // Logic info jika diaktifkan (Untuk L1 belum dirender full, bisa disesuaikan nanti)
-                    titleEl.style.display = 'none';
-                    container.innerHTML = '<div class="empty-state">Mode Informasi Aktif</div>';
+                if (jadwalAktif.length === 0) {
+                    titleElL1.style.display = 'none';
+                    containerL1.innerHTML = '<div class="empty-state">Belum ada jadwal hari ini.</div>';
                 } else {
-                    titleEl.style.display = 'inline-block';
-                    titleEl.innerText = `Sesi Berlangsung: ${pageData.sesi}`;
+                    titleElL1.style.display = 'inline-block';
+                    titleElL1.innerText = `Sesi Berlangsung: ${targetSesi}`;
                     
                     var html = '';
-                    pageData.data.forEach(function(row, idx) {
+                    jadwalAktif.forEach(function(row, idx) {
                         var namaSiswaHtml = renderSiswaDenganAbsen(row.siswa, row.sesi, true);
                         var isKomik = (row.ruang && row.ruang.toLowerCase().includes("komik")) ? "komik" : "";
-                        var delay = idx * 0.05; // Cascading animation
+                        var delay = idx * 0.05; 
                         html += `
                             <div class="card-room" style="animation-delay: ${delay}s;">
                                 <div class="card-header"><span class="badge-ruang ${isKomik}">${row.ruang || '-'}</span><span class="badge-sesi">${row.sesi || '-'}</span></div>
@@ -546,64 +532,91 @@
                                 <div class="student-label">DAFTAR SISWA:</div><div class="student-grid">${namaSiswaHtml}</div>
                             </div>`;
                     });
-                    container.innerHTML = html;
+                    
+                    // Render Ulang Hanya Jika Terjadi Perubahan Sesi (Agar Auto Scroll Tidak Terganggu)
+                    if (currentSesiBerlangsung !== targetSesi || containerL1.innerHTML.indexOf("Sedang menarik") > -1) {
+                        containerL1.innerHTML = html;
+                        if (scrollContainerL1) { scrollContainerL1.scrollTo({ top: 0, behavior: 'instant' }); currentScrollYL1 = 0; }
+                    } else {
+                        // Jika sesi masih sama, kita hanya replace HTML tanpa reset scroll agar warna absen terupdate secara stealthy
+                        containerL1.innerHTML = html;
+                    }
+                }
+            } 
+            // RENDER KE LAYOUT 2
+            else {
+                var containerL2 = document.getElementById('tabel-wadah-l2'); 
+                var tableL2 = document.getElementById('schedule-table-l2');
+                var tbodyL2 = document.getElementById('table-body-l2');
+                var tempPagesL2 = [];
+                
+                if (jadwalAktif.length === 0) {
+                    tempPagesL2.push([{ empty: true }]);
+                } else {
+                    var currentPageData = []; var safeMargin = 50; 
+                    tbodyL2.innerHTML = '';
+                    for (var i = 0; i < jadwalAktif.length; i++) {
+                        var row = jadwalAktif[i]; currentPageData.push(row);
+                        var tr = document.createElement('tr'); 
+                        var namaSiswaHtml = renderSiswaDenganAbsen(row.siswa, row.sesi, false);
+                        var isKomik = (row.ruang && row.ruang.toLowerCase().includes("komik")) ? "komik" : "";
+                        tr.innerHTML = `<td style="text-align:center;"><span class="badge-sesi">${row.sesi || '-'}</span></td><td style="text-align:center;"><span class="badge-ruang ${isKomik}">${row.ruang || '-'}</span></td><td><div class="guru-mapel-wrapper"><div class="guru-name">${row.guru || '-'}</div><div class="badge-mapel">${row.mapel || '-'}</div></div></td><td class="siswa-list">${namaSiswaHtml}</td>`;
+                        tbodyL2.appendChild(tr);
+                        
+                        if (tableL2.offsetHeight > (containerL2.clientHeight - safeMargin)) {
+                            tbodyL2.removeChild(tr); currentPageData.pop();
+                            if (currentPageData.length > 0) tempPagesL2.push(currentPageData);
+                            currentPageData = [row]; tbodyL2.innerHTML = ''; tbodyL2.appendChild(tr); 
+                        }
+                    }
+                    if (currentPageData.length > 0) tempPagesL2.push(currentPageData);
+                    tbodyL2.innerHTML = '';
                 }
                 
-            } else {
-                if (pagesL2.length === 0) return;
-                var indicator = document.getElementById('page-indicator-l2');
-                if(indicator) indicator.innerText = 'Page ' + (currentPageIndex + 1) + ' of ' + pagesL2.length;
-
-                if (currentMode === "JADWAL") {
-                    var tbody = document.getElementById('table-body-l2'); if(!tbody) return;
-                    tbody.style.display = 'none'; tbody.innerHTML = ''; 
-                    var pageData = pagesL2[currentPageIndex];
-                    if(pageData[0] && pageData[0].empty) {
-                         tbody.innerHTML = '<tr><td colspan="4" class="empty-state" style="background:transparent; border:none; box-shadow:none;">Jadwal Sesi Ini Belum Dimulai</td></tr>';
-                    } else {
-                        pageData.forEach(function(row) {
-                            var tr = document.createElement('tr'); 
-                            var namaSiswaHtml = renderSiswaDenganAbsen(row.siswa, row.sesi, false);
-                            var isKomik = (row.ruang && row.ruang.toLowerCase().includes("komik")) ? "komik" : "";
-                            tr.innerHTML = `<td style="text-align:center;"><span class="badge-sesi">${row.sesi || '-'}</span></td><td style="text-align:center;"><span class="badge-ruang ${isKomik}">${row.ruang || '-'}</span></td><td><div class="guru-mapel-wrapper"><div class="guru-name">${row.guru || '-'}</div><div class="badge-mapel">${row.mapel || '-'}</div></div></td><td class="siswa-list">${namaSiswaHtml}</td>`; 
-                            tbody.appendChild(tr);
-                        });
-                    }
-                    setTimeout(() => { tbody.style.display = 'table-row-group'; }, 50);
-                } else {
-                    var infoList = document.getElementById('info-list-l2'); if(!infoList) return;
-                    infoList.innerHTML = ''; var pageData = pagesL2[currentPageIndex];
-                    pageData.forEach(function(text) {
-                        var div = document.createElement('div'); var textStr = String(text).trim(); var isVideo = false; var mediaUrl = "";
-                        if (textStr.toUpperCase().indexOf('VIDEO:') === 0) { isVideo = true; mediaUrl = textStr.substring(6).trim(); } else if (textStr.indexOf('http') === 0) { mediaUrl = textStr; }
-                        if (mediaUrl !== "") {
-                            document.getElementById('info-header-title-l2').style.display = 'none'; 
-                            div.style.width = '100%'; div.style.height = '100%'; div.style.display = 'flex'; div.style.justifyContent = 'center'; div.style.alignItems = 'center';
-                            if (isVideo) {
-                                if (mediaUrl.includes("drive.google.com")) { var fileId = ""; if (mediaUrl.includes("/file/d/")) { fileId = mediaUrl.split("/file/d/")[1].split("/")[0]; } div.innerHTML = '<iframe class="video-content" src="https://drive.google.com/file/d/' + fileId + '/preview?autoplay=1&mute=1" allow="autoplay" style="width: 100%; height: 100%; border: none; border-radius: 16px;"></iframe>'; } 
-                                else { div.innerHTML = '<video class="video-content" autoplay loop muted style="max-width: 100%; max-height: 100%; border-radius: 16px; object-fit: cover;"><source src="' + mediaUrl + '" type="video/mp4"></video>'; }
-                            } else {
-                                var fileIdPhoto = ""; if (mediaUrl.includes("drive.google.com/file/d/")) { fileIdPhoto = mediaUrl.split("/file/d/")[1].split("/")[0]; mediaUrl = "https://lh3.googleusercontent.com/d/" + fileIdPhoto; }
-                                div.innerHTML = '<img class="poster-img" src="' + mediaUrl + '" style="max-width: 100%; max-height: 100%; border-radius: 16px; object-fit: contain;">';
-                            }
-                        } else {
-                            document.getElementById('info-header-title-l2').style.display = 'block'; div.className = 'info-card'; div.innerText = textStr;
-                        }
-                        infoList.appendChild(div);
-                    });
+                pagesL2 = tempPagesL2;
+                if (currentSesiBerlangsung !== targetSesi) { 
+                    currentPageIndexL2 = 0; 
+                } else if (currentPageIndexL2 >= pagesL2.length) {
+                    currentPageIndexL2 = 0;
                 }
+                
+                renderPageLayout2(); 
+                startPaginationLayout2();
             }
+
+            currentSesiBerlangsung = targetSesi;
         }
 
-        function startPagination() {
-            if(slideInterval !== null) clearInterval(slideInterval);
-            let activePages = currentLayout === '1' ? pagesL1 : pagesL2;
+        function renderPageLayout2() {
+            if (pagesL2.length === 0) return;
+            var indicator = document.getElementById('page-indicator-l2');
+            if(indicator) indicator.innerText = 'Page ' + (currentPageIndexL2 + 1) + ' of ' + pagesL2.length;
+
+            var tbody = document.getElementById('table-body-l2'); if(!tbody) return;
+            tbody.style.display = 'none'; tbody.innerHTML = ''; 
+            var pageData = pagesL2[currentPageIndexL2];
             
-            if (activePages.length > 1) { 
-                slideInterval = setInterval(function() { 
-                    currentPageIndex++; 
-                    if (currentPageIndex >= activePages.length) currentPageIndex = 0; 
-                    renderPage(); 
+            if(pageData[0] && pageData[0].empty) {
+                 tbody.innerHTML = '<tr><td colspan="4" class="empty-state" style="background:transparent; border:none; box-shadow:none;">Jadwal Sesi Ini Belum Dimulai</td></tr>';
+            } else {
+                pageData.forEach(function(row) {
+                    var tr = document.createElement('tr'); 
+                    var namaSiswaHtml = renderSiswaDenganAbsen(row.siswa, row.sesi, false);
+                    var isKomik = (row.ruang && row.ruang.toLowerCase().includes("komik")) ? "komik" : "";
+                    tr.innerHTML = `<td style="text-align:center;"><span class="badge-sesi">${row.sesi || '-'}</span></td><td style="text-align:center;"><span class="badge-ruang ${isKomik}">${row.ruang || '-'}</span></td><td><div class="guru-mapel-wrapper"><div class="guru-name">${row.guru || '-'}</div><div class="badge-mapel">${row.mapel || '-'}</div></div></td><td class="siswa-list">${namaSiswaHtml}</td>`; 
+                    tbody.appendChild(tr);
+                });
+            }
+            setTimeout(() => { tbody.style.display = 'table-row-group'; }, 50);
+        }
+
+        function startPaginationLayout2() {
+            if(slideIntervalL2 !== null) clearInterval(slideIntervalL2);
+            if (pagesL2.length > 1) { 
+                slideIntervalL2 = setInterval(function() { 
+                    currentPageIndexL2++; 
+                    if (currentPageIndexL2 >= pagesL2.length) currentPageIndexL2 = 0; 
+                    renderPageLayout2(); 
                 }, SLIDE_DURATION); 
             }
         }

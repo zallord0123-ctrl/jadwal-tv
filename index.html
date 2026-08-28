@@ -258,12 +258,15 @@
     <!-- LOGIKA JAVASCRIPT GLOBAL -->
     <!-- ========================================================= -->
     <script>
-        var API_URL = "https://script.google.com/macros/s/AKfycbywopky_VUnmvfktok0xRaXDpQrzjuOMo7VjfAselVjzZI7G6FBwijJJh8G9LZWUCqqdw/exec"; 
+        // 🚨 MASUKKAN URL APPS SCRIPT PORTAL GURU BAPAK/IBU DI SINI:
+        var API_URL = "https://script.google.com/macros/s/AKfycbyaKhduB8t8jzdF3TyFemU5cl6oxqsLyMqk9bP1j142C_bfOreXydoIJg5J1tGBTVNl/exec"; 
+
         var ENABLE_INFO_SLIDE = false; 
-        var SLIDE_DURATION = 5000;  
+        var SLIDE_DURATION = 15000;  
         var REFRESH_DATA = 60000;    
 
         var rawResponseData = null;
+        var globalAbsenSync = {}; // Penampung Data Absen Realtime
         var pages = []; 
         var currentPageIndex = 0;
         var slideInterval = null;
@@ -271,25 +274,22 @@
         var prayerTimes = {};
         var prayerTimeout = null;
         
-        // Cek Layout yang aktif (1 = Grid AutoScroll, 2 = Table Pagination)
         var currentLayout = localStorage.getItem('tv_layout') || '1';
 
-        // Fungsi Tombol Ganti Tampilan
         function toggleLayout() {
             currentLayout = (currentLayout === '1') ? '2' : '1';
             localStorage.setItem('tv_layout', currentLayout);
-            location.reload(); // Refresh total agar memori stabil & transisi bersih
+            location.reload(); 
         }
 
-        // Tampilkan layout sesuai yang dipilih saat pertama diload
         document.addEventListener("DOMContentLoaded", function() {
             if (currentLayout === '1') {
                 document.getElementById('layout-1').style.display = 'flex';
-                initAutoScroll(); // Hidupkan mesin scroll
+                initAutoScroll(); 
             } else {
                 document.getElementById('layout-2').style.display = 'flex';
                 pasangHaditsAPI(); 
-                setInterval(pasangHaditsAPI, 43200000); // 12 Jam Update Hadits
+                setInterval(pasangHaditsAPI, 43200000); 
             }
         });
 
@@ -374,19 +374,64 @@
             setTimeout(sesuaikanUkuranTeks, 100); 
         }
 
-        // 4. PENARIK DATA UTAMA
+        // 4. PENARIK DATA UTAMA (+ ABSENSI REALTIME)
         function fetchData() {
-            var xhr = new XMLHttpRequest(); var urlAntiMacet = API_URL + (API_URL.indexOf('?') > -1 ? '&' : '?') + 'waktu=' + new Date().getTime();
-            xhr.open("GET", urlAntiMacet, true); 
+            // Minta jalur rahasia ?v=tv_api ke Portal Guru
+            var urlData = API_URL + (API_URL.indexOf('?') > -1 ? '&' : '?') + 'v=tv_api&_t=' + new Date().getTime();
+            
+            var xhr = new XMLHttpRequest(); 
+            xhr.open("GET", urlData, true); 
             xhr.onreadystatechange = function() {
                 if (xhr.readyState === 4 && xhr.status === 200) { 
                     try { 
                         rawResponseData = JSON.parse(xhr.responseText); 
+                        globalAbsenSync = rawResponseData.absen || {}; // Menyimpan data absen dari guru
+                        
                         if (currentLayout === '1') { renderLayout1(rawResponseData.jadwal || []); } 
                         else { calculateDynamicPagesLayout2(); }
-                    } catch(e) {} 
+                    } catch(e) { console.log(e) } 
                 }
             }; xhr.send();
+        }
+
+        // FUNGSI RENDER NAMA SISWA + WARNA ABSEN
+        function renderSiswaDenganAbsen(teksMentah, sesiTarget, isGridMode) {
+            if (!teksMentah) return "-";
+            let dateStr = new Date().toDateString(); // Kunci tanggal hari ini
+            let arr = String(teksMentah).replace(/\s*\([^)]*\)/g, '').split(/<br>|\n/);
+            
+            let html = isGridMode ? '' : '<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px 15px; font-size: 17px; font-weight: 700; line-height: 1.4;">';
+            let validCount = 0;
+
+            for(let i=0; i<arr.length; i++) {
+                let nama = arr[i].trim();
+                if(nama !== "" && nama !== "-") {
+                    validCount++;
+                    // Mencocokkan kunci unik absen persis seperti di Portal Guru
+                    let kunciUnik = `absen_${dateStr}_${(sesiTarget||'').replace(/:|\./g, '')}_${nama.replace(/[^a-zA-Z0-9]/g, '')}`;
+                    let status = globalAbsenSync[kunciUnik];
+                    
+                    let style = "color: var(--text-main);";
+                    let icon = "";
+                    
+                    if(status === 'Hadir') { style = "color: #16a34a;"; icon = "✅ "; }
+                    else if(status === 'Sakit') { style = "color: #eab308;"; icon = "🤒 "; }
+                    else if(status === 'Izin') { style = "color: #2563eb;"; icon = "✈️ "; }
+                    else if(status === 'Alpha') { style = "color: #dc2626;"; icon = "❌ "; }
+                    
+                    if (isGridMode) {
+                        html += `<div style="${style}">${icon}${nama}</div>`;
+                    } else {
+                        html += `<div style="${style} white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${icon}${nama}</div>`;
+                    }
+                }
+            }
+            if (isGridMode) {
+                return validCount === 0 ? "-" : html;
+            } else {
+                html += '</div>';
+                return validCount === 0 ? "-" : html;
+            }
         }
 
         // =======================================================
@@ -414,20 +459,17 @@
             if (!scheduleData || scheduleData.length === 0) { container.innerHTML = '<div class="empty-state">Belum ada jadwal hari ini.</div>'; return; }
             var html = '';
             scheduleData.forEach(function(row) {
-                var arr = String(row.siswa).replace(/\s*\([^)]*\)/g, '').split(/<br>|\n/);
-                var namaSiswa = '';
-                for(var i=0; i<arr.length; i++) { var nama = arr[i].trim(); if(nama !== "" && nama !== "-") namaSiswa += '<div>' + nama + '</div>'; }
-                if(namaSiswa === '') namaSiswa = "-";
+                var namaSiswaHtml = renderSiswaDenganAbsen(row.siswa, row.sesi, true);
                 var isKomik = (row.ruang && row.ruang.toLowerCase().includes("komik")) ? "komik" : "";
                 html += `
                     <div class="card-room">
                         <div class="card-header"><span class="badge-ruang ${isKomik}">${row.ruang || '-'}</span><span class="badge-sesi">${row.sesi || '-'}</span></div>
                         <div class="guru-mapel"><h3 class="guru-name">${row.guru || '-'}</h3><span class="badge-mapel">${row.mapel || '-'}</span></div>
-                        <div class="student-label">DAFTAR SISWA:</div><div class="student-grid">${namaSiswa}</div>
+                        <div class="student-label">DAFTAR SISWA:</div><div class="student-grid">${namaSiswaHtml}</div>
                     </div>`;
             });
             container.innerHTML = html;
-            if (scrollContainer) { scrollContainer.scrollTo({ top: 0, behavior: 'instant' }); currentScrollY = 0; }
+            if (scrollContainer && currentScrollY === 0) { scrollContainer.scrollTo({ top: 0, behavior: 'instant' }); }
         }
 
         // =======================================================
@@ -462,15 +504,9 @@
                         var row = scheduleData[i]; currentPageData.push(row);
                         var tr = document.createElement('tr'); 
                         
-                        var arr = String(row.siswa).replace(/\s*\([^)]*\)/g, '').split(/<br>|\n/);
-                        var htmlSiswa = '<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px 15px; font-size: 17px; font-weight: 700; line-height: 1.4;">';
-                        var countSiswa = 0;
-                        for(var j=0; j<arr.length; j++) { var nama = arr[j].trim(); if(nama !== "" && nama !== "-") { htmlSiswa += '<div>' + nama + '</div>'; countSiswa++; } }
-                        htmlSiswa += '</div>';
-                        var namaSiswa = countSiswa === 0 ? "-" : htmlSiswa;
-
+                        var namaSiswaHtml = renderSiswaDenganAbsen(row.siswa, row.sesi, false);
                         var isKomik = (row.ruang && row.ruang.toLowerCase().includes("komik")) ? "komik" : "";
-                        tr.innerHTML = `<td style="text-align:center;"><span class="badge-sesi">${row.sesi || '-'}</span></td><td style="text-align:center;"><span class="badge-ruang ${isKomik}">${row.ruang || '-'}</span></td><td><div class="guru-mapel-wrapper"><div class="guru-name">${row.guru || '-'}</div><div class="badge-mapel">${row.mapel || '-'}</div></div></td><td class="siswa-list">${namaSiswa}</td>`;
+                        tr.innerHTML = `<td style="text-align:center;"><span class="badge-sesi">${row.sesi || '-'}</span></td><td style="text-align:center;"><span class="badge-ruang ${isKomik}">${row.ruang || '-'}</span></td><td><div class="guru-mapel-wrapper"><div class="guru-name">${row.guru || '-'}</div><div class="badge-mapel">${row.mapel || '-'}</div></div></td><td class="siswa-list">${namaSiswaHtml}</td>`;
                         tbody.appendChild(tr);
                         
                         if (table.offsetHeight > (container.clientHeight - safeMargin)) {
@@ -504,14 +540,9 @@
                 } else {
                     pageData.forEach(function(row) {
                         var tr = document.createElement('tr'); 
-                        var arr = String(row.siswa).replace(/\s*\([^)]*\)/g, '').split(/<br>|\n/);
-                        var htmlSiswa = '<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px 15px; font-size: 17px; font-weight: 700; line-height: 1.4;">';
-                        var countSiswa = 0;
-                        for(var j=0; j<arr.length; j++) { var nama = arr[j].trim(); if(nama !== "" && nama !== "-") { htmlSiswa += '<div>' + nama + '</div>'; countSiswa++; } }
-                        htmlSiswa += '</div>';
-                        var namaSiswa = countSiswa === 0 ? "-" : htmlSiswa;
+                        var namaSiswaHtml = renderSiswaDenganAbsen(row.siswa, row.sesi, false);
                         var isKomik = (row.ruang && row.ruang.toLowerCase().includes("komik")) ? "komik" : "";
-                        tr.innerHTML = `<td style="text-align:center;"><span class="badge-sesi">${row.sesi || '-'}</span></td><td style="text-align:center;"><span class="badge-ruang ${isKomik}">${row.ruang || '-'}</span></td><td><div class="guru-mapel-wrapper"><div class="guru-name">${row.guru || '-'}</div><div class="badge-mapel">${row.mapel || '-'}</div></div></td><td class="siswa-list">${namaSiswa}</td>`; 
+                        tr.innerHTML = `<td style="text-align:center;"><span class="badge-sesi">${row.sesi || '-'}</span></td><td style="text-align:center;"><span class="badge-ruang ${isKomik}">${row.ruang || '-'}</span></td><td><div class="guru-mapel-wrapper"><div class="guru-name">${row.guru || '-'}</div><div class="badge-mapel">${row.mapel || '-'}</div></div></td><td class="siswa-list">${namaSiswaHtml}</td>`; 
                         tbody.appendChild(tr);
                     });
                 }

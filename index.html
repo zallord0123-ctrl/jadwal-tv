@@ -61,7 +61,6 @@
         #layout-1 { display: flex; flex-direction: column; height: 100%; width: 100%; gap: 15px; padding: 15px;}
         #layout-1 .header-panel { height: 80px; display: flex; justify-content: space-between; align-items: center; padding: 0 30px; flex-shrink: 0; }
         #layout-1 .header-brand { display: flex; align-items: center; gap: 15px; }
-        #layout-1 .header-brand img { height: 55px; filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.1)); }
         #layout-1 .header-brand-text h1 { font-size: 20px; font-weight: 800; color: var(--bp-blue); letter-spacing: -0.5px; }
         #layout-1 .header-brand-text p { font-size: 11px; font-weight: 800; color: var(--bp-yellow); text-transform: uppercase; letter-spacing: 2px; }
         #layout-1 .clock-text { font-size: 30px; font-weight: 900; color: var(--bp-blue); line-height: 1; }
@@ -90,18 +89,14 @@
         #layout-1 .footer-badge { font-size: 13px; padding: 5px 14px; border-radius: 8px;}
         #layout-1 marquee { font-size: 16px; font-weight: 700; color: var(--bp-blue); }
 
-
         /* ========================================= */
-        /* CSS LAYOUT 2 (TABEL DENGAN SIDEBAR HADITS) - OPTIMIZED PROPORTIONS */
+        /* CSS LAYOUT 2 (TABEL DENGAN SIDEBAR HADITS) */
         /* ========================================= */
         #layout-2 { display: flex; flex-direction: column; height: 100%; width: 100%; gap: 15px; padding: 15px;}
-        
-        /* Flex Ratio diperbesar untuk Tabel (Kiri 80%, Kanan 20%) */
         #layout-2 .content-wrapper { display: flex; flex: 1; gap: 15px; overflow: hidden; }
         #layout-2 .layout-kiri { flex: 4; display: flex; flex-direction: column; gap: 15px; height: 100%; } 
-        #layout-2 .layout-kanan { flex: 1; display: flex; flex-direction: column; gap: 15px; height: 100%; max-width: 260px; } /* Membatasi maksimal lebar hadits */
+        #layout-2 .layout-kanan { flex: 1; display: flex; flex-direction: column; gap: 15px; height: 100%; max-width: 260px; }
 
-        /* Header Dikecilkan */
         #layout-2 .header-panel { height: 80px; display: flex; justify-content: space-between; align-items: center; padding: 0 30px; position: relative; border-radius: 20px; flex-shrink: 0;}
         #layout-2 .header-brand h1 { font-size: 22px; font-weight: 800; color: var(--bp-blue); letter-spacing: -0.5px; text-shadow: 2px 2px 4px rgba(0,0,0,0.05); margin-top:2px;}
         #layout-2 .header-brand p { font-size: 11px; font-weight: 800; color: var(--bp-yellow); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 0px; }
@@ -109,7 +104,6 @@
         #layout-2 .date-text { font-size: 12px; font-weight: 700; color: var(--text-muted); margin-top: 4px; }
         #layout-2 .now-playing { color: var(--bp-tosca); background: rgba(15, 118, 110, 0.1); padding: 3px 10px; border-radius: 12px; display: inline-block; font-size: 10px; font-weight: 800; margin-top: 4px; box-shadow: var(--shadow-3d-in); }
         
-        /* Tabel Lebih Lega */
         #layout-2 .table-panel { flex: 1; padding: 10px 20px; display: flex; flex-direction: column; border-radius: 20px; height: 100%; overflow: hidden;}
         #layout-2 table { width: 100%; border-collapse: separate; border-spacing: 0 10px; }
         #layout-2 thead th { color: var(--text-muted); font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; padding: 0 20px 8px 20px; border-bottom: 2px solid rgba(30, 58, 138, 0.1); text-align: left; }
@@ -126,7 +120,6 @@
         #layout-2 .siswa-list { font-size: 15px; font-weight: 600; color: var(--text-main); line-height: 1.5; }
         #layout-2 .empty-state { text-align: center; padding: 100px 0; font-size: 20px; font-weight: 700; color: var(--text-muted); background: transparent !important; box-shadow: none !important; border:none !important; }
 
-        /* Panel Hadits Kanan Dikecilkan */
         #layout-2 .logo-panel { height: 80px; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 10px; border-radius: 20px; flex-shrink: 0;}
         #layout-2 .logo-panel img { max-height: 45px; filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.1)); }
         #layout-2 #page-indicator-l2 { margin-top: 6px; font-size: 10px; font-weight: 800; color: var(--bp-blue); letter-spacing: 1px; background: var(--bg-light-blue); box-shadow: var(--shadow-3d-in); padding: 4px 12px; border-radius: 15px; }
@@ -138,7 +131,6 @@
         #layout-2 #hadits-wrapper { flex: 1; min-height: 0; width: 100%; display: flex; align-items: center; justify-content: center; overflow: hidden; }
         #layout-2 .hadits-text { font-weight: 600; color: var(--text-main); line-height: 1.6; position: relative; z-index: 2; font-style: italic; text-align: center;}
 
-        /* Footer Dikecilkan */
         #layout-2 .footer-panel { width: 100%; height: 50px; display: flex; align-items: center; padding: 0 20px; flex-shrink: 0; z-index: 10; border-radius: 20px;}
         #layout-2 .footer-badge { font-size: 13px; padding: 5px 14px; border-radius: 8px;}
         #layout-2 marquee { font-size: 17px; font-weight: 700; color: var(--bp-blue); }
@@ -199,7 +191,7 @@
 
         <div class="panel-3d footer-panel">
             <div class="footer-badge">INFORMASI</div>
-            <marquee scrollamount="6">⭐ BINTANG PELAJAR: Prestasi Tinggi & Akhlak Terpuji! ✦ Dilengkapi pendampingan ibadah Islami ✦ Pilihan eksklusif 1 kelas 5 siswa ✦ Selamat belajar! ⭐</marquee>
+            <marquee scrollamount="6">⭐ BINTANG PELAJAR: Prestasi Tinggi & Akhlak Terpuji! ✦ Keterangan Status Presensi Siswa: <b style="color:#16a34a;">Hijau (Hadir)</b> | <b style="color:#d97706;">Kuning (Izin / Sakit)</b> | <b style="color:#dc2626;">Merah (Alpha / Tanpa Keterangan)</b> ✦ Dilengkapi pendampingan ibadah Islami ✦ Pilihan eksklusif 1 kelas 5 siswa ✦ Selamat belajar! ⭐</marquee>
         </div>
     </div>
 
@@ -256,7 +248,7 @@
 
         <div class="panel-3d footer-panel">
             <div class="footer-badge">INFORMASI</div>
-            <marquee scrollamount="6">BINTANG PELAJAR: Prestasi Tinggi & Akhlak Terpuji! ✦ Dilengkapi pendampingan ibadah Islami ✦ Pilihan eksklusif 1 kelas 5 siswa ✦ Raih cita-citamu bersama kami!</marquee>
+            <marquee scrollamount="6">⭐ BINTANG PELAJAR: Prestasi Tinggi & Akhlak Terpuji! ✦ Keterangan Status Presensi Siswa: <b style="color:#16a34a;">Hijau (Hadir)</b> | <b style="color:#d97706;">Kuning (Izin / Sakit)</b> | <b style="color:#dc2626;">Merah (Alpha / Tanpa Keterangan)</b> ✦ Dilengkapi pendampingan ibadah Islami ✦ Pilihan eksklusif 1 kelas 5 siswa ✦ Raih cita-citamu bersama kami! ⭐</marquee>
         </div>
     </div>
 
@@ -378,8 +370,6 @@
         function sesuaikanUkuranTeks() {
             let wrapper = document.getElementById('hadits-wrapper'), textEl = document.getElementById('sidebar-hadits');
             if (!wrapper || !textEl) return;
-            
-            // UKURAN HADITS MAKSIMAL DIKECILKAN MENJADI 18PX (SEBELUMNYA 24PX) AGAR LEBIH RAPI
             let maxSize = 18, minSize = 10, currentSize = maxSize; 
             textEl.style.fontSize = currentSize + 'px';
             while (textEl.scrollHeight > wrapper.clientHeight && currentSize > minSize) { currentSize--; textEl.style.fontSize = currentSize + 'px'; }
@@ -411,14 +401,13 @@
             }; xhr.send();
         }
 
-        // FUNGSI RENDER NAMA SISWA + WARNA ABSEN
+        // FUNGSI RENDER NAMA SISWA + WARNA SAJA (TANPA ICON / EMOTICON)
         function renderSiswaDenganAbsen(teksMentah, sesiTarget, isGridMode) {
             if (!teksMentah) return "-";
             let dateStr = new Date().toDateString(); 
             let arr = String(teksMentah).replace(/\s*\([^)]*\)/g, '').split(/<br>|\n/);
             
-            // FONT NAMA SISWA DIPERBESAR AGAR LEBIH TERLIHAT OLEH ANAK
-            let html = isGridMode ? '' : '<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px 15px; font-size: 19px; font-weight: 800; line-height: 1.4;">';
+            let html = isGridMode ? '' : '<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px 15px; font-size: 18px; font-weight: 800; line-height: 1.4;">';
             let validCount = 0;
 
             for(let i=0; i<arr.length; i++) {
@@ -428,18 +417,21 @@
                     let kunciUnik = `absen_${dateStr}_${(sesiTarget||'').replace(/:|\./g, '')}_${nama.replace(/[^a-zA-Z0-9]/g, '')}`;
                     let status = globalAbsenSync[kunciUnik];
                     
-                    let style = "color: var(--text-main);";
-                    let icon = "";
+                    let style = "color: var(--text-main); font-weight: 700;";
                     
-                    if(status === 'Hadir') { style = "color: #16a34a;"; icon = "✅ "; }
-                    else if(status === 'Sakit') { style = "color: #eab308;"; icon = "🤒 "; }
-                    else if(status === 'Izin') { style = "color: #2563eb;"; icon = "✈️ "; }
-                    else if(status === 'Alpha') { style = "color: #dc2626;"; icon = "❌ "; }
+                    // WARNA PRESENSI (TANPA EMOTICON)
+                    if(status === 'Hadir') { 
+                        style = "color: #16a34a; font-weight: 800;"; // Hijau
+                    } else if(status === 'Sakit' || status === 'Izin') { 
+                        style = "color: #d97706; font-weight: 800;"; // Kuning / Amber
+                    } else if(status === 'Alpha') { 
+                        style = "color: #dc2626; font-weight: 800;"; // Merah
+                    }
                     
                     if (isGridMode) {
-                        html += `<div style="${style}">${icon}${nama}</div>`;
+                        html += `<div style="${style}">${nama}</div>`;
                     } else {
-                        html += `<div style="${style} white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${icon}${nama}</div>`;
+                        html += `<div style="${style} white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${nama}</div>`;
                     }
                 }
             }
@@ -541,7 +533,7 @@
                     }
                 }
             } 
-            // RENDER KE LAYOUT 2 (TABEL PAGINATION DINAMIS SESUAI TINGGI)
+            // RENDER KE LAYOUT 2 (TABEL DENGAN PERHITUNGAN BATAS TINGGI FLEKSIBEL)
             else {
                 var tempPagesL2 = [];
                 
@@ -574,6 +566,7 @@
                         tr.innerHTML = `<td style="text-align:center;"><span class="badge-sesi">${row.sesi || '-'}</span></td><td style="text-align:center;"><span class="badge-ruang ${isKomik}">${row.ruang || '-'}</span></td><td><div class="guru-mapel-wrapper"><div class="guru-name">${row.guru || '-'}</div><div class="badge-mapel">${row.mapel || '-'}</div></div></td><td class="siswa-list">${namaSiswaHtml}</td>`;
                         tbodyL2.appendChild(tr);
                         
+                        // KURUNGAN BATAS: Jika tinggi tabel melampaui batas maksimal layar
                         if (tableL2.offsetHeight > (maxH - safeMargin)) {
                             if (currentPageData.length > 1) {
                                 tbodyL2.removeChild(tr); 

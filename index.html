@@ -90,53 +90,58 @@
         #layout-1 .footer-badge { font-size: 13px; padding: 5px 14px; border-radius: 8px;}
         #layout-1 marquee { font-size: 16px; font-weight: 700; color: var(--bp-blue); }
 
+
         /* ========================================= */
-        /* CSS LAYOUT 2 (TABEL DENGAN SIDEBAR HADITS) */
+        /* CSS LAYOUT 2 (TABEL DENGAN SIDEBAR HADITS) - OPTIMIZED PROPORTIONS */
         /* ========================================= */
-        #layout-2 { display: flex; flex-direction: column; height: 100%; width: 100%; gap: 25px; padding: 25px;}
-        #layout-2 .content-wrapper { display: flex; flex: 1; gap: 25px; overflow: hidden; }
-        #layout-2 .layout-kiri { flex: 3; display: flex; flex-direction: column; gap: 25px; height: 100%; }
-        #layout-2 .layout-kanan { flex: 1; display: flex; flex-direction: column; gap: 25px; height: 100%; }
+        #layout-2 { display: flex; flex-direction: column; height: 100%; width: 100%; gap: 15px; padding: 15px;}
         
-        /* DIKECILKAN UKURAN HEADER AGAR FOKUS KE TABEL */
-        #layout-2 .header-panel { height: 100px; display: flex; justify-content: space-between; align-items: center; padding: 0 40px; position: relative; border-radius: 28px; flex-shrink: 0;}
-        #layout-2 .header-brand h1 { font-size: 22px; font-weight: 800; color: var(--bp-blue); letter-spacing: -0.5px; text-shadow: 2px 2px 4px rgba(0,0,0,0.05); }
-        #layout-2 .header-brand p { font-size: 12px; font-weight: 800; color: var(--bp-yellow); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 2px; }
-        #layout-2 .clock-text { font-size: 38px; font-weight: 900; color: var(--bp-blue); text-shadow: 2px 2px 5px rgba(0,0,0,0.1); font-variant-numeric: tabular-nums; line-height: 1; }
-        #layout-2 .date-text { font-size: 13px; font-weight: 700; color: var(--text-muted); margin-top: 4px; }
+        /* Flex Ratio diperbesar untuk Tabel (Kiri 80%, Kanan 20%) */
+        #layout-2 .content-wrapper { display: flex; flex: 1; gap: 15px; overflow: hidden; }
+        #layout-2 .layout-kiri { flex: 4; display: flex; flex-direction: column; gap: 15px; height: 100%; } 
+        #layout-2 .layout-kanan { flex: 1; display: flex; flex-direction: column; gap: 15px; height: 100%; max-width: 260px; } /* Membatasi maksimal lebar hadits */
+
+        /* Header Dikecilkan */
+        #layout-2 .header-panel { height: 80px; display: flex; justify-content: space-between; align-items: center; padding: 0 30px; position: relative; border-radius: 20px; flex-shrink: 0;}
+        #layout-2 .header-brand h1 { font-size: 22px; font-weight: 800; color: var(--bp-blue); letter-spacing: -0.5px; text-shadow: 2px 2px 4px rgba(0,0,0,0.05); margin-top:2px;}
+        #layout-2 .header-brand p { font-size: 11px; font-weight: 800; color: var(--bp-yellow); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 0px; }
+        #layout-2 .clock-text { font-size: 30px; font-weight: 900; color: var(--bp-blue); text-shadow: 2px 2px 5px rgba(0,0,0,0.1); font-variant-numeric: tabular-nums; line-height: 1; }
+        #layout-2 .date-text { font-size: 12px; font-weight: 700; color: var(--text-muted); margin-top: 4px; }
+        #layout-2 .now-playing { color: var(--bp-tosca); background: rgba(15, 118, 110, 0.1); padding: 3px 10px; border-radius: 12px; display: inline-block; font-size: 10px; font-weight: 800; margin-top: 4px; box-shadow: var(--shadow-3d-in); }
         
-        #layout-2 .table-panel { flex: 1; padding: 10px 30px; display: flex; flex-direction: column; border-radius: 28px; height: 100%; overflow: hidden;}
-        #layout-2 table { width: 100%; border-collapse: separate; border-spacing: 0 15px; }
-        #layout-2 thead th { color: var(--text-muted); font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; padding: 0 20px 10px 20px; border-bottom: 2px solid rgba(30, 58, 138, 0.1); text-align: left; }
+        /* Tabel Lebih Lega */
+        #layout-2 .table-panel { flex: 1; padding: 10px 20px; display: flex; flex-direction: column; border-radius: 20px; height: 100%; overflow: hidden;}
+        #layout-2 table { width: 100%; border-collapse: separate; border-spacing: 0 10px; }
+        #layout-2 thead th { color: var(--text-muted); font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; padding: 0 20px 8px 20px; border-bottom: 2px solid rgba(30, 58, 138, 0.1); text-align: left; }
         #layout-2 tbody tr { background: var(--bg-light-blue); box-shadow: 4px 4px 10px rgba(148, 185, 211, 0.3), -4px -4px 10px rgba(255, 255, 255, 0.8); transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
-        #layout-2 tbody td { background: var(--bg-panel); padding: 20px; vertical-align: middle; border-top: 1px solid rgba(255,255,255,0.8); border-bottom: 1px solid rgba(255,255,255,0.8); }
-        #layout-2 tbody td:first-child { border-radius: 20px 0 0 20px; border-left: 1px solid rgba(255,255,255,0.8); }
-        #layout-2 tbody td:last-child { border-radius: 0 20px 20px 0; border-right: 1px solid rgba(255,255,255,0.8); }
-        #layout-2 .badge-sesi { color: var(--bp-yellow); font-size: 22px; font-weight: 800; font-variant-numeric: tabular-nums; }
-        #layout-2 .badge-ruang { background: #fef3c7; color: #b45309; border: 2px solid #fde68a; font-size: 16px; font-weight: 800; padding: 8px 16px; border-radius: 12px; display: inline-block; }
+        #layout-2 tbody td { background: var(--bg-panel); padding: 15px 20px; vertical-align: middle; border-top: 1px solid rgba(255,255,255,0.8); border-bottom: 1px solid rgba(255,255,255,0.8); }
+        #layout-2 tbody td:first-child { border-radius: 16px 0 0 16px; border-left: 1px solid rgba(255,255,255,0.8); }
+        #layout-2 tbody td:last-child { border-radius: 0 16px 16px 0; border-right: 1px solid rgba(255,255,255,0.8); }
+        #layout-2 .badge-sesi { color: var(--bp-yellow); font-size: 20px; font-weight: 800; font-variant-numeric: tabular-nums; }
+        #layout-2 .badge-ruang { background: #fef3c7; color: #b45309; border: 2px solid #fde68a; font-size: 16px; font-weight: 800; padding: 6px 14px; border-radius: 10px; display: inline-block; }
         #layout-2 .badge-ruang.komik { background: #ffedd5; color: #c2410c; border: 2px solid #fed7aa; }
-        #layout-2 .guru-mapel-wrapper { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+        #layout-2 .guru-mapel-wrapper { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
         #layout-2 .guru-name { font-size: 18px; font-weight: 800; color: var(--bp-blue); margin-bottom: 0; }
-        #layout-2 .badge-mapel { font-size: 12px; padding: 4px 12px; }
-        #layout-2 .siswa-list { font-size: 16px; font-weight: 600; color: var(--text-main); line-height: 1.6; }
+        #layout-2 .badge-mapel { font-size: 11px; padding: 3px 10px; border-radius: 6px; }
+        #layout-2 .siswa-list { font-size: 15px; font-weight: 600; color: var(--text-main); line-height: 1.5; }
         #layout-2 .empty-state { text-align: center; padding: 100px 0; font-size: 20px; font-weight: 700; color: var(--text-muted); background: transparent !important; box-shadow: none !important; border:none !important; }
 
-        #layout-2 .logo-panel { height: 100px; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 10px; border-radius: 28px; flex-shrink: 0;}
-        #layout-2 .logo-panel img { max-height: 60px; filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.1)); }
-        #layout-2 #page-indicator-l2 { margin-top: 8px; font-size: 11px; font-weight: 800; color: var(--bp-blue); letter-spacing: 1px; background: var(--bg-light-blue); box-shadow: var(--shadow-3d-in); padding: 5px 14px; border-radius: 20px; }
+        /* Panel Hadits Kanan Dikecilkan */
+        #layout-2 .logo-panel { height: 80px; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 10px; border-radius: 20px; flex-shrink: 0;}
+        #layout-2 .logo-panel img { max-height: 45px; filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.1)); }
+        #layout-2 #page-indicator-l2 { margin-top: 6px; font-size: 10px; font-weight: 800; color: var(--bp-blue); letter-spacing: 1px; background: var(--bg-light-blue); box-shadow: var(--shadow-3d-in); padding: 4px 12px; border-radius: 15px; }
 
-        #layout-2 .hadits-panel { flex: 1; padding: 30px; display: flex; flex-direction: column; position: relative; border-radius: 28px;}
-        #layout-2 .hadits-panel::before { content: '”'; position: absolute; top: 10px; left: 20px; font-size: 150px; color: rgba(30, 58, 138, 0.04); font-family: serif; line-height: 1; }
-        
-        /* DIKECILKAN UKURAN JUDUL HADITS */
-        #layout-2 .hadits-title { font-size: 14px; font-weight: 800; color: var(--bp-tosca); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; flex-shrink: 0;}
-        #layout-2 .hadits-title::before { content: ''; display: block; width: 30px; height: 3px; background: var(--bp-tosca); border-radius: 2px; }
+        #layout-2 .hadits-panel { flex: 1; padding: 25px 20px; display: flex; flex-direction: column; position: relative; border-radius: 20px;}
+        #layout-2 .hadits-panel::before { content: '”'; position: absolute; top: 5px; left: 15px; font-size: 120px; color: rgba(30, 58, 138, 0.04); font-family: serif; line-height: 1; }
+        #layout-2 .hadits-title { font-size: 13px; font-weight: 800; color: var(--bp-tosca); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 12px; display: flex; align-items: center; gap: 10px; flex-shrink: 0;}
+        #layout-2 .hadits-title::before { content: ''; display: block; width: 25px; height: 3px; background: var(--bp-tosca); border-radius: 2px; }
         #layout-2 #hadits-wrapper { flex: 1; min-height: 0; width: 100%; display: flex; align-items: center; justify-content: center; overflow: hidden; }
-        #layout-2 .hadits-text { font-weight: 600; color: var(--text-main); line-height: 1.7; position: relative; z-index: 2; font-style: italic; text-align: center;}
+        #layout-2 .hadits-text { font-weight: 600; color: var(--text-main); line-height: 1.6; position: relative; z-index: 2; font-style: italic; text-align: center;}
 
-        #layout-2 .footer-panel { width: 100%; height: 70px; display: flex; align-items: center; padding: 0 25px; flex-shrink: 0; z-index: 10; border-radius: 28px;}
-        #layout-2 .footer-badge { font-size: 15px; padding: 8px 18px; }
-        #layout-2 marquee { font-size: 20px; font-weight: 700; color: var(--bp-blue); }
+        /* Footer Dikecilkan */
+        #layout-2 .footer-panel { width: 100%; height: 50px; display: flex; align-items: center; padding: 0 20px; flex-shrink: 0; z-index: 10; border-radius: 20px;}
+        #layout-2 .footer-badge { font-size: 13px; padding: 5px 14px; border-radius: 8px;}
+        #layout-2 marquee { font-size: 17px; font-weight: 700; color: var(--bp-blue); }
 
         @keyframes fadeUpIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         #layout-2 tbody tr { animation: fadeUpIn 0.5s ease-out forwards; opacity: 0; }
@@ -171,7 +176,6 @@
     <div id="layout-1" style="display:none;">
         <div class="panel-3d header-panel">
             <div class="header-brand">
-                <img src="https://www.bintangpelajar.com/wp-content/uploads/2023/05/LOGO_BP_rev-2023.webp" alt="Logo BP">
                 <div class="header-brand-text">
                     <p>JADWAL BELAJAR</p>
                     <h1>Bintang Pelajar Pesona Khayangan Depok</h1>
@@ -194,7 +198,7 @@
         </div>
 
         <div class="panel-3d footer-panel">
-            <div class="footer-badge">Informasi</div>
+            <div class="footer-badge">INFORMASI</div>
             <marquee scrollamount="6">⭐ BINTANG PELAJAR: Prestasi Tinggi & Akhlak Terpuji! ✦ Dilengkapi pendampingan ibadah Islami ✦ Pilihan eksklusif 1 kelas 5 siswa ✦ Selamat belajar! ⭐</marquee>
         </div>
     </div>
@@ -251,7 +255,7 @@
         </div>
 
         <div class="panel-3d footer-panel">
-            <div class="footer-badge">Informasi</div>
+            <div class="footer-badge">INFORMASI</div>
             <marquee scrollamount="6">BINTANG PELAJAR: Prestasi Tinggi & Akhlak Terpuji! ✦ Dilengkapi pendampingan ibadah Islami ✦ Pilihan eksklusif 1 kelas 5 siswa ✦ Raih cita-citamu bersama kami!</marquee>
         </div>
     </div>
@@ -261,8 +265,8 @@
     <!-- LOGIKA JAVASCRIPT GLOBAL -->
     <!-- ========================================================= -->
     <script>
-        // 🚨 URL APPS SCRIPT SUDAH DIMASUKKAN
-        var API_URL = "https://script.google.com/macros/s/AKfycbyaKhduB8t8jzdF3TyFemU5cl6oxqsLyMqk9bP1j142C_bfOreXydoIJg5J1tGBTvNl/exec"; 
+        // 🚨 URL APPS SCRIPT PORTAL GURU 
+        var API_URL = "https://script.google.com/macros/s/AKfycbyaKhduB8t8jzdF3TyFemU5cl6oxqsLyMqk9bP1j142C_bfOreXydoIJg5J1tGBTVNl/exec"; 
 
         var SLIDE_DURATION = 8000;  
         var REFRESH_DATA = 60000;    
@@ -375,7 +379,7 @@
             let wrapper = document.getElementById('hadits-wrapper'), textEl = document.getElementById('sidebar-hadits');
             if (!wrapper || !textEl) return;
             
-            // UKURAN MAKSIMAL HADITS DIKECILKAN AGAR TIDAK TERLALU MENCOLOK
+            // UKURAN HADITS MAKSIMAL DIKECILKAN MENJADI 18PX (SEBELUMNYA 24PX) AGAR LEBIH RAPI
             let maxSize = 18, minSize = 10, currentSize = maxSize; 
             textEl.style.fontSize = currentSize + 'px';
             while (textEl.scrollHeight > wrapper.clientHeight && currentSize > minSize) { currentSize--; textEl.style.fontSize = currentSize + 'px'; }
@@ -413,7 +417,7 @@
             let dateStr = new Date().toDateString(); 
             let arr = String(teksMentah).replace(/\s*\([^)]*\)/g, '').split(/<br>|\n/);
             
-            // FONT SISWA DIPERBESAR DAN DIPERTEBAL AGAR MAKIN FOKUS
+            // FONT NAMA SISWA DIPERBESAR AGAR LEBIH TERLIHAT OLEH ANAK
             let html = isGridMode ? '' : '<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px 15px; font-size: 19px; font-weight: 800; line-height: 1.4;">';
             let validCount = 0;
 
@@ -537,7 +541,7 @@
                     }
                 }
             } 
-            // RENDER KE LAYOUT 2 
+            // RENDER KE LAYOUT 2 (TABEL PAGINATION DINAMIS SESUAI TINGGI)
             else {
                 var tempPagesL2 = [];
                 

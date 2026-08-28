@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Jadwal 3D TV - Bintang Pelajar</title>
-    <!-- Font modern 'Plus Jakarta Sans' -->
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -26,7 +25,6 @@
             display: flex; flex-direction: column; position: relative; 
         }
 
-        /* TOMBOL RAHASIA GANTI TAMPILAN */
         .switch-btn { 
             position: fixed; bottom: 20px; right: 20px; z-index: 10000; 
             background: rgba(30, 58, 138, 0.5); color: white; border: none; 
@@ -35,20 +33,17 @@
         }
         .switch-btn:hover { opacity: 1; background: var(--bp-blue); box-shadow: var(--shadow-3d-out); }
 
-        /* LATAR BELAKANG 3D BLOBS */
         .ambient-blob { position: absolute; border-radius: 50%; filter: blur(80px); z-index: -1; animation: float 20s infinite ease-in-out alternate; }
         .blob-1 { top: -10%; left: -10%; width: 50vw; height: 50vh; background: rgba(255, 255, 255, 0.6); }
         .blob-2 { bottom: -20%; right: -10%; width: 60vw; height: 60vh; background: rgba(186, 230, 253, 0.5); animation-delay: -5s; }
         @keyframes float { 0% { transform: translate(0, 0) scale(1); } 50% { transform: translate(5%, 10%) scale(1.1); } 100% { transform: translate(-5%, -5%) scale(0.9); } }
 
-        /* WAKTU SHOLAT OVERLAY */
         #prayer-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(30, 58, 138, 0.95); z-index: 9999; display: none; flex-direction: column; justify-content: center; align-items: center; backdrop-filter: blur(15px); text-align: center; }
         #prayer-overlay h1 { font-size: 100px; font-weight: 900; color: #facc15; margin-bottom: 20px; letter-spacing: 5px; text-shadow: 0 0 30px rgba(250, 204, 21, 0.5); }
         #prayer-overlay h2 { font-size: 40px; color: #ffffff; font-weight: 600; }
         #prayer-name { color: #facc15; font-weight: 800; }
         #prayer-overlay p { font-size: 24px; color: #cbd5e1; margin-top: 20px; }
 
-        /* COMMON COMPONENT CSS */
         .panel-3d { background: var(--bg-panel); border-radius: 20px; box-shadow: var(--shadow-3d-out); border: 2px solid rgba(255, 255, 255, 0.6); overflow: hidden;}
         .header-time { text-align: right; }
         .now-playing { color: var(--bp-tosca); background: rgba(15, 118, 110, 0.1); padding: 4px 12px; border-radius: 12px; display: inline-block; font-size: 12px; font-weight: 800; margin-top: 8px; box-shadow: var(--shadow-3d-in); }
@@ -56,7 +51,7 @@
         .badge-mapel { color: #ffffff; font-weight: 700; background: var(--bp-tosca); border-radius: 8px; display: inline-block; box-shadow: 2px 2px 5px rgba(15, 118, 110, 0.3); }
 
         /* ========================================= */
-        /* CSS LAYOUT 1 (GRID + AUTO SCROLL) */
+        /* CSS LAYOUT 1 (GRID FULL 6 KOLOM AUTO SCROLL) */
         /* ========================================= */
         #layout-1 { display: flex; flex-direction: column; height: 100%; width: 100%; gap: 15px; padding: 15px;}
         #layout-1 .header-panel { height: 80px; display: flex; justify-content: space-between; align-items: center; padding: 0 30px; flex-shrink: 0; }
@@ -531,19 +526,78 @@
                     }
                 }
             } 
-            // RENDER KE LAYOUT 2 (TABEL PAGINATION PER 4 RUANGAN)
+            // RENDER KE LAYOUT 2 (TABEL PAGINATION DINAMIS SESUAI TINGGI/BOUNDING BOX)
             else {
                 var tempPagesL2 = [];
                 
                 if (jadwalAktif.length === 0) {
                     tempPagesL2.push([{ empty: true }]);
                 } else {
-                    for (var i = 0; i < jadwalAktif.length; i += 4) {
-                        tempPagesL2.push(jadwalAktif.slice(i, i + 4));
+                    var containerL2 = document.getElementById('tabel-wadah-l2'); 
+                    var tableL2 = document.getElementById('schedule-table-l2');
+                    var tbodyL2 = document.getElementById('table-body-l2');
+                    
+                    // Kita harus memaksa Layout 2 terlihat sebentar secara rahasia jika sedang disembunyikan
+                    // agar sistem bisa mengukur tinggi elemen (offsetHeight) dengan benar.
+                    var wasHidden = (document.getElementById('layout-2').style.display === 'none');
+                    if (wasHidden) {
+                        document.getElementById('layout-2').style.visibility = 'hidden';
+                        document.getElementById('layout-2').style.display = 'flex';
+                    }
+
+                    var currentPageData = []; 
+                    var safeMargin = 15; // Jarak aman bawah agar tidak mepet
+                    var maxH = containerL2.clientHeight;
+                    
+                    tbodyL2.innerHTML = '';
+                    
+                    for (var i = 0; i < jadwalAktif.length; i++) {
+                        var row = jadwalAktif[i]; 
+                        currentPageData.push(row);
+                        
+                        var tr = document.createElement('tr'); 
+                        var namaSiswaHtml = renderSiswaDenganAbsen(row.siswa, row.sesi, false);
+                        var isKomik = (row.ruang && row.ruang.toLowerCase().includes("komik")) ? "komik" : "";
+                        tr.innerHTML = `<td style="text-align:center;"><span class="badge-sesi">${row.sesi || '-'}</span></td><td style="text-align:center;"><span class="badge-ruang ${isKomik}">${row.ruang || '-'}</span></td><td><div class="guru-mapel-wrapper"><div class="guru-name">${row.guru || '-'}</div><div class="badge-mapel">${row.mapel || '-'}</div></div></td><td class="siswa-list">${namaSiswaHtml}</td>`;
+                        tbodyL2.appendChild(tr);
+                        
+                        // CEK APAKAH TABEL MENABRAK BATAS BAWAH LAYAR
+                        if (tableL2.offsetHeight > (maxH - safeMargin)) {
+                            if (currentPageData.length > 1) {
+                                // Jika melebihi batas layar, buang baris terakhir ini dan simpan baris sebelumnya sbg Page baru
+                                tbodyL2.removeChild(tr); 
+                                currentPageData.pop();
+                                tempPagesL2.push(currentPageData);
+                                
+                                // Baris yang dibuang tadi dimasukkan sbg data pertama di halaman selanjutnya
+                                currentPageData = [row]; 
+                                tbodyL2.innerHTML = ''; 
+                                tbodyL2.appendChild(tr); 
+                            } else {
+                                // Pengecualian: Jika 1 baris saja sudah sangat panjang dan melebihi batas layar,
+                                // terpaksa kita simpan sendirian di 1 halaman
+                                tempPagesL2.push(currentPageData);
+                                currentPageData = [];
+                                tbodyL2.innerHTML = '';
+                            }
+                        }
+                    }
+                    
+                    // Masukkan sisa jadwal yang belum masuk ke halaman manapun
+                    if (currentPageData.length > 0) tempPagesL2.push(currentPageData);
+                    
+                    tbodyL2.innerHTML = ''; // Bersihkan tabel lagi setelah selesai simulasi ukuran
+                    
+                    // Kembalikan ke mode awal jika tadinya tersembunyi
+                    if (wasHidden) {
+                        document.getElementById('layout-2').style.display = 'none';
+                        document.getElementById('layout-2').style.visibility = 'visible';
                     }
                 }
                 
                 pagesL2 = tempPagesL2;
+                
+                // Reset slide jika sesi berganti
                 if (currentSesiBerlangsung !== targetSesi) { 
                     currentPageIndexL2 = 0; 
                 } else if (currentPageIndexL2 >= pagesL2.length) {

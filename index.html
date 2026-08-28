@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Jadwal 3D TV - Bintang Pelajar</title>
+    <!-- Font modern 'Plus Jakarta Sans' -->
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -25,6 +26,7 @@
             display: flex; flex-direction: column; position: relative; 
         }
 
+        /* TOMBOL RAHASIA GANTI TAMPILAN */
         .switch-btn { 
             position: fixed; bottom: 20px; right: 20px; z-index: 10000; 
             background: rgba(30, 58, 138, 0.5); color: white; border: none; 
@@ -33,17 +35,20 @@
         }
         .switch-btn:hover { opacity: 1; background: var(--bp-blue); box-shadow: var(--shadow-3d-out); }
 
+        /* LATAR BELAKANG 3D BLOBS */
         .ambient-blob { position: absolute; border-radius: 50%; filter: blur(80px); z-index: -1; animation: float 20s infinite ease-in-out alternate; }
         .blob-1 { top: -10%; left: -10%; width: 50vw; height: 50vh; background: rgba(255, 255, 255, 0.6); }
         .blob-2 { bottom: -20%; right: -10%; width: 60vw; height: 60vh; background: rgba(186, 230, 253, 0.5); animation-delay: -5s; }
         @keyframes float { 0% { transform: translate(0, 0) scale(1); } 50% { transform: translate(5%, 10%) scale(1.1); } 100% { transform: translate(-5%, -5%) scale(0.9); } }
 
+        /* WAKTU SHOLAT OVERLAY */
         #prayer-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(30, 58, 138, 0.95); z-index: 9999; display: none; flex-direction: column; justify-content: center; align-items: center; backdrop-filter: blur(15px); text-align: center; }
         #prayer-overlay h1 { font-size: 100px; font-weight: 900; color: #facc15; margin-bottom: 20px; letter-spacing: 5px; text-shadow: 0 0 30px rgba(250, 204, 21, 0.5); }
         #prayer-overlay h2 { font-size: 40px; color: #ffffff; font-weight: 600; }
         #prayer-name { color: #facc15; font-weight: 800; }
         #prayer-overlay p { font-size: 24px; color: #cbd5e1; margin-top: 20px; }
 
+        /* COMMON COMPONENT CSS */
         .panel-3d { background: var(--bg-panel); border-radius: 20px; box-shadow: var(--shadow-3d-out); border: 2px solid rgba(255, 255, 255, 0.6); overflow: hidden;}
         .header-time { text-align: right; }
         .now-playing { color: var(--bp-tosca); background: rgba(15, 118, 110, 0.1); padding: 4px 12px; border-radius: 12px; display: inline-block; font-size: 12px; font-weight: 800; margin-top: 8px; box-shadow: var(--shadow-3d-in); }
@@ -90,15 +95,15 @@
         /* ========================================= */
         #layout-2 { display: flex; flex-direction: column; height: 100%; width: 100%; gap: 25px; padding: 25px;}
         #layout-2 .content-wrapper { display: flex; flex: 1; gap: 25px; overflow: hidden; }
-        #layout-2 .layout-kiri { flex: 3; display: flex; flex-direction: column; gap: 25px; }
-        #layout-2 .layout-kanan { flex: 1; display: flex; flex-direction: column; gap: 25px; }
-        #layout-2 .header-panel { height: 120px; display: flex; justify-content: space-between; align-items: center; padding: 0 40px; position: relative; border-radius: 28px;}
+        #layout-2 .layout-kiri { flex: 3; display: flex; flex-direction: column; gap: 25px; height: 100%; }
+        #layout-2 .layout-kanan { flex: 1; display: flex; flex-direction: column; gap: 25px; height: 100%; }
+        #layout-2 .header-panel { height: 120px; display: flex; justify-content: space-between; align-items: center; padding: 0 40px; position: relative; border-radius: 28px; flex-shrink: 0;}
         #layout-2 .header-brand h1 { font-size: 30px; font-weight: 800; color: var(--bp-blue); letter-spacing: -0.5px; text-shadow: 2px 2px 4px rgba(0,0,0,0.05); }
         #layout-2 .header-brand p { font-size: 16px; font-weight: 800; color: var(--bp-yellow); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 2px; }
         #layout-2 .clock-text { font-size: 42px; font-weight: 900; color: var(--bp-blue); text-shadow: 2px 2px 5px rgba(0,0,0,0.1); font-variant-numeric: tabular-nums; line-height: 1; }
         #layout-2 .date-text { font-size: 15px; font-weight: 700; color: var(--text-muted); margin-top: 4px; }
         
-        #layout-2 .table-panel { flex: 1; padding: 10px 30px; display: flex; flex-direction: column; border-radius: 28px;}
+        #layout-2 .table-panel { flex: 1; padding: 10px 30px; display: flex; flex-direction: column; border-radius: 28px; height: 100%; overflow: hidden;}
         #layout-2 table { width: 100%; border-collapse: separate; border-spacing: 0 15px; }
         #layout-2 thead th { color: var(--text-muted); font-size: 15px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; padding: 0 20px 10px 20px; border-bottom: 2px solid rgba(30, 58, 138, 0.1); text-align: left; }
         #layout-2 tbody tr { background: var(--bg-light-blue); box-shadow: 4px 4px 10px rgba(148, 185, 211, 0.3), -4px -4px 10px rgba(255, 255, 255, 0.8); transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
@@ -114,9 +119,9 @@
         #layout-2 .siswa-list { font-size: 16px; font-weight: 600; color: var(--text-main); line-height: 1.6; }
         #layout-2 .empty-state { text-align: center; padding: 100px 0; font-size: 20px; font-weight: 700; color: var(--text-muted); background: transparent !important; box-shadow: none !important; border:none !important; }
 
-        #layout-2 .logo-panel { height: 120px; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 15px; border-radius: 28px;}
+        #layout-2 .logo-panel { height: 120px; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 15px; border-radius: 28px; flex-shrink: 0;}
         #layout-2 .logo-panel img { max-height: 80px; filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.1)); }
-        #layout-2 #page-indicator { margin-top: 10px; font-size: 11px; font-weight: 800; color: var(--bp-blue); letter-spacing: 1px; background: var(--bg-light-blue); box-shadow: var(--shadow-3d-in); padding: 6px 14px; border-radius: 20px; }
+        #layout-2 #page-indicator-l2 { margin-top: 10px; font-size: 11px; font-weight: 800; color: var(--bp-blue); letter-spacing: 1px; background: var(--bg-light-blue); box-shadow: var(--shadow-3d-in); padding: 6px 14px; border-radius: 20px; }
 
         #layout-2 .hadits-panel { flex: 1; padding: 30px; display: flex; flex-direction: column; position: relative; border-radius: 28px;}
         #layout-2 .hadits-panel::before { content: '”'; position: absolute; top: 10px; left: 20px; font-size: 150px; color: rgba(30, 58, 138, 0.04); font-family: serif; line-height: 1; }
@@ -129,17 +134,13 @@
         #layout-2 .footer-badge { font-size: 15px; padding: 8px 18px; }
         #layout-2 marquee { font-size: 20px; font-weight: 700; color: var(--bp-blue); }
 
-        #layout-2 #info-container { flex-grow: 1; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 40px; border-radius: 28px;}
-        #layout-2 .info-title { font-size: 32px; color: var(--bp-blue); font-weight: 800; margin-bottom: 25px; letter-spacing: 1px;}
-        #layout-2 .info-card { background: var(--bg-light-blue); border-left: 6px solid var(--bp-yellow); padding: 30px 40px; border-radius: 16px; font-size: 24px; color: var(--text-main); font-weight: 700; width: 100%; margin-bottom: 15px; box-shadow: var(--shadow-3d-out); }
-
         @keyframes fadeUpIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         #layout-2 tbody tr { animation: fadeUpIn 0.5s ease-out forwards; opacity: 0; }
         #layout-2 tbody tr:nth-child(1) { animation-delay: 0.1s; }
         #layout-2 tbody tr:nth-child(2) { animation-delay: 0.2s; }
         #layout-2 tbody tr:nth-child(3) { animation-delay: 0.3s; }
         #layout-2 tbody tr:nth-child(4) { animation-delay: 0.4s; }
-        #layout-2 .info-card, #layout-2 .poster-img, #layout-2 .video-content, #prayer-overlay { animation: fadeUpIn 0.6s ease-out forwards; }
+        #prayer-overlay { animation: fadeUpIn 0.6s ease-out forwards; }
     </style>
 </head>
 <body onclick="playMusic()">
@@ -228,11 +229,6 @@
                         </tbody>
                     </table>
                 </div>
-
-                <div class="panel-3d" id="info-container-l2">
-                    <div class="info-title" id="info-header-title-l2">Update Terbaru</div>
-                    <div id="info-list-l2" style="width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center;"></div>
-                </div>
             </div>
 
             <div class="layout-kanan">
@@ -264,8 +260,7 @@
         // 🚨 MASUKKAN URL APPS SCRIPT PORTAL GURU BAPAK/IBU DI SINI:
         var API_URL = "https://script.google.com/macros/s/AKfycbyaKhduB8t8jzdF3TyFemU5cl6oxqsLyMqk9bP1j142C_bfOreXydoIJg5J1tGBTvNl/exec"; 
 
-        var ENABLE_INFO_SLIDE = false; 
-        var SLIDE_DURATION = 15000;  
+        var SLIDE_DURATION = 8000;  
         var REFRESH_DATA = 60000;    
 
         var rawResponseData = null;
@@ -275,8 +270,7 @@
         var currentPageIndexL2 = 0;
         var slideIntervalL2 = null;
         
-        var currentSesiBerlangsung = ""; // Sesi yang sedang aktif saat ini
-        var isModeChanged = false;
+        var currentSesiBerlangsung = ""; 
         
         var prayerTimes = {};
         var prayerTimeout = null;
@@ -446,7 +440,7 @@
         }
 
         // =======================================================
-        // MESIN LAYOUT 1: AUTO SCROLL (PENGATURAN)
+        // MESIN LAYOUT 1: AUTO SCROLL
         // =======================================================
         function initAutoScrollL1() { 
             scrollContainerL1 = document.getElementById('scroll-wadah-l1'); 
@@ -483,7 +477,6 @@
             var targetSesi = "";
             var jadwalAktif = [];
             
-            // Kelompokkan dulu per sesi
             var groupedBySesi = {};
             scheduleData.forEach(row => {
                 if(!groupedBySesi[row.sesi]) groupedBySesi[row.sesi] = [];
@@ -491,16 +484,13 @@
             });
             var sesiKeys = Object.keys(groupedBySesi).sort();
 
-            // Cari Sesi yang Aktif
             if (sesiKeys.length > 0) {
                 for (var i = 0; i < sesiKeys.length; i++) {
                     var sesiMenit = parseJamKeMenit(sesiKeys[i]);
-                    // Tampilkan sesi jika sekarang adalah 30 menit sebelum sesi dimulai
                     if (currentMinutes >= (sesiMenit - 30)) {
                         targetSesi = sesiKeys[i];
                     }
                 }
-                // Jika masih terlalu pagi (belum H-30mnt dari sesi pertama), tampilkan sesi pertama saja
                 if (targetSesi === "") {
                     targetSesi = sesiKeys[0];
                 }
@@ -533,44 +523,24 @@
                             </div>`;
                     });
                     
-                    // Render Ulang Hanya Jika Terjadi Perubahan Sesi (Agar Auto Scroll Tidak Terganggu)
                     if (currentSesiBerlangsung !== targetSesi || containerL1.innerHTML.indexOf("Sedang menarik") > -1) {
                         containerL1.innerHTML = html;
                         if (scrollContainerL1) { scrollContainerL1.scrollTo({ top: 0, behavior: 'instant' }); currentScrollYL1 = 0; }
                     } else {
-                        // Jika sesi masih sama, kita hanya replace HTML tanpa reset scroll agar warna absen terupdate secara stealthy
                         containerL1.innerHTML = html;
                     }
                 }
             } 
-            // RENDER KE LAYOUT 2
+            // RENDER KE LAYOUT 2 (TABEL PAGINATION PER 4 RUANGAN)
             else {
-                var containerL2 = document.getElementById('tabel-wadah-l2'); 
-                var tableL2 = document.getElementById('schedule-table-l2');
-                var tbodyL2 = document.getElementById('table-body-l2');
                 var tempPagesL2 = [];
                 
                 if (jadwalAktif.length === 0) {
                     tempPagesL2.push([{ empty: true }]);
                 } else {
-                    var currentPageData = []; var safeMargin = 50; 
-                    tbodyL2.innerHTML = '';
-                    for (var i = 0; i < jadwalAktif.length; i++) {
-                        var row = jadwalAktif[i]; currentPageData.push(row);
-                        var tr = document.createElement('tr'); 
-                        var namaSiswaHtml = renderSiswaDenganAbsen(row.siswa, row.sesi, false);
-                        var isKomik = (row.ruang && row.ruang.toLowerCase().includes("komik")) ? "komik" : "";
-                        tr.innerHTML = `<td style="text-align:center;"><span class="badge-sesi">${row.sesi || '-'}</span></td><td style="text-align:center;"><span class="badge-ruang ${isKomik}">${row.ruang || '-'}</span></td><td><div class="guru-mapel-wrapper"><div class="guru-name">${row.guru || '-'}</div><div class="badge-mapel">${row.mapel || '-'}</div></div></td><td class="siswa-list">${namaSiswaHtml}</td>`;
-                        tbodyL2.appendChild(tr);
-                        
-                        if (tableL2.offsetHeight > (containerL2.clientHeight - safeMargin)) {
-                            tbodyL2.removeChild(tr); currentPageData.pop();
-                            if (currentPageData.length > 0) tempPagesL2.push(currentPageData);
-                            currentPageData = [row]; tbodyL2.innerHTML = ''; tbodyL2.appendChild(tr); 
-                        }
+                    for (var i = 0; i < jadwalAktif.length; i += 4) {
+                        tempPagesL2.push(jadwalAktif.slice(i, i + 4));
                     }
-                    if (currentPageData.length > 0) tempPagesL2.push(currentPageData);
-                    tbodyL2.innerHTML = '';
                 }
                 
                 pagesL2 = tempPagesL2;
@@ -624,7 +594,7 @@
         // SCRIPT MULAI
         setTimeout(playMusic, 2000); 
         fetchData(); setInterval(fetchData, REFRESH_DATA); 
-        setTimeout(function() { location.reload(); }, 10800000); // 3 Jam reload paksa TV
+        setTimeout(function() { location.reload(); }, 10800000);
     </script>
 </body>
 </html>
